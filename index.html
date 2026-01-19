@@ -41,9 +41,9 @@
         }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; min-height: 100dvh; overflow-x: hidden; }
-        .screen { display: none; min-height: 100vh; min-height: 100dvh; opacity: 0; transition: opacity 0.3s ease; }
-        .screen.active { display: block; opacity: 1; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .screen { position: absolute; top: 0; left: 0; right: 0; min-height: 100vh; min-height: 100dvh; display: none; opacity: 0; visibility: hidden; }
+        .screen.active { display: block; opacity: 1; visibility: visible; position: relative; }
+        .login-screen.active { display: flex; }
 
         /* LOGIN */
         .login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 24px; background: radial-gradient(ellipse at 50% 0%, rgba(196, 30, 58, 0.15) 0%, transparent 50%), var(--bg-primary); }
@@ -395,37 +395,21 @@
     </div>
 
     <!-- DETAIL MODAL -->
-    <div class="modal-overlay" id="detailModal"><div class="modal" style="max-width:600px;"><h2 class="modal-title" id="detailTitle">Details</h2><p class="modal-subtitle" id="detailSubtitle"></p><div id="detailContent"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="document.getElementById('detailModal').classList.remove('active')">Schließen</button></div></div></div>
+    <div class="modal-overlay" id="detailModal"><div class="modal" style="max-width:600px;"><h2 class="modal-title" id="detailTitle">Details</h2><p class="modal-subtitle" id="detailSubtitle"></p><div id="detailContent"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="document.getElementById('detailModal').classList.remove('active')">Schließen</button><button class="btn btn-primary" id="deleteCheckBtn" onclick="deleteCheck()" style="background:#e74c3c;display:none;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>Löschen</button></div></div></div>
 
     <script>
         // USERS
         const USERS = { '0054': { role: 'user', name: 'User' }, '5400': { role: 'admin', name: 'Admin' } };
-        const GITHUB_TOKEN = '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';
-        let currentUser = null, currentPin = '', checklistState = {}, commentsState = {}, signatureData = null;
+        let currentUser = null, currentPin = '', checklistState = {}, commentsState = {}, signatureData = null, currentDetailId = null;
 
         // CHECKLIST DATA
         const checklistData=[{id:'corpuls',title:'Corpuls 3',icon:`<svg viewBox="0 0 24 24"><path d="M19.5 6c-1.31 0-2.37 1.01-2.48 2.3-1.88-.5-2.84-.52-4.52.02C12.4 7.01 11.34 6 10.03 6 8.69 6 7.58 7.11 7.58 8.45c0 .65.26 1.24.68 1.68-2.21 1.87-2.62 4.29-2.62 6.37 0 1.1.9 2 2 2h8.72c1.1 0 2-.9 2-2 0-2.08-.41-4.5-2.62-6.37.42-.44.68-1.03.68-1.68C16.42 7.11 15.31 6 13.97 6z"/></svg>`,items:['EKG-Kabel (6- und 12-Kanal) + Rasierer','EKG-Elektroden > 12 Stück','corPatch-Elektroden Erwachsener','CPR-Feedback-Sensor','CO2-Sensor und 1 Küvette','NIBD-Manschette und Schlauch','SpO2-Sensor und Zwischenkabel','Druckerpapier im Druckerfach vorhanden','Testschock mit 200J + Kontrolle Stromabgabe','Ladekonsole (Laden aktiv)','Kommunikation zwischen den Modulen','Batteriestatus der Module','Gerät einschalten (Selbsttest)']},{id:'absaugpumpe',title:'Elektrische Absaugpumpe',icon:`<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>`,items:['Funktion','Pumpe hält Sog bei erreichtem Vakuum','Absaugkatheter (je 2x) + Schlauch & Fingertip','Pumpe lädt in Halterung']},{id:'notfallzimmer',title:'Notfallzimmer',icon:`<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/></svg>`,items:['O2-Flaschendruck >50bar (10L)','Rucksack Rot vorhanden','EKG-Rechner eingeschaltet','Rucksack Gelb vorhanden','OP-Leuchte Funktion','Gelb: O2>80bar, Laryngoskop Funktion','Infusionsständer mit 2x Infusion + Besteck','Zentrifuge Funktion / Blut kühlen','Kühl- und Gefrierschrank Funktion','SicSac in Spender >5 Stück']},{id:'ambulanz1',title:'Ambulanz 1',icon:`<svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm6 11h-3v3h-2v-3H8v-2h3v-3h2v3h3v2z"/></svg>`,items:['OP-Leuchte Funktion','Ambulanzwagen sauber, befüllt','Spaltlampe Funktion','Otoskop Funktion','Kryo-Fos Funktion/Akku/Ladung','Augenspülflasche in Spiegelschrank']},{id:'ambulanz2',title:'Ambulanz 2',icon:`<svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm6 11h-3v3h-2v-3H8v-2h3v-3h2v3h3v2z"/></svg>`,items:['OP-Leuchte Funktion','Ambulanzwagen sauber, befüllt','Desinfektionsbad leer','Otoskop Funktion','Kryo-Fos Funktion/Akku/Ladung']},{id:'ruheraum',title:'Ruheraum',icon:`<svg viewBox="0 0 24 24"><path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V7H1v10h22v-6c0-2.21-1.79-4-4-4z"/></svg>`,items:['Liegen sauber / Decken vorhanden','SicSac in Spender >5 Stück']},{id:'physio',title:'Physikalische Therapie',icon:`<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`,items:['Liegen sauber / Ärztekrepp vorhanden','Reizstromgerät Funktion/Sauberkeit','Rotlicht vorne Funktion/Sauberkeit','Rotlicht mittig Funktion/Sauberkeit','SicSac in Spender >5 Stück','Elacur + Voltaren vorhanden','Schwämme abkochen']},{id:'aufenthalt',title:'Aufenthaltsraum',icon:`<svg viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>`,items:['Schalter "Patientenklingel" eingeschaltet','Schwesternruf grüne Leuchte an']},{id:'sonntag',title:'Nur Sonntag',icon:`<svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>`,items:['Notruftelefon Funktion überprüft','Dokumente Leitstelle abholen'],isSunday:true}];
 
         // SCREENS
         function showScreen(name) { 
-            // Scroll to top first
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(name + 'Screen').classList.add('active');
             window.scrollTo(0, 0);
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
-            
-            // Hide all screens completely
-            document.querySelectorAll('.screen').forEach(s => {
-                s.classList.remove('active');
-            });
-            
-            // Show the target screen
-            const target = document.getElementById(name + 'Screen');
-            target.classList.add('active');
-            
-            // Scroll again after screen change
-            setTimeout(() => {
-                window.scrollTo(0, 0);
-            }, 10);
         }
 
         // PIN
@@ -435,22 +419,14 @@
         function checkPin() {
             if (USERS[currentPin]) {
                 currentUser = USERS[currentPin];
-                
-                // Update dashboard
                 document.getElementById('userBadge').textContent = currentUser.name;
                 document.getElementById('userBadge').classList.toggle('admin', currentUser.role === 'admin');
                 document.getElementById('adminSection').style.display = currentUser.role === 'admin' ? 'block' : 'none';
                 document.getElementById('adminTiles').style.display = currentUser.role === 'admin' ? 'grid' : 'none';
                 document.getElementById('dashboardDate').textContent = new Date().toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
-                
-                // Smooth transition
-                document.getElementById('loginScreen').style.opacity = '0';
-                setTimeout(() => {
-                    currentPin = ''; 
-                    updatePinDisplay(); 
-                    showScreen('dashboard');
-                    document.getElementById('loginScreen').style.opacity = '1';
-                }, 200);
+                currentPin = ''; 
+                updatePinDisplay(); 
+                showScreen('dashboard');
             } else {
                 document.querySelectorAll('.pin-dot').forEach(d => d.classList.add('error'));
                 setTimeout(() => { currentPin = ''; updatePinDisplay(); }, 500);
@@ -687,48 +663,122 @@
         // SUBMIT
         document.getElementById('submitBtn').addEventListener('click', async () => {
             const employeeName = document.getElementById('employeeName').value || 'Nicht angegeben';
-            const t = GITHUB_TOKEN;
-            const btn = document.getElementById('submitBtn'); btn.disabled = true; btn.innerHTML = '<svg class="spinner" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z"/></svg> Speichern...';
+            const btn = document.getElementById('submitBtn'); 
+            btn.disabled = true; 
+            btn.innerHTML = '<svg class="spinner" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z"/></svg> Speichern...';
+            
             const now = new Date(), ds = now.toISOString().split('T')[0], ts = now.toLocaleTimeString('de-DE'), sun = now.getDay() === 0;
-            let res = {}; checklistData.forEach(s => { if (s.isSunday && !sun) return; res[s.title] = {}; s.items.forEach((it, i) => { const key = `${s.id}-${i}`; const comment = commentsState[key] || ''; res[s.title][it] = { checked: checklistState[key] ? '✓' : '✗', comment: comment }; }); });
-            const data = { meta: { datum: ds, uhrzeit: ts, mitarbeiter: employeeName, user: currentUser.name, standort: 'Mercedes-Benz Rastatt' }, checkliste: res, unterschrift: signatureData };
+            let res = {}; 
+            checklistData.forEach(s => { 
+                if (s.isSunday && !sun) return; 
+                res[s.title] = {}; 
+                s.items.forEach((it, i) => { 
+                    const key = `${s.id}-${i}`; 
+                    const comment = commentsState[key] || ''; 
+                    res[s.title][it] = { checked: checklistState[key] ? '✓' : '✗', comment: comment }; 
+                }); 
+            });
+            
+            const data = { 
+                id: Date.now(),
+                meta: { datum: ds, uhrzeit: ts, mitarbeiter: employeeName, user: currentUser.name, standort: 'Mercedes-Benz Rastatt' }, 
+                checkliste: res, 
+                unterschrift: signatureData 
+            };
+            
+            // Save to localStorage
             try {
-                const r = await fetch('https://api.github.com/gists', { method: 'POST', headers: { 'Authorization': `token ${t}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ description: `Ambulanzcheck ${ds} - ${employeeName}`, public: false, files: { [`ambulanzcheck_${ds}_${employeeName.replace(/\s+/g, '_')}.json`]: { content: JSON.stringify(data, null, 2) } } }) });
-                if (!r.ok) throw new Error('API');
+                let archive = JSON.parse(localStorage.getItem('ambulanzcheck_archive') || '[]');
+                archive.unshift(data); // Add to beginning
+                // Keep max 100 entries
+                if (archive.length > 100) archive = archive.slice(0, 100);
+                localStorage.setItem('ambulanzcheck_archive', JSON.stringify(archive));
+                
                 document.getElementById('successDate').textContent = `${ds} ${ts}`;
                 document.getElementById('successEmployee').textContent = employeeName;
                 document.getElementById('successItems').textContent = document.getElementById('progressCount').textContent;
                 showScreen('success');
-            } catch (e) { alert(`Fehler: ${e.message}`); btn.disabled = false; btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>Check abschließen & speichern'; }
+            } catch (e) { 
+                alert(`Fehler beim Speichern: ${e.message}`); 
+                btn.disabled = false; 
+                btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>Check abschließen & speichern'; 
+            }
         });
 
         // ARCHIVE
-        async function loadArchive() {
-            const c = document.getElementById('archiveContainer'), t = GITHUB_TOKEN;
+        function loadArchive() {
+            const c = document.getElementById('archiveContainer');
             c.innerHTML = '<div class="archive-loading">Lade...</div>';
+            
             try {
-                const r = await fetch('https://api.github.com/gists', { headers: { 'Authorization': `token ${t}` } });
-                const g = (await r.json()).filter(x => x.description && x.description.includes('Ambulanzcheck'));
-                if (!g.length) { c.innerHTML = '<div class="archive-empty"><div class="archive-empty-icon"><svg viewBox="0 0 24 24"><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27z"/></svg></div><p class="archive-empty-text">Noch keine Checks.</p></div>'; return; }
-                c.innerHTML = g.map(x => { const m = x.description.match(/Ambulanzcheck (\d{4}-\d{2}-\d{2})(?:\s*-\s*(.+))?/), d = m ? m[1] : '?', emp = m && m[2] ? m[2] : ''; return `<div class="archive-item" onclick="showGistDetail('${x.id}')"><div class="archive-item-header"><span class="archive-item-date">${d}</span><span class="archive-item-badge">✓</span></div><div class="archive-item-details">${emp ? `<div class="archive-item-detail"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>${emp}</div>` : ''}<div class="archive-item-detail"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>${new Date(x.created_at).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}</div></div></div>`; }).join('');
-            } catch (e) { c.innerHTML = '<div class="archive-empty"><p class="archive-empty-text">Fehler.</p></div>'; }
+                const archive = JSON.parse(localStorage.getItem('ambulanzcheck_archive') || '[]');
+                
+                if (!archive.length) { 
+                    c.innerHTML = '<div class="archive-empty"><div class="archive-empty-icon"><svg viewBox="0 0 24 24"><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27z"/></svg></div><p class="archive-empty-text">Noch keine Checks gespeichert.</p></div>'; 
+                    return; 
+                }
+                
+                c.innerHTML = archive.map(x => {
+                    const d = x.meta.datum;
+                    const emp = x.meta.mitarbeiter || '';
+                    const time = x.meta.uhrzeit;
+                    return `<div class="archive-item" onclick="showCheckDetail(${x.id})">
+                        <div class="archive-item-header">
+                            <span class="archive-item-date">${d}</span>
+                            <span class="archive-item-badge">✓</span>
+                        </div>
+                        <div class="archive-item-details">
+                            ${emp ? `<div class="archive-item-detail"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>${emp}</div>` : ''}
+                            <div class="archive-item-detail"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>${time}</div>
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch (e) { 
+                c.innerHTML = '<div class="archive-empty"><p class="archive-empty-text">Fehler beim Laden.</p></div>'; 
+            }
         }
-        async function showGistDetail(id) {
-            const t = GITHUB_TOKEN;
+        
+        function showCheckDetail(id) {
             try {
-                const r = await fetch(`https://api.github.com/gists/${id}`, { headers: { 'Authorization': `token ${t}` } }), g = await r.json(), fn = Object.keys(g.files)[0], c = JSON.parse(g.files[fn].content);
+                const archive = JSON.parse(localStorage.getItem('ambulanzcheck_archive') || '[]');
+                const c = archive.find(x => x.id === id);
+                if (!c) { alert('Check nicht gefunden'); return; }
+                
+                currentDetailId = id;
                 document.getElementById('detailTitle').textContent = `Check vom ${c.meta.datum}`;
                 document.getElementById('detailSubtitle').textContent = `${c.meta.mitarbeiter || ''} • ${c.meta.uhrzeit}`;
-                let h = ''; Object.entries(c.checkliste).forEach(([sec, items]) => { h += `<div class="detail-section"><div class="detail-section-title">${sec}</div>`; Object.entries(items).forEach(([it, val]) => { 
-                    const isNewFormat = typeof val === 'object';
-                    const status = isNewFormat ? val.checked : val;
-                    const comment = isNewFormat ? val.comment : '';
-                    h += `<div class="detail-item"><span class="detail-item-label">${it}${comment ? `<br><small style="color:var(--text-muted);font-style:italic;">→ ${comment}</small>` : ''}</span><span class="detail-item-value ${status === '✓' ? 'success' : ''}">${status}</span></div>`; 
-                }); h += '</div>'; });
+                
+                // Show delete button only for admin
+                document.getElementById('deleteCheckBtn').style.display = currentUser && currentUser.role === 'admin' ? 'flex' : 'none';
+                
+                let h = ''; 
+                Object.entries(c.checkliste).forEach(([sec, items]) => { 
+                    h += `<div class="detail-section"><div class="detail-section-title">${sec}</div>`; 
+                    Object.entries(items).forEach(([it, val]) => { 
+                        const isNewFormat = typeof val === 'object';
+                        const status = isNewFormat ? val.checked : val;
+                        const comment = isNewFormat ? val.comment : '';
+                        h += `<div class="detail-item"><span class="detail-item-label">${it}${comment ? `<br><small style="color:var(--text-muted);font-style:italic;">→ ${comment}</small>` : ''}</span><span class="detail-item-value ${status === '✓' ? 'success' : ''}">${status}</span></div>`; 
+                    }); 
+                    h += '</div>'; 
+                });
+                
                 if (c.unterschrift) h += `<div class="detail-section"><div class="detail-section-title">Unterschrift</div><div class="detail-signature"><img src="${c.unterschrift}" alt=""></div></div>`;
+                
                 document.getElementById('detailContent').innerHTML = h;
                 document.getElementById('detailModal').classList.add('active');
-            } catch (e) { alert('Fehler'); }
+            } catch (e) { alert('Fehler: ' + e.message); }
+        }
+        
+        function deleteCheck() {
+            if (!confirm('Check wirklich löschen?')) return;
+            try {
+                let archive = JSON.parse(localStorage.getItem('ambulanzcheck_archive') || '[]');
+                archive = archive.filter(x => x.id !== currentDetailId);
+                localStorage.setItem('ambulanzcheck_archive', JSON.stringify(archive));
+                document.getElementById('detailModal').classList.remove('active');
+                loadArchive();
+            } catch (e) { alert('Fehler: ' + e.message); }
         }
 
         // INIT
