@@ -454,7 +454,9 @@
             document.getElementById('employeeName').value = '';
             checklistState = {}; commentsState = {}; signatureData = null;
             checklistData.forEach(s => s.items.forEach((_, i) => { checklistState[`${s.id}-${i}`] = false; }));
-            renderChecklist(); setupSignatureCanvas(); updateProgress();
+            renderChecklist(); updateProgress();
+            // Delay signature canvas setup until screen is fully visible
+            setTimeout(setupSignatureCanvas, 500);
             document.getElementById('employeeName').addEventListener('input', function() {
                 validateForm();
                 document.getElementById('signatureName').textContent = this.value.toUpperCase();
@@ -499,27 +501,34 @@
             document.getElementById('submitBtn').disabled = !signatureData || !all || !employeeName;
         }
         function setupSignatureCanvas() {
-            const canvas = document.getElementById('signatureCanvas');
-            const cont = document.getElementById('signatureContainer');
-            const ctx = canvas.getContext('2d');
-            let isDrawing = false;
+            var canvas = document.getElementById('signatureCanvas');
+            var cont = document.getElementById('signatureContainer');
+            var ctx = canvas.getContext('2d');
+            var isDrawing = false;
+            var canvasReady = false;
             
             // Set canvas size
             function initCanvas() {
-                const rect = canvas.getBoundingClientRect();
-                canvas.width = rect.width * 2;
-                canvas.height = rect.height * 2;
+                var rect = canvas.getBoundingClientRect();
+                var w = rect.width > 0 ? rect.width : 300;
+                var h = rect.height > 0 ? rect.height : 200;
+                canvas.width = w * 2;
+                canvas.height = h * 2;
+                // Reset transform completely before scaling
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
                 ctx.scale(2, 2);
                 ctx.strokeStyle = '#ffffff';
                 ctx.lineWidth = 2;
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
+                ctx.clearRect(0, 0, w, h);
+                canvasReady = true;
             }
             initCanvas();
             
             function getXY(e) {
-                const rect = canvas.getBoundingClientRect();
-                let clientX, clientY;
+                var rect = canvas.getBoundingClientRect();
+                var clientX, clientY;
                 if (e.touches && e.touches[0]) {
                     clientX = e.touches[0].clientX;
                     clientY = e.touches[0].clientY;
@@ -535,8 +544,9 @@
             
             function startDraw(e) {
                 e.preventDefault();
+                if (!canvasReady) initCanvas();
                 isDrawing = true;
-                const pos = getXY(e);
+                var pos = getXY(e);
                 ctx.beginPath();
                 ctx.moveTo(pos.x, pos.y);
             }
@@ -544,7 +554,7 @@
             function doDraw(e) {
                 if (!isDrawing) return;
                 e.preventDefault();
-                const pos = getXY(e);
+                var pos = getXY(e);
                 ctx.lineTo(pos.x, pos.y);
                 ctx.stroke();
                 ctx.beginPath();
@@ -554,7 +564,7 @@
                 validateForm();
             }
             
-            function endDraw(e) {
+            function endDraw() {
                 isDrawing = false;
             }
             
@@ -564,7 +574,7 @@
             canvas.addEventListener('mouseup', endDraw);
             canvas.addEventListener('mouseleave', endDraw);
             
-            // Touch events - with passive: false to allow preventDefault
+            // Touch events
             canvas.addEventListener('touchstart', startDraw, { passive: false });
             canvas.addEventListener('touchmove', doDraw, { passive: false });
             canvas.addEventListener('touchend', endDraw);
@@ -572,7 +582,6 @@
             // Clear button
             document.getElementById('clearSignature').addEventListener('click', function() {
                 initCanvas();
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 cont.classList.remove('has-signature');
                 signatureData = null;
                 validateForm();
@@ -701,11 +710,18 @@
                 doc.text('Unterschrift:', 20, y);
                 y += 8;
                 
-                if (signatureData) {
+                if (signatureData && signatureData.length > 100) {
                     doc.setDrawColor(200, 200, 200);
                     doc.setFillColor(255, 255, 255);
                     doc.rect(20, y, 80, 35, 'FD');
-                    doc.addImage(signatureData, 'PNG', 22, y + 2, 76, 31);
+                    try {
+                        doc.addImage(signatureData, 'PNG', 22, y + 2, 76, 31);
+                    } catch(imgErr) {
+                        console.error('Signature image error:', imgErr);
+                        doc.setTextColor(150, 150, 150);
+                        doc.setFontSize(9);
+                        doc.text('[Unterschrift Fehler]', 25, y + 18);
+                    }
                     y += 38;
                     // Name in Druckbuchstaben
                     doc.setFontSize(10);
