@@ -711,16 +711,17 @@
                 y += 8;
                 
                 if (signatureData && signatureData.length > 100) {
-                    doc.setDrawColor(200, 200, 200);
-                    doc.setFillColor(255, 255, 255);
+                    // Dark background for white signature
+                    doc.setDrawColor(150, 150, 150);
+                    doc.setFillColor(40, 40, 40);
                     doc.rect(20, y, 80, 35, 'FD');
                     try {
                         doc.addImage(signatureData, 'PNG', 22, y + 2, 76, 31);
                     } catch(imgErr) {
                         console.error('Signature image error:', imgErr);
-                        doc.setTextColor(150, 150, 150);
+                        doc.setTextColor(200, 200, 200);
                         doc.setFontSize(9);
-                        doc.text('[Unterschrift Fehler]', 25, y + 18);
+                        doc.text('[Unterschrift Fehler]', 40, y + 18);
                     }
                     y += 38;
                     // Name in Druckbuchstaben
