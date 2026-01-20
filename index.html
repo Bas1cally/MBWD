@@ -166,6 +166,10 @@
         .comment-toggle.has-comment { background: var(--accent); border-color: var(--accent); }
         .comment-toggle svg { width: 16px; height: 16px; fill: var(--text-muted); }
         .comment-toggle.has-comment svg { fill: white; }
+        .doc-link { width: 32px; height: 32px; background: var(--blue); border: 1px solid var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); flex-shrink: 0; text-decoration: none; }
+        .doc-link:hover { background: #2980b9; transform: scale(1.05); }
+        .doc-link:active { transform: scale(0.95); }
+        .doc-link svg { width: 16px; height: 16px; fill: white; }
         .comment-field { display: none; width: 100%; }
         .comment-field.show { display: block; }
         .comment-input { width: 100%; padding: 10px 14px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-family: inherit; font-size: 14px; resize: none; min-height: 60px; }
@@ -179,6 +183,40 @@
         .toggle-switch input:checked + .toggle-slider:before { transform: translateX(28px); }
         .sunday-section { background: linear-gradient(135deg, rgba(196, 30, 58, 0.1) 0%, transparent 100%); border: 1px solid var(--accent); border-radius: var(--radius); }
         .sunday-section .section-header { background: rgba(196, 30, 58, 0.1); border-color: var(--accent); }
+
+        /* EXPIRY TRACKER */
+        .expiry-tracker { margin: 20px; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .expiry-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 20px; }
+        .expiry-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .expiry-title { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .expiry-title svg { width: 24px; height: 24px; fill: var(--orange); }
+        .expiry-badge { background: var(--orange); color: white; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 12px; }
+        .expiry-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+        .expiry-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--bg-input); border-radius: var(--radius); border-left: 4px solid var(--text-muted); }
+        .expiry-item.urgent { border-left-color: #e74c3c; background: rgba(231, 76, 60, 0.1); }
+        .expiry-item.warning { border-left-color: var(--orange); background: rgba(230, 126, 34, 0.1); }
+        .expiry-item.soon { border-left-color: #f1c40f; background: rgba(241, 196, 15, 0.1); }
+        .expiry-item-info { flex: 1; }
+        .expiry-item-name { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
+        .expiry-item-date { font-size: 13px; color: var(--text-muted); }
+        .expiry-item-meta { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+        .expiry-item-days { font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 8px; background: var(--bg-card); white-space: nowrap; }
+        .expiry-item.urgent .expiry-item-days { background: #e74c3c; color: white; }
+        .expiry-item.warning .expiry-item-days { background: var(--orange); color: white; }
+        .expiry-item.soon .expiry-item-days { background: #f1c40f; color: #333; }
+        .expiry-delete { width: 32px; height: 32px; background: transparent; border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); }
+        .expiry-delete:hover { background: #e74c3c; border-color: #e74c3c; }
+        .expiry-delete svg { width: 16px; height: 16px; fill: var(--text-muted); }
+        .expiry-delete:hover svg { fill: white; }
+        .expiry-empty { text-align: center; padding: 24px; color: var(--text-muted); font-size: 14px; }
+        .expiry-form { display: flex; gap: 10px; flex-wrap: wrap; }
+        .expiry-input { flex: 1; min-width: 150px; padding: 12px 16px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-primary); font-family: inherit; font-size: 14px; }
+        .expiry-input:focus { outline: none; border-color: var(--orange); }
+        .expiry-input::placeholder { color: var(--text-muted); }
+        .expiry-input[type="date"] { min-width: 140px; }
+        .expiry-add-btn { padding: 12px 20px; background: var(--orange); border: none; border-radius: var(--radius); color: white; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: var(--transition); }
+        .expiry-add-btn:hover { background: #d35400; }
+        .expiry-add-btn svg { width: 18px; height: 18px; fill: white; }
 
         /* SIGNATURE */
         .signature-section { margin: 32px 20px; max-width: 800px; margin-left: auto; margin-right: auto; }
@@ -312,23 +350,24 @@
                     <div class="tile-title">Ambulanzcheck</div>
                     <div class="tile-desc">Tägliche Checkliste Gesundheitszentrum</div>
                 </div>
-                <div class="tile blue disabled">
-                    <span class="tile-badge coming">Bald</span>
-                    <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></div>
-                    <div class="tile-title">Protokolle</div>
-                    <div class="tile-desc">Einsatz- und Übergabeprotokolle</div>
+                <div class="tile blue" onclick="openApp('mpgcheck')">
+                    <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zM19.5 9.5L21 12h-3.5v3h-1v-3H10V9.5h9.5zM6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zM20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4h3zM3 6v9h.76c.55-.61 1.35-1 2.24-1s1.69.39 2.24 1H10V6H3z"/></svg></div>
+                    <div class="tile-title">MPG-Check RTW</div>
+                    <div class="tile-desc">Täglicher Medizinprodukte-Check</div>
+                </div>
+            </div>
+            <div class="tiles-section-title">Wöchentliche Aufgaben</div>
+            <div class="tiles-grid">
+                <div class="tile orange" onclick="openApp('wochencheck')">
+                    <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg></div>
+                    <div class="tile-title">RTW Wochencheck</div>
+                    <div class="tile-desc">Wöchentliche Fahrzeugprüfung</div>
                 </div>
                 <div class="tile green disabled">
                     <span class="tile-badge coming">Bald</span>
                     <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></div>
                     <div class="tile-title">Inventar</div>
                     <div class="tile-desc">Materialverwaltung & Bestellungen</div>
-                </div>
-                <div class="tile orange disabled">
-                    <span class="tile-badge coming">Bald</span>
-                    <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg></div>
-                    <div class="tile-title">Dienstplan</div>
-                    <div class="tile-desc">Schichten & Verfügbarkeit</div>
                 </div>
             </div>
             <div class="tiles-section-title" id="adminSection" style="display:none;">Administration</div>
@@ -355,7 +394,7 @@
                 <button class="back-btn" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
                 <h1 class="header-title">Ambulanzcheck</h1>
                 <div class="header-actions">
-                    <button class="header-btn" onclick="exportPDF()" title="Als PDF exportieren"><svg viewBox="0 0 24 24"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg></button>
+                    <button class="header-btn" onclick="exportPDF('ambulanz')" title="Als PDF exportieren"><svg viewBox="0 0 24 24"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg></button>
                 </div>
             </div>
             <div class="header-meta">
@@ -370,7 +409,82 @@
         </header>
         <div class="checklist-container" id="checklistContainer"></div>
         <div class="signature-section"><div class="signature-card"><h3 class="signature-title"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Unterschrift</h3><div class="signature-canvas-container" id="signatureContainer"><canvas class="signature-canvas" id="signatureCanvas"></canvas><span class="signature-placeholder">Hier unterschreiben</span></div><div class="signature-name" id="signatureName"></div><div class="signature-actions"><button class="btn btn-secondary" id="clearSignature"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>Löschen</button></div></div></div>
-        <div class="submit-section"><button class="btn btn-primary" id="submitBtn" disabled><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>Check abschließen & speichern</button></div>
+        <div class="submit-section"><button class="btn btn-primary" id="submitBtn" disabled onclick="submitCheck('ambulanz')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>Check abschließen & speichern</button></div>
+    </div>
+
+    <!-- MPG-CHECK RTW -->
+    <div class="screen app-screen" id="mpgcheckScreen">
+        <header class="app-header">
+            <div class="header-top">
+                <button class="back-btn" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+                <h1 class="header-title">MPG-Check RTW</h1>
+                <div class="header-actions">
+                    <button class="header-btn" onclick="exportPDF('mpg')" title="Als PDF exportieren"><svg viewBox="0 0 24 24"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg></button>
+                </div>
+            </div>
+            <div class="header-meta">
+                <div class="employee-input">
+                    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    <input type="text" id="mpgEmployeeName" placeholder="Name eingeben..." class="employee-name-input">
+                </div>
+                <span class="header-date" id="mpgCheckDate"></span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" id="mpgProgressFill" style="width: 0%"></div></div>
+            <div class="progress-text"><span id="mpgProgressCount">0</span> / <span id="mpgTotalCount">0</span> erledigt</div>
+        </header>
+        <div class="checklist-container" id="mpgChecklistContainer"></div>
+        <div class="signature-section"><div class="signature-card"><h3 class="signature-title"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Unterschrift</h3><div class="signature-canvas-container" id="mpgSignatureContainer"><canvas class="signature-canvas" id="mpgSignatureCanvas"></canvas><span class="signature-placeholder">Hier unterschreiben</span></div><div class="signature-name" id="mpgSignatureName"></div><div class="signature-actions"><button class="btn btn-secondary" id="mpgClearSignature"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>Löschen</button></div></div></div>
+        <div class="submit-section"><button class="btn btn-primary" id="mpgSubmitBtn" disabled onclick="submitCheck('mpg')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>Check abschließen & speichern</button></div>
+    </div>
+
+    <!-- WOCHENCHECK RTW -->
+    <div class="screen app-screen" id="wochencheckScreen">
+        <header class="app-header">
+            <div class="header-top">
+                <button class="back-btn" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+                <h1 class="header-title">RTW Wochencheck</h1>
+                <div class="header-actions">
+                    <button class="header-btn" onclick="exportPDF('wochen')" title="Als PDF exportieren"><svg viewBox="0 0 24 24"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg></button>
+                </div>
+            </div>
+            <div class="header-meta">
+                <div class="employee-input">
+                    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    <input type="text" id="wochenEmployeeName" placeholder="Name eingeben..." class="employee-name-input">
+                </div>
+                <span class="header-date" id="wochenCheckDate"></span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" id="wochenProgressFill" style="width: 0%"></div></div>
+            <div class="progress-text"><span id="wochenProgressCount">0</span> / <span id="wochenTotalCount">0</span> erledigt</div>
+        </header>
+        
+        <!-- VERFALL-TRACKER -->
+        <div class="expiry-tracker">
+            <div class="expiry-card">
+                <div class="expiry-header">
+                    <h3 class="expiry-title">
+                        <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                        Verfall-Tracker
+                    </h3>
+                    <span class="expiry-badge" id="expiryCount">0</span>
+                </div>
+                <div class="expiry-list" id="expiryList">
+                    <div class="expiry-empty">Keine Verfallsdaten eingetragen</div>
+                </div>
+                <div class="expiry-form">
+                    <input type="text" class="expiry-input" id="expiryItemName" placeholder="Artikel (z.B. Adrenalin, Infusion...)">
+                    <input type="date" class="expiry-input" id="expiryItemDate">
+                    <button class="expiry-add-btn" onclick="addExpiryItem()">
+                        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                        Hinzufügen
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="checklist-container" id="wochenChecklistContainer"></div>
+        <div class="signature-section"><div class="signature-card"><h3 class="signature-title"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Unterschrift</h3><div class="signature-canvas-container" id="wochenSignatureContainer"><canvas class="signature-canvas" id="wochenSignatureCanvas"></canvas><span class="signature-placeholder">Hier unterschreiben</span></div><div class="signature-name" id="wochenSignatureName"></div><div class="signature-actions"><button class="btn btn-secondary" id="wochenClearSignature"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>Löschen</button></div></div></div>
+        <div class="submit-section"><button class="btn btn-primary" id="wochenSubmitBtn" disabled onclick="submitCheck('wochen')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>Check abschließen & speichern</button></div>
     </div>
 
     <!-- ARCHIV -->
@@ -400,9 +514,43 @@
         // USERS
         const USERS = { '0054': { role: 'user', name: 'User' }, '5400': { role: 'admin', name: 'Admin' } };
         let currentUser = null, currentPin = '', checklistState = {}, commentsState = {}, signatureData = null, currentDetailId = null;
+        let mpgChecklistState = {}, mpgCommentsState = {}, mpgSignatureData = null;
+        let currentCheckType = 'ambulanz';
 
-        // CHECKLIST DATA
+        // AMBULANZ CHECKLIST DATA
         const checklistData=[{id:'corpuls',title:'Corpuls 3',icon:`<svg viewBox="0 0 24 24"><path d="M19.5 6c-1.31 0-2.37 1.01-2.48 2.3-1.88-.5-2.84-.52-4.52.02C12.4 7.01 11.34 6 10.03 6 8.69 6 7.58 7.11 7.58 8.45c0 .65.26 1.24.68 1.68-2.21 1.87-2.62 4.29-2.62 6.37 0 1.1.9 2 2 2h8.72c1.1 0 2-.9 2-2 0-2.08-.41-4.5-2.62-6.37.42-.44.68-1.03.68-1.68C16.42 7.11 15.31 6 13.97 6z"/></svg>`,items:['EKG-Kabel (6- und 12-Kanal) + Rasierer','EKG-Elektroden > 12 Stück','corPatch-Elektroden Erwachsener','CPR-Feedback-Sensor','CO2-Sensor und 1 Küvette','NIBD-Manschette und Schlauch','SpO2-Sensor und Zwischenkabel','Druckerpapier im Druckerfach vorhanden','Testschock mit 200J + Kontrolle Stromabgabe','Ladekonsole (Laden aktiv)','Kommunikation zwischen den Modulen','Batteriestatus der Module','Gerät einschalten (Selbsttest)']},{id:'absaugpumpe',title:'Elektrische Absaugpumpe',icon:`<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>`,items:['Funktion','Pumpe hält Sog bei erreichtem Vakuum','Absaugkatheter (je 2x) + Schlauch & Fingertip','Pumpe lädt in Halterung']},{id:'notfallzimmer',title:'Notfallzimmer',icon:`<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/></svg>`,items:['O2-Flaschendruck >50bar (10L)','Rucksack Rot vorhanden','EKG-Rechner eingeschaltet','Rucksack Gelb vorhanden','OP-Leuchte Funktion','Gelb: O2>80bar, Laryngoskop Funktion','Infusionsständer mit 2x Infusion + Besteck','Zentrifuge Funktion / Blut kühlen','Kühl- und Gefrierschrank Funktion','SicSac in Spender >5 Stück']},{id:'ambulanz1',title:'Ambulanz 1',icon:`<svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm6 11h-3v3h-2v-3H8v-2h3v-3h2v3h3v2z"/></svg>`,items:['OP-Leuchte Funktion','Ambulanzwagen sauber, befüllt','Spaltlampe Funktion','Otoskop Funktion','Kryo-Fos Funktion/Akku/Ladung','Augenspülflasche in Spiegelschrank']},{id:'ambulanz2',title:'Ambulanz 2',icon:`<svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm6 11h-3v3h-2v-3H8v-2h3v-3h2v3h3v2z"/></svg>`,items:['OP-Leuchte Funktion','Ambulanzwagen sauber, befüllt','Desinfektionsbad leer','Otoskop Funktion','Kryo-Fos Funktion/Akku/Ladung']},{id:'ruheraum',title:'Ruheraum',icon:`<svg viewBox="0 0 24 24"><path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V7H1v10h22v-6c0-2.21-1.79-4-4-4z"/></svg>`,items:['Liegen sauber / Decken vorhanden','SicSac in Spender >5 Stück']},{id:'physio',title:'Physikalische Therapie',icon:`<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`,items:['Liegen sauber / Ärztekrepp vorhanden','Reizstromgerät Funktion/Sauberkeit','Rotlicht vorne Funktion/Sauberkeit','Rotlicht mittig Funktion/Sauberkeit','SicSac in Spender >5 Stück','Elacur + Voltaren vorhanden','Schwämme abkochen']},{id:'aufenthalt',title:'Aufenthaltsraum',icon:`<svg viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>`,items:['Schalter "Patientenklingel" eingeschaltet','Schwesternruf grüne Leuchte an']},{id:'sonntag',title:'Nur Sonntag',icon:`<svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>`,items:['Notruftelefon Funktion überprüft','Dokumente Leitstelle abholen'],isSunday:true}];
+
+        // MPG-CHECK RTW CHECKLIST DATA
+        const mpgChecklistData=[
+            {id:'mpg-corpuls',title:'Corpuls³',icon:`<svg viewBox="0 0 24 24"><path d="M19.5 6c-1.31 0-2.37 1.01-2.48 2.3-1.88-.5-2.84-.52-4.52.02C12.4 7.01 11.34 6 10.03 6 8.69 6 7.58 7.11 7.58 8.45c0 .65.26 1.24.68 1.68-2.21 1.87-2.62 4.29-2.62 6.37 0 1.1.9 2 2 2h8.72c1.1 0 2-.9 2-2 0-2.08-.41-4.5-2.62-6.37.42-.44.68-1.03.68-1.68C16.42 7.11 15.31 6 13.97 6z"/></svg>`,items:['EKG-Kabel (6- und 12-Kanal) + 3 Rasierer','EKG-Elektroden > 12 Stück','corPatch-Elektroden Erwachsener + Kinder','CPR-Feedback-Sensor','CO2-Sensor und 1 Küvette','NIBP-Manschette und Schlauch','SpO2-Sensor und Zwischenkabel','Druckerpapier im Druckerfach vorhanden','Testschock 200J + Kontrolle Stromabgabe (via Taste Einsatz)','Ladekonsole (Laden aktiv)','Kommunikation zwischen den Modulen','Batteriestatus der Module','Gerät einschalten (Selbsttest)']},
+            {id:'mpg-absaug',title:'Elektrische Absaugpumpe',icon:`<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>`,items:['Funktion','Pumpe hält Sog bei erreichtem Vakuum','Absaugkatheter (je 2x) + Schlauch + Fingertip','Pumpe lädt in Halterung']},
+            {id:'mpg-oxybag',title:'Oxybag',icon:`<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>`,items:['Flaschendruck > 80bar','2x Sauerstoffmasken','Funktion und Dichtigkeit','1x Gänsegurgel','Beatmungsbeutel mit Versorgungsleitung','1x Hyperventilationsmaske','Funktion und Sauberkeit in Ordnung?','1x Verneblermaske']},
+            {id:'mpg-medumat',title:'Medumat Standard',icon:`<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/></svg>`,items:['Flaschendruck > 100bar','Außentasche: Prüfbeutel, O²-Maske, Filter','Funktion Inhalation','Sichtprüfung: Patientenventil, Schlauch']},
+            {id:'mpg-beatmung',title:'Medumat - Beatmungsfunktionen',icon:`<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`,items:['Einstellung Frequenz 8/min. (+/-1)','Einstellung Druck 20mbar (+/-5)','Einstellung Frequenz 40/min. (+/-2)','Einstellung Druck 60mbar (+/-5)','Vollständiges Aufblähen des Prüfbeutels bei: 8/min. + 8L/min']},
+            {id:'mpg-alarme',title:'Medumat - Alarme prüfen',icon:`<svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></svg>`,items:['Atemsystemunterbrechung (Diskonnektion)','Stenosis','Kein Abfall des Sauerstoff-Versorgungsdruck']},
+            {id:'mpg-rtw',title:'Außenschrank / RTW',icon:`<svg viewBox="0 0 24 24"><path d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zM19.5 9.5L21 12h-3.5v3h-1v-3H10V9.5h9.5zM6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zM20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4h3zM3 6v9h.76c.55-.61 1.35-1 2.24-1s1.69.39 2.24 1H10V6H3z"/></svg>`,items:['Flaschendruck li. Flasche > 50bar','Flaschendruck re. Flasche > 50bar','Funktion und Dichtigkeit','2L O²-Flasche vorhanden? (Reserveflasche)','Morphin 1ml/mg (Soll 4 Ampullen)','Prüfung Funktion Laryngoskop Fach 7','Fentanyl 0,5mg/10ml (Soll 4 Ampullen)','Desinfektion der Griffe & Arbeitsflächen']}
+        ];
+
+        // WÖCHENTLICHER RTW CHECK DATA
+        let wochenChecklistState = {}, wochenCommentsState = {}, wochenSignatureData = null;
+        const wochenChecklistData=[
+            {id:'wochen-rtw',title:'RTW Wochencheck',icon:`<svg viewBox="0 0 24 24"><path d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zM19.5 9.5L21 12h-3.5v3h-1v-3H10V9.5h9.5zM6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zM20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4h3zM3 6v9h.76c.55-.61 1.35-1 2.24-1s1.69.39 2.24 1H10V6H3z"/></svg>`,items:[
+                {text:'Thermobox Funktion?'},
+                {text:'Tragetisch alle Funktionen?'},
+                {text:'Innenbeleuchtung, alle Lichter Funktion?'}
+            ]},
+            {id:'wochen-checklisten',title:'Checklisten prüfen',icon:`<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`,items:[
+                {text:'Nach Checkliste „Corpuls3_EKG_Defibrillator"', doc:'054_CL_Corpuls3_EKG_Defibrillator.pdf'},
+                {text:'Nach Checkliste „AccuvacRescue_Absaugpumpe"', doc:'054_CL_AccuvacRescue_Absaugpumpe.pdf'},
+                {text:'Nach Checkliste „Medumat_Standard_Beatmungsgerät"', doc:'054_CL_Medumat_Standard_Beatmungsgerät.pdf'},
+                {text:'Nach Checkliste „MANV_Tasche_RTW"', doc:'054_CL_MANV_Tasche_RTW.pdf'},
+                {text:'Nach Checkliste „Notfallrucksäcke_Rot&Gelb"', doc:'054_CL_Notfallrucksäcke_Rot_Gelb.pdf'},
+                {text:'Nach Checkliste „Notfallrucksack_Kinder"', doc:'054_CL_Notfallrucksack_Kinder.pdf'}
+            ]},
+            {id:'wochen-verfall',title:'Verfall prüfen (letzte KW des Monats)',icon:`<svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>`,items:[
+                {text:'Check mit Verfall durchgeführt?'}
+            ],isLastWeek:true}
+        ];
 
         // SCREENS
         function showScreen(name) { 
@@ -444,7 +592,9 @@
 
         // APPS
         function openApp(app) {
-            if (app === 'ambulanzcheck') { initAmbulanzcheck(); showScreen('ambulanzcheck'); }
+            if (app === 'ambulanzcheck') { currentCheckType = 'ambulanz'; initAmbulanzcheck(); showScreen('ambulanzcheck'); }
+            else if (app === 'mpgcheck') { currentCheckType = 'mpg'; initMpgCheck(); showScreen('mpgcheck'); }
+            else if (app === 'wochencheck') { currentCheckType = 'wochen'; initWochenCheck(); showScreen('wochencheck'); }
             else if (app === 'archiv') { loadArchive(); showScreen('archiv'); }
         }
 
@@ -588,179 +738,625 @@
             });
         }
 
+        // MPG-CHECK FUNCTIONS
+        function initMpgCheck() {
+            document.getElementById('mpgCheckDate').textContent = new Date().toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
+            document.getElementById('mpgEmployeeName').value = '';
+            mpgChecklistState = {}; mpgCommentsState = {}; mpgSignatureData = null;
+            mpgChecklistData.forEach(s => s.items.forEach((_, i) => { mpgChecklistState[`${s.id}-${i}`] = false; }));
+            renderMpgChecklist(); updateMpgProgress();
+            setTimeout(setupMpgSignatureCanvas, 500);
+            document.getElementById('mpgEmployeeName').addEventListener('input', function() {
+                validateMpgForm();
+                document.getElementById('mpgSignatureName').textContent = this.value.toUpperCase();
+            });
+        }
+        function renderMpgChecklist() {
+            const c = document.getElementById('mpgChecklistContainer');
+            let h = ''; mpgChecklistData.forEach(s => {
+                h += `<div class="section" data-section="${s.id}"><div class="section-header" onclick="toggleSection('${s.id}')"><div class="section-icon">${s.icon}</div><div class="section-info"><div class="section-title">${s.title}</div><div class="section-count" id="count-${s.id}">0 / ${s.items.length}</div></div><div class="section-toggle"><svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg></div></div><div class="section-content">${s.items.map((it, i) => `<div class="check-item"><div class="check-item-row"><span class="check-label" id="label-${s.id}-${i}">${it}</span><button class="comment-toggle" onclick="toggleMpgComment('${s.id}-${i}')" title="Kommentar hinzufügen"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12zM7 9h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/></svg></button><label class="toggle-switch"><input type="checkbox" data-key="${s.id}-${i}" onchange="handleMpgCheckChange(this)"><span class="toggle-slider"></span></label></div><div class="comment-field" id="mpg-comment-field-${s.id}-${i}"><textarea class="comment-input" id="mpg-comment-${s.id}-${i}" placeholder="Kommentar eingeben..." oninput="updateMpgCommentToggle('${s.id}-${i}')"></textarea></div></div>`).join('')}</div></div>`;
+            });
+            c.innerHTML = h;
+            let tot = 0; mpgChecklistData.forEach(s => { tot += s.items.length; });
+            document.getElementById('mpgTotalCount').textContent = tot;
+        }
+        function toggleMpgComment(key) { 
+            const field = document.getElementById(`mpg-comment-field-${key}`);
+            field.classList.toggle('show');
+            if (field.classList.contains('show')) {
+                document.getElementById(`mpg-comment-${key}`).focus();
+            }
+        }
+        function updateMpgCommentToggle(key) {
+            const input = document.getElementById(`mpg-comment-${key}`);
+            const toggle = input.closest('.check-item').querySelector('.comment-toggle');
+            const hasComment = input.value.trim().length > 0;
+            toggle.classList.toggle('has-comment', hasComment);
+            mpgCommentsState[key] = input.value;
+        }
+        function handleMpgCheckChange(cb) { mpgChecklistState[cb.dataset.key] = cb.checked; document.getElementById(`label-${cb.dataset.key}`).classList.toggle('checked', cb.checked); updateMpgProgress(); validateMpgForm(); }
+        function updateMpgProgress() {
+            let ck = 0, tot = 0;
+            mpgChecklistData.forEach(s => { let sc = 0; s.items.forEach((_, i) => { if (mpgChecklistState[`${s.id}-${i}`]) { ck++; sc++; } tot++; }); const c = document.getElementById(`count-${s.id}`); if (c) c.textContent = `${sc} / ${s.items.length}`; });
+            document.getElementById('mpgProgressCount').textContent = ck;
+            document.getElementById('mpgProgressFill').style.width = `${tot > 0 ? (ck / tot) * 100 : 0}%`;
+        }
+        function validateMpgForm() {
+            let all = true;
+            const employeeName = document.getElementById('mpgEmployeeName').value.trim();
+            mpgChecklistData.forEach(s => { s.items.forEach((_, i) => { if (!mpgChecklistState[`${s.id}-${i}`]) all = false; }); });
+            document.getElementById('mpgSubmitBtn').disabled = !mpgSignatureData || !all || !employeeName;
+        }
+        function setupMpgSignatureCanvas() {
+            var canvas = document.getElementById('mpgSignatureCanvas');
+            var cont = document.getElementById('mpgSignatureContainer');
+            var ctx = canvas.getContext('2d');
+            var isDrawing = false;
+            var canvasReady = false;
+            
+            function initCanvas() {
+                var rect = canvas.getBoundingClientRect();
+                var w = rect.width > 0 ? rect.width : 300;
+                var h = rect.height > 0 ? rect.height : 200;
+                canvas.width = w * 2;
+                canvas.height = h * 2;
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.scale(2, 2);
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.clearRect(0, 0, w, h);
+                canvasReady = true;
+            }
+            initCanvas();
+            
+            function getXY(e) {
+                var rect = canvas.getBoundingClientRect();
+                var clientX, clientY;
+                if (e.touches && e.touches[0]) {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                } else {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                }
+                return { x: clientX - rect.left, y: clientY - rect.top };
+            }
+            
+            function startDraw(e) {
+                e.preventDefault();
+                if (!canvasReady) initCanvas();
+                isDrawing = true;
+                var pos = getXY(e);
+                ctx.beginPath();
+                ctx.moveTo(pos.x, pos.y);
+            }
+            
+            function doDraw(e) {
+                if (!isDrawing) return;
+                e.preventDefault();
+                var pos = getXY(e);
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(pos.x, pos.y);
+                cont.classList.add('has-signature');
+                mpgSignatureData = canvas.toDataURL('image/png');
+                validateMpgForm();
+            }
+            
+            function endDraw() { isDrawing = false; }
+            
+            canvas.addEventListener('mousedown', startDraw);
+            canvas.addEventListener('mousemove', doDraw);
+            canvas.addEventListener('mouseup', endDraw);
+            canvas.addEventListener('mouseleave', endDraw);
+            canvas.addEventListener('touchstart', startDraw, { passive: false });
+            canvas.addEventListener('touchmove', doDraw, { passive: false });
+            canvas.addEventListener('touchend', endDraw);
+            
+            document.getElementById('mpgClearSignature').addEventListener('click', function() {
+                initCanvas();
+                cont.classList.remove('has-signature');
+                mpgSignatureData = null;
+                validateMpgForm();
+            });
+        }
+
+        // WOCHENCHECK FUNCTIONS
+        function initWochenCheck() {
+            var now = new Date();
+            var kw = getWeekNumber(now);
+            document.getElementById('wochenCheckDate').textContent = 'KW ' + kw + ' / ' + now.toLocaleDateString('de-DE', { year: 'numeric' });
+            document.getElementById('wochenEmployeeName').value = '';
+            wochenChecklistState = {}; wochenCommentsState = {}; wochenSignatureData = null;
+            wochenChecklistData.forEach(s => s.items.forEach((_, i) => { wochenChecklistState[`${s.id}-${i}`] = false; }));
+            renderWochenChecklist(); updateWochenProgress();
+            renderExpiryTracker(); // Verfall-Tracker laden
+            setTimeout(setupWochenSignatureCanvas, 500);
+            document.getElementById('wochenEmployeeName').addEventListener('input', function() {
+                validateWochenForm();
+                document.getElementById('wochenSignatureName').textContent = this.value.toUpperCase();
+            });
+        }
+        
+        // VERFALL-TRACKER FUNCTIONS
+        function getExpiryItems() {
+            try {
+                return JSON.parse(localStorage.getItem('rtw_expiry_tracker') || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+        
+        function saveExpiryItems(items) {
+            localStorage.setItem('rtw_expiry_tracker', JSON.stringify(items));
+        }
+        
+        function addExpiryItem() {
+            var name = document.getElementById('expiryItemName').value.trim();
+            var date = document.getElementById('expiryItemDate').value;
+            
+            if (!name || !date) {
+                alert('Bitte Artikel und Verfallsdatum eingeben!');
+                return;
+            }
+            
+            var items = getExpiryItems();
+            items.push({
+                id: Date.now(),
+                name: name,
+                date: date,
+                addedBy: currentUser ? currentUser.name : 'Unbekannt',
+                addedAt: new Date().toISOString()
+            });
+            
+            // Sort by date (earliest first)
+            items.sort((a, b) => new Date(a.date) - new Date(b.date));
+            saveExpiryItems(items);
+            
+            document.getElementById('expiryItemName').value = '';
+            document.getElementById('expiryItemDate').value = '';
+            renderExpiryTracker();
+        }
+        
+        function deleteExpiryItem(id) {
+            if (!confirm('Eintrag löschen? (z.B. weil ersetzt oder entsorgt)')) return;
+            var items = getExpiryItems().filter(x => x.id !== id);
+            saveExpiryItems(items);
+            renderExpiryTracker();
+        }
+        
+        function renderExpiryTracker() {
+            var items = getExpiryItems();
+            var container = document.getElementById('expiryList');
+            var badge = document.getElementById('expiryCount');
+            
+            badge.textContent = items.length;
+            
+            if (items.length === 0) {
+                container.innerHTML = '<div class="expiry-empty">Keine Verfallsdaten eingetragen – Artikel hinzufügen wenn etwas bald abläuft!</div>';
+                return;
+            }
+            
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            var html = items.map(function(item) {
+                var expDate = new Date(item.date);
+                var diffTime = expDate - today;
+                var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                var urgencyClass = '';
+                var daysText = '';
+                
+                if (diffDays < 0) {
+                    urgencyClass = 'urgent';
+                    daysText = 'ABGELAUFEN!';
+                } else if (diffDays === 0) {
+                    urgencyClass = 'urgent';
+                    daysText = 'Heute!';
+                } else if (diffDays <= 14) {
+                    urgencyClass = 'urgent';
+                    daysText = diffDays + ' Tag' + (diffDays !== 1 ? 'e' : '');
+                } else if (diffDays <= 30) {
+                    urgencyClass = 'warning';
+                    daysText = diffDays + ' Tage';
+                } else if (diffDays <= 60) {
+                    urgencyClass = 'soon';
+                    daysText = Math.ceil(diffDays / 7) + ' Wochen';
+                } else {
+                    daysText = Math.ceil(diffDays / 30) + ' Monate';
+                }
+                
+                var dateFormatted = expDate.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                var addedDate = new Date(item.addedAt).toLocaleDateString('de-DE');
+                
+                return '<div class="expiry-item ' + urgencyClass + '">' +
+                    '<div class="expiry-item-info">' +
+                        '<div class="expiry-item-name">' + item.name + '</div>' +
+                        '<div class="expiry-item-date">Verfällt am: ' + dateFormatted + '</div>' +
+                        '<div class="expiry-item-meta">Eingetragen von ' + item.addedBy + ' am ' + addedDate + '</div>' +
+                    '</div>' +
+                    '<span class="expiry-item-days">' + daysText + '</span>' +
+                    '<button class="expiry-delete" onclick="deleteExpiryItem(' + item.id + ')" title="Löschen (wenn ersetzt)">' +
+                        '<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>' +
+                    '</button>' +
+                '</div>';
+            }).join('');
+            
+            container.innerHTML = html;
+        }
+        
+        function getWeekNumber(d) {
+            d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+            d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+            var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+            var weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+            return weekNo;
+        }
+        function isLastWeekOfMonth() {
+            var now = new Date();
+            var lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            var daysLeft = lastDay.getDate() - now.getDate();
+            return daysLeft < 7;
+        }
+        function renderWochenChecklist() {
+            const c = document.getElementById('wochenChecklistContainer');
+            const lastWeek = isLastWeekOfMonth();
+            let h = ''; wochenChecklistData.forEach(s => {
+                if (s.isLastWeek && !lastWeek) return;
+                h += `<div class="${s.isLastWeek ? 'section sunday-section' : 'section'}" data-section="${s.id}"><div class="section-header" onclick="toggleSection('${s.id}')"><div class="section-icon">${s.icon}</div><div class="section-info"><div class="section-title">${s.title}</div><div class="section-count" id="count-${s.id}">0 / ${s.items.length}</div></div><div class="section-toggle"><svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg></div></div><div class="section-content">${s.items.map((it, i) => {
+                    const itemText = typeof it === 'object' ? it.text : it;
+                    const docLink = typeof it === 'object' && it.doc ? `<a class="doc-link" href="docs/${it.doc}" target="_blank" title="Original-Checkliste öffnen" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg></a>` : '';
+                    return `<div class="check-item"><div class="check-item-row"><span class="check-label" id="label-${s.id}-${i}">${itemText}</span>${docLink}<button class="comment-toggle" onclick="toggleWochenComment('${s.id}-${i}')" title="Kommentar hinzufügen"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12zM7 9h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/></svg></button><label class="toggle-switch"><input type="checkbox" data-key="${s.id}-${i}" onchange="handleWochenCheckChange(this)"><span class="toggle-slider"></span></label></div><div class="comment-field" id="wochen-comment-field-${s.id}-${i}"><textarea class="comment-input" id="wochen-comment-${s.id}-${i}" placeholder="Kommentar/Bemerkungen..." oninput="updateWochenCommentToggle('${s.id}-${i}')"></textarea></div></div>`;
+                }).join('')}</div></div>`;
+            });
+            c.innerHTML = h;
+            let tot = 0; wochenChecklistData.forEach(s => { if (!s.isLastWeek || lastWeek) tot += s.items.length; });
+            document.getElementById('wochenTotalCount').textContent = tot;
+        }
+        function toggleWochenComment(key) { 
+            const field = document.getElementById(`wochen-comment-field-${key}`);
+            field.classList.toggle('show');
+            if (field.classList.contains('show')) {
+                document.getElementById(`wochen-comment-${key}`).focus();
+            }
+        }
+        function updateWochenCommentToggle(key) {
+            const input = document.getElementById(`wochen-comment-${key}`);
+            const toggle = input.closest('.check-item').querySelector('.comment-toggle');
+            const hasComment = input.value.trim().length > 0;
+            toggle.classList.toggle('has-comment', hasComment);
+            wochenCommentsState[key] = input.value;
+        }
+        function handleWochenCheckChange(cb) { wochenChecklistState[cb.dataset.key] = cb.checked; document.getElementById(`label-${cb.dataset.key}`).classList.toggle('checked', cb.checked); updateWochenProgress(); validateWochenForm(); }
+        function updateWochenProgress() {
+            const lastWeek = isLastWeekOfMonth();
+            let ck = 0, tot = 0;
+            wochenChecklistData.forEach(s => { if (s.isLastWeek && !lastWeek) return; let sc = 0; s.items.forEach((_, i) => { if (wochenChecklistState[`${s.id}-${i}`]) { ck++; sc++; } tot++; }); const c = document.getElementById(`count-${s.id}`); if (c) c.textContent = `${sc} / ${s.items.length}`; });
+            document.getElementById('wochenProgressCount').textContent = ck;
+            document.getElementById('wochenProgressFill').style.width = `${tot > 0 ? (ck / tot) * 100 : 0}%`;
+        }
+        function validateWochenForm() {
+            const lastWeek = isLastWeekOfMonth();
+            let all = true;
+            const employeeName = document.getElementById('wochenEmployeeName').value.trim();
+            wochenChecklistData.forEach(s => { if (s.isLastWeek && !lastWeek) return; s.items.forEach((_, i) => { if (!wochenChecklistState[`${s.id}-${i}`]) all = false; }); });
+            document.getElementById('wochenSubmitBtn').disabled = !wochenSignatureData || !all || !employeeName;
+        }
+        function setupWochenSignatureCanvas() {
+            var canvas = document.getElementById('wochenSignatureCanvas');
+            var cont = document.getElementById('wochenSignatureContainer');
+            var ctx = canvas.getContext('2d');
+            var isDrawing = false;
+            var canvasReady = false;
+            
+            function initCanvas() {
+                var rect = canvas.getBoundingClientRect();
+                var w = rect.width > 0 ? rect.width : 300;
+                var h = rect.height > 0 ? rect.height : 200;
+                canvas.width = w * 2;
+                canvas.height = h * 2;
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.scale(2, 2);
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.clearRect(0, 0, w, h);
+                canvasReady = true;
+            }
+            initCanvas();
+            
+            function getXY(e) {
+                var rect = canvas.getBoundingClientRect();
+                var clientX, clientY;
+                if (e.touches && e.touches[0]) {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                } else {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                }
+                return { x: clientX - rect.left, y: clientY - rect.top };
+            }
+            
+            function startDraw(e) {
+                e.preventDefault();
+                if (!canvasReady) initCanvas();
+                isDrawing = true;
+                var pos = getXY(e);
+                ctx.beginPath();
+                ctx.moveTo(pos.x, pos.y);
+            }
+            
+            function doDraw(e) {
+                if (!isDrawing) return;
+                e.preventDefault();
+                var pos = getXY(e);
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(pos.x, pos.y);
+                cont.classList.add('has-signature');
+                wochenSignatureData = canvas.toDataURL('image/png');
+                validateWochenForm();
+            }
+            
+            function endDraw() { isDrawing = false; }
+            
+            canvas.addEventListener('mousedown', startDraw);
+            canvas.addEventListener('mousemove', doDraw);
+            canvas.addEventListener('mouseup', endDraw);
+            canvas.addEventListener('mouseleave', endDraw);
+            canvas.addEventListener('touchstart', startDraw, { passive: false });
+            canvas.addEventListener('touchmove', doDraw, { passive: false });
+            canvas.addEventListener('touchend', endDraw);
+            
+            document.getElementById('wochenClearSignature').addEventListener('click', function() {
+                initCanvas();
+                cont.classList.remove('has-signature');
+                wochenSignatureData = null;
+                validateWochenForm();
+            });
+        }
+
         // PDF EXPORT
-        function exportPDF() {
+        function exportPDF(type) {
             try {
                 if (!window.jspdf) {
                     alert('PDF Bibliothek nicht geladen. Bitte Seite neu laden.');
                     return;
                 }
+                
+                var theChecklistData, theChecklistState, theCommentsState, theSignatureData, employeeName, docId, pdfTitle, headerColor;
+                
+                if (type === 'ambulanz') {
+                    theChecklistData = checklistData;
+                    theChecklistState = checklistState;
+                    theCommentsState = commentsState;
+                    theSignatureData = signatureData;
+                    employeeName = document.getElementById('employeeName').value || 'Nicht angegeben';
+                    docId = '054_CL_Ambulanzcheck';
+                    pdfTitle = 'Täglicher Ambulanzcheck';
+                    headerColor = [196, 30, 58];
+                } else if (type === 'mpg') {
+                    theChecklistData = mpgChecklistData;
+                    theChecklistState = mpgChecklistState;
+                    theCommentsState = mpgCommentsState;
+                    theSignatureData = mpgSignatureData;
+                    employeeName = document.getElementById('mpgEmployeeName').value || 'Nicht angegeben';
+                    docId = '054_CL_Täglicher_MPG-Check_RTW';
+                    pdfTitle = 'Täglicher MPG-Check RTW';
+                    headerColor = [30, 100, 200];
+                } else if (type === 'wochen') {
+                    theChecklistData = wochenChecklistData;
+                    theChecklistState = wochenChecklistState;
+                    theCommentsState = wochenCommentsState;
+                    theSignatureData = wochenSignatureData;
+                    employeeName = document.getElementById('wochenEmployeeName').value || 'Nicht angegeben';
+                    docId = '054_CL_Wöchentlicher_RTW_Check_1-83-1';
+                    pdfTitle = 'Wöchentlicher RTW Check';
+                    headerColor = [230, 126, 34];
+                }
+                
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
                 const sun = new Date().getDay() === 0;
-                const employeeName = document.getElementById('employeeName').value || 'Nicht angegeben';
+                const lastWeek = isLastWeekOfMonth();
                 const dateStr = new Date().toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
+                const shortDate = new Date().toLocaleDateString('de-DE');
+                const kw = getWeekNumber(new Date());
                 
                 let y = 20;
                 
-                // Header
-                doc.setFillColor(196, 30, 58);
-                doc.rect(0, 0, 210, 35, 'F');
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(22);
-                doc.setFont('helvetica', 'bold');
-                doc.text('Täglicher Ambulanzcheck', 105, 18, { align: 'center' });
-                doc.setFontSize(11);
+                // Header line (document ID)
+                doc.setFontSize(8);
+                doc.setTextColor(120, 120, 120);
                 doc.setFont('helvetica', 'normal');
-                doc.text('Gesundheitszentrum Mercedes-Benz Rastatt', 105, 28, { align: 'center' });
+                doc.text(docId, 195, 10, { align: 'right' });
                 
-                y = 50;
+                // Main Header
+                doc.setFillColor(headerColor[0], headerColor[1], headerColor[2]);
+                doc.rect(0, 15, 210, 30, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(20);
+                doc.setFont('helvetica', 'bold');
+                doc.text(pdfTitle, 105, 30, { align: 'center' });
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.text('Gesundheitszentrum Mercedes-Benz Rastatt', 105, 40, { align: 'center' });
+                
+                y = 55;
                 
                 // Meta info
                 doc.setTextColor(0, 0, 0);
-                doc.setFontSize(11);
+                doc.setFontSize(10);
                 doc.setFont('helvetica', 'bold');
-                doc.text('Datum:', 20, y);
-                doc.text('Mitarbeiter:', 110, y);
-                doc.setFont('helvetica', 'normal');
-                doc.text(dateStr, 45, y);
+                if (type === 'wochen') {
+                    doc.text('KW:', 20, y);
+                    doc.text('Mitarbeiter:', 110, y);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(kw.toString(), 35, y);
+                } else {
+                    doc.text('Datum:', 20, y);
+                    doc.text('Mitarbeiter:', 110, y);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(dateStr, 40, y);
+                }
                 doc.text(employeeName, 140, y);
                 
-                y += 15;
+                y += 12;
                 
                 // Checklist sections
-                checklistData.forEach(function(section) {
+                theChecklistData.forEach(function(section) {
                     if (section.isSunday && !sun) return;
+                    if (section.isLastWeek && !lastWeek) return;
                     
-                    if (y > 250) {
+                    if (y > 245) {
+                        addFooter(doc, docId, shortDate, employeeName);
                         doc.addPage();
-                        y = 20;
+                        y = 25;
+                        // Header on new page
+                        doc.setFontSize(8);
+                        doc.setTextColor(120, 120, 120);
+                        doc.text(docId, 195, 10, { align: 'right' });
+                        doc.setFillColor(headerColor[0], headerColor[1], headerColor[2]);
+                        doc.rect(0, 12, 210, 8, 'F');
                     }
                     
                     // Section header
-                    doc.setFillColor(36, 36, 36);
-                    doc.rect(15, y - 5, 180, 10, 'F');
+                    doc.setFillColor(50, 50, 50);
+                    doc.rect(15, y - 4, 180, 8, 'F');
                     doc.setTextColor(255, 255, 255);
-                    doc.setFontSize(11);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text(section.title, 20, y + 2);
-                    y += 12;
-                    
                     doc.setFontSize(10);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(section.title, 20, y + 1);
+                    y += 10;
+                    
+                    doc.setFontSize(9);
                     doc.setFont('helvetica', 'normal');
                     
                     section.items.forEach(function(item, i) {
-                        if (y > 270) {
+                        if (y > 250) {
+                            addFooter(doc, docId, shortDate, employeeName);
                             doc.addPage();
-                            y = 20;
+                            y = 25;
+                            doc.setFontSize(8);
+                            doc.setTextColor(120, 120, 120);
+                            doc.text(docId, 195, 10, { align: 'right' });
+                            doc.setFillColor(headerColor[0], headerColor[1], headerColor[2]);
+                            doc.rect(0, 12, 210, 8, 'F');
                         }
                         
                         var key = section.id + '-' + i;
-                        var checked = checklistState[key];
-                        var comment = commentsState[key] || '';
+                        var checked = theChecklistState[key];
+                        var comment = theCommentsState[key] || '';
+                        var itemText = typeof item === 'object' ? item.text : item;
                         
-                        // Checkbox mit Haken
+                        // Checkbox
                         if (checked) {
                             doc.setFillColor(46, 204, 113);
-                            doc.rect(20, y - 4, 5, 5, 'F');
-                            // Weißer Haken als Linien
+                            doc.rect(20, y - 3, 4, 4, 'F');
                             doc.setDrawColor(255, 255, 255);
-                            doc.setLineWidth(0.7);
-                            doc.line(21.2, y - 1.2, 22.5, y + 0.2);
-                            doc.line(22.5, y + 0.2, 24.5, y - 3);
+                            doc.setLineWidth(0.5);
+                            doc.line(21, y - 0.8, 22, y + 0.3);
+                            doc.line(22, y + 0.3, 23.5, y - 2.2);
                         } else {
                             doc.setDrawColor(150, 150, 150);
-                            doc.setFillColor(240, 240, 240);
-                            doc.rect(20, y - 4, 5, 5, 'FD');
+                            doc.setFillColor(245, 245, 245);
+                            doc.rect(20, y - 3, 4, 4, 'FD');
                         }
                         
-                        // Reset
                         doc.setDrawColor(0, 0, 0);
-                        doc.setLineWidth(0.2);
-                        doc.setTextColor(checked ? 100 : 0, checked ? 100 : 0, checked ? 100 : 0);
+                        doc.setLineWidth(0.1);
+                        doc.setTextColor(checked ? 80 : 0, checked ? 80 : 0, checked ? 80 : 0);
                         
-                        var displayItem = item.length > 55 ? item.substring(0, 52) + '...' : item;
-                        doc.text(displayItem, 28, y);
-                        y += 6;
+                        var displayItem = itemText.length > 60 ? itemText.substring(0, 57) + '...' : itemText;
+                        doc.text(displayItem, 27, y);
+                        y += 5;
                         
                         if (comment) {
-                            doc.setFontSize(9);
+                            doc.setFontSize(8);
                             doc.setTextColor(100, 100, 100);
                             doc.setFont('helvetica', 'italic');
-                            doc.text('> ' + comment, 28, y);
+                            doc.text('→ ' + comment, 27, y);
                             doc.setFont('helvetica', 'normal');
-                            doc.setFontSize(10);
-                            y += 5;
+                            doc.setFontSize(9);
+                            y += 4;
                         }
-                        y += 2;
+                        y += 1;
                     });
-                    y += 5;
+                    y += 4;
                 });
                 
                 // Signature
                 if (y > 200) {
+                    addFooter(doc, docId, shortDate, employeeName);
                     doc.addPage();
-                    y = 20;
+                    y = 25;
+                    doc.setFontSize(8);
+                    doc.setTextColor(120, 120, 120);
+                    doc.text(docId, 195, 10, { align: 'right' });
                 }
                 
-                y += 10;
+                y += 8;
                 doc.setTextColor(0, 0, 0);
-                doc.setFontSize(11);
+                doc.setFontSize(10);
                 doc.setFont('helvetica', 'bold');
                 doc.text('Unterschrift:', 20, y);
-                y += 8;
+                y += 6;
                 
-                if (signatureData && signatureData.length > 100) {
-                    // Dark background for white signature
+                if (theSignatureData && theSignatureData.length > 100) {
                     doc.setDrawColor(150, 150, 150);
                     doc.setFillColor(40, 40, 40);
-                    doc.rect(20, y, 80, 35, 'FD');
+                    doc.rect(20, y, 70, 30, 'FD');
                     try {
-                        doc.addImage(signatureData, 'PNG', 22, y + 2, 76, 31);
+                        doc.addImage(theSignatureData, 'PNG', 22, y + 2, 66, 26);
                     } catch(imgErr) {
-                        console.error('Signature image error:', imgErr);
-                        doc.setTextColor(200, 200, 200);
-                        doc.setFontSize(9);
-                        doc.text('[Unterschrift Fehler]', 40, y + 18);
+                        console.error('Signature error:', imgErr);
                     }
-                    y += 38;
-                    // Name in Druckbuchstaben
-                    doc.setFontSize(10);
+                    y += 33;
+                    doc.setFontSize(9);
                     doc.setFont('helvetica', 'bold');
-                    doc.setTextColor(80, 80, 80);
-                    doc.text(employeeName.toUpperCase(), 60, y, { align: 'center' });
+                    doc.setTextColor(60, 60, 60);
+                    doc.text(employeeName.toUpperCase(), 55, y, { align: 'center' });
                 } else {
                     doc.setDrawColor(150, 150, 150);
-                    doc.line(20, y + 20, 100, y + 20);
-                    y += 25;
-                    // Name in Druckbuchstaben
-                    doc.setFontSize(10);
+                    doc.line(20, y + 18, 90, y + 18);
+                    y += 22;
+                    doc.setFontSize(9);
                     doc.setFont('helvetica', 'bold');
-                    doc.setTextColor(80, 80, 80);
-                    doc.text(employeeName.toUpperCase(), 60, y, { align: 'center' });
+                    doc.setTextColor(60, 60, 60);
+                    doc.text(employeeName.toUpperCase(), 55, y, { align: 'center' });
                 }
                 
-                // Footer
+                // Add footer to all pages
                 var pageCount = doc.internal.getNumberOfPages();
                 for (var p = 1; p <= pageCount; p++) {
                     doc.setPage(p);
-                    doc.setFontSize(8);
-                    doc.setTextColor(150, 150, 150);
-                    doc.text('MBWD App - Seite ' + p + ' von ' + pageCount, 105, 290, { align: 'center' });
+                    addFooter(doc, docId, shortDate, employeeName, p, pageCount);
                 }
                 
-                // Download - use blob for iPad compatibility
-                var fileName = 'Ambulanzcheck_' + new Date().toISOString().split('T')[0] + '_' + employeeName.replace(/\s+/g, '_') + '.pdf';
+                // Download
+                var filePrefix;
+                if (type === 'ambulanz') {
+                    filePrefix = 'Ambulanzcheck_';
+                } else if (type === 'mpg') {
+                    filePrefix = 'MPGCheck_';
+                } else if (type === 'wochen') {
+                    filePrefix = 'Wochencheck_KW' + kw + '_';
+                }
+                var fileName = filePrefix + new Date().toISOString().split('T')[0] + '_' + employeeName.replace(/\s+/g, '_') + '.pdf';
                 
-                // Check if iOS
                 var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
                 if (isIOS) {
-                    // On iOS, open PDF in new tab
                     var pdfBlob = doc.output('blob');
                     var blobUrl = URL.createObjectURL(pdfBlob);
                     window.open(blobUrl, '_blank');
                 } else {
-                    // On other devices, download directly
                     doc.save(fileName);
                 }
                 
@@ -769,51 +1365,121 @@
                 console.error(err);
             }
         }
+        
+        function addFooter(doc, docId, date, employee, pageNum, totalPages) {
+            var y = 282;
+            
+            // Footer line
+            doc.setDrawColor(200, 200, 200);
+            doc.setLineWidth(0.3);
+            doc.line(15, y - 5, 195, y - 5);
+            
+            // Footer table
+            doc.setFontSize(7);
+            doc.setTextColor(100, 100, 100);
+            doc.setFont('helvetica', 'normal');
+            
+            // Row 1
+            doc.text('bearbeitet von: ' + employee, 15, y);
+            doc.text('bearbeitet am: ' + date, 80, y);
+            doc.text('054_HR/PHB', 145, y);
+            
+            // Row 2
+            y += 4;
+            doc.text('freigegeben von:', 15, y);
+            doc.text('freigegeben am:', 80, y);
+            if (pageNum && totalPages) {
+                doc.text('Seite ' + pageNum + '/' + totalPages, 145, y);
+            }
+        }
 
-        // SUBMIT
-        document.getElementById('submitBtn').addEventListener('click', async () => {
-            const employeeName = document.getElementById('employeeName').value || 'Nicht angegeben';
-            const btn = document.getElementById('submitBtn'); 
+        // SUBMIT CHECK
+        function submitCheck(type) {
+            var theChecklistData, theChecklistState, theCommentsState, theSignatureData, employeeName, btn, storageKey, checkTitle, progressCountId;
+            var lastWeek = isLastWeekOfMonth();
+            
+            if (type === 'ambulanz') {
+                theChecklistData = checklistData;
+                theChecklistState = checklistState;
+                theCommentsState = commentsState;
+                theSignatureData = signatureData;
+                employeeName = document.getElementById('employeeName').value || 'Nicht angegeben';
+                btn = document.getElementById('submitBtn');
+                storageKey = 'ambulanzcheck_archive';
+                checkTitle = 'Ambulanzcheck';
+                progressCountId = 'progressCount';
+            } else if (type === 'mpg') {
+                theChecklistData = mpgChecklistData;
+                theChecklistState = mpgChecklistState;
+                theCommentsState = mpgCommentsState;
+                theSignatureData = mpgSignatureData;
+                employeeName = document.getElementById('mpgEmployeeName').value || 'Nicht angegeben';
+                btn = document.getElementById('mpgSubmitBtn');
+                storageKey = 'mpgcheck_archive';
+                checkTitle = 'MPG-Check RTW';
+                progressCountId = 'mpgProgressCount';
+            } else if (type === 'wochen') {
+                theChecklistData = wochenChecklistData;
+                theChecklistState = wochenChecklistState;
+                theCommentsState = wochenCommentsState;
+                theSignatureData = wochenSignatureData;
+                employeeName = document.getElementById('wochenEmployeeName').value || 'Nicht angegeben';
+                btn = document.getElementById('wochenSubmitBtn');
+                storageKey = 'wochencheck_archive';
+                checkTitle = 'RTW Wochencheck';
+                progressCountId = 'wochenProgressCount';
+            }
+            
             btn.disabled = true; 
             btn.innerHTML = '<svg class="spinner" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z"/></svg> Speichern...';
             
-            const now = new Date(), ds = now.toISOString().split('T')[0], ts = now.toLocaleTimeString('de-DE'), sun = now.getDay() === 0;
-            let res = {}; 
-            checklistData.forEach(s => { 
-                if (s.isSunday && !sun) return; 
+            var now = new Date(), ds = now.toISOString().split('T')[0], ts = now.toLocaleTimeString('de-DE'), sun = now.getDay() === 0;
+            var kw = getWeekNumber(now);
+            var res = {}; 
+            theChecklistData.forEach(function(s) { 
+                if (s.isSunday && !sun) return;
+                if (s.isLastWeek && !lastWeek) return;
                 res[s.title] = {}; 
-                s.items.forEach((it, i) => { 
-                    const key = `${s.id}-${i}`; 
-                    const comment = commentsState[key] || ''; 
-                    res[s.title][it] = { checked: checklistState[key] ? '✓' : '✗', comment: comment }; 
+                s.items.forEach(function(it, i) { 
+                    var key = s.id + '-' + i;
+                    var itemText = typeof it === 'object' ? it.text : it;
+                    var comment = theCommentsState[key] || ''; 
+                    res[s.title][itemText] = { checked: theChecklistState[key] ? '✓' : '✗', comment: comment }; 
                 }); 
             });
             
-            const data = { 
+            var data = { 
                 id: Date.now(),
-                meta: { datum: ds, uhrzeit: ts, mitarbeiter: employeeName, user: currentUser.name, standort: 'Mercedes-Benz Rastatt' }, 
+                type: type,
+                meta: { 
+                    datum: ds, 
+                    uhrzeit: ts, 
+                    mitarbeiter: employeeName, 
+                    user: currentUser.name, 
+                    standort: 'Mercedes-Benz Rastatt',
+                    kw: type === 'wochen' ? kw : null
+                }, 
                 checkliste: res, 
-                unterschrift: signatureData 
+                unterschrift: theSignatureData 
             };
             
-            // Save to localStorage
             try {
-                let archive = JSON.parse(localStorage.getItem('ambulanzcheck_archive') || '[]');
-                archive.unshift(data); // Add to beginning
-                // Keep max 100 entries
+                var archive = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                archive.unshift(data);
                 if (archive.length > 100) archive = archive.slice(0, 100);
-                localStorage.setItem('ambulanzcheck_archive', JSON.stringify(archive));
+                localStorage.setItem(storageKey, JSON.stringify(archive));
                 
-                document.getElementById('successDate').textContent = `${ds} ${ts}`;
+                document.getElementById('successDate').textContent = type === 'wochen' ? 'KW ' + kw + ' / ' + ds : ds + ' ' + ts;
                 document.getElementById('successEmployee').textContent = employeeName;
-                document.getElementById('successItems').textContent = document.getElementById('progressCount').textContent;
+                document.getElementById('successItems').textContent = document.getElementById(progressCountId).textContent;
+                document.querySelector('.success-message').textContent = 'Der ' + checkTitle + ' wurde erfolgreich abgeschlossen.';
                 showScreen('success');
             } catch (e) { 
-                alert(`Fehler beim Speichern: ${e.message}`); 
+                alert('Fehler beim Speichern: ' + e.message); 
                 btn.disabled = false; 
                 btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>Check abschließen & speichern'; 
             }
-        });
+        }
 
         // ARCHIVE
         function loadArchive() {
@@ -821,7 +1487,10 @@
             c.innerHTML = '<div class="archive-loading">Lade...</div>';
             
             try {
-                const archive = JSON.parse(localStorage.getItem('ambulanzcheck_archive') || '[]');
+                const ambulanzArchive = JSON.parse(localStorage.getItem('ambulanzcheck_archive') || '[]').map(x => ({...x, type: 'ambulanz'}));
+                const mpgArchive = JSON.parse(localStorage.getItem('mpgcheck_archive') || '[]').map(x => ({...x, type: 'mpg'}));
+                const wochenArchive = JSON.parse(localStorage.getItem('wochencheck_archive') || '[]').map(x => ({...x, type: 'wochen'}));
+                const archive = [...ambulanzArchive, ...mpgArchive, ...wochenArchive].sort((a, b) => b.id - a.id);
                 
                 if (!archive.length) { 
                     c.innerHTML = '<div class="archive-empty"><div class="archive-empty-icon"><svg viewBox="0 0 24 24"><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27z"/></svg></div><p class="archive-empty-text">Noch keine Checks gespeichert.</p></div>'; 
@@ -832,10 +1501,22 @@
                     const d = x.meta.datum;
                     const emp = x.meta.mitarbeiter || '';
                     const time = x.meta.uhrzeit;
-                    return `<div class="archive-item" onclick="showCheckDetail(${x.id})">
+                    const kw = x.meta.kw;
+                    let badgeColor, typeName;
+                    if (x.type === 'ambulanz') {
+                        badgeColor = '#c41e3a';
+                        typeName = 'Ambulanz';
+                    } else if (x.type === 'mpg') {
+                        badgeColor = '#1e64c4';
+                        typeName = 'MPG-RTW';
+                    } else if (x.type === 'wochen') {
+                        badgeColor = '#e67e22';
+                        typeName = 'Woche' + (kw ? ' KW' + kw : '');
+                    }
+                    return `<div class="archive-item" onclick="showCheckDetail(${x.id}, '${x.type}')">
                         <div class="archive-item-header">
                             <span class="archive-item-date">${d}</span>
-                            <span class="archive-item-badge">✓</span>
+                            <span class="archive-item-badge" style="background:${badgeColor}">${typeName}</span>
                         </div>
                         <div class="archive-item-details">
                             ${emp ? `<div class="archive-item-detail"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>${emp}</div>` : ''}
@@ -848,14 +1529,33 @@
             }
         }
         
-        function showCheckDetail(id) {
+        var currentArchiveType = 'ambulanz';
+        function showCheckDetail(id, type) {
             try {
-                const archive = JSON.parse(localStorage.getItem('ambulanzcheck_archive') || '[]');
+                currentArchiveType = type || 'ambulanz';
+                let storageKey;
+                if (currentArchiveType === 'ambulanz') {
+                    storageKey = 'ambulanzcheck_archive';
+                } else if (currentArchiveType === 'mpg') {
+                    storageKey = 'mpgcheck_archive';
+                } else if (currentArchiveType === 'wochen') {
+                    storageKey = 'wochencheck_archive';
+                }
+                const archive = JSON.parse(localStorage.getItem(storageKey) || '[]');
                 const c = archive.find(x => x.id === id);
                 if (!c) { alert('Check nicht gefunden'); return; }
                 
                 currentDetailId = id;
-                document.getElementById('detailTitle').textContent = `Check vom ${c.meta.datum}`;
+                let typeName;
+                if (currentArchiveType === 'ambulanz') {
+                    typeName = 'Ambulanzcheck';
+                } else if (currentArchiveType === 'mpg') {
+                    typeName = 'MPG-Check RTW';
+                } else if (currentArchiveType === 'wochen') {
+                    typeName = 'RTW Wochencheck';
+                }
+                const dateDisplay = currentArchiveType === 'wochen' && c.meta.kw ? `KW ${c.meta.kw} (${c.meta.datum})` : c.meta.datum;
+                document.getElementById('detailTitle').textContent = `${typeName} vom ${dateDisplay}`;
                 document.getElementById('detailSubtitle').textContent = `${c.meta.mitarbeiter || ''} • ${c.meta.uhrzeit}`;
                 
                 // Show delete button only for admin
@@ -883,9 +1583,17 @@
         function deleteCheck() {
             if (!confirm('Check wirklich löschen?')) return;
             try {
-                let archive = JSON.parse(localStorage.getItem('ambulanzcheck_archive') || '[]');
+                let storageKey;
+                if (currentArchiveType === 'ambulanz') {
+                    storageKey = 'ambulanzcheck_archive';
+                } else if (currentArchiveType === 'mpg') {
+                    storageKey = 'mpgcheck_archive';
+                } else if (currentArchiveType === 'wochen') {
+                    storageKey = 'wochencheck_archive';
+                }
+                let archive = JSON.parse(localStorage.getItem(storageKey) || '[]');
                 archive = archive.filter(x => x.id !== currentDetailId);
-                localStorage.setItem('ambulanzcheck_archive', JSON.stringify(archive));
+                localStorage.setItem(storageKey, JSON.stringify(archive));
                 document.getElementById('detailModal').classList.remove('active');
                 loadArchive();
             } catch (e) { alert('Fehler: ' + e.message); }
