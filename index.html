@@ -39,15 +39,14 @@
             --shadow: 0 4px 24px rgba(0,0,0,0.4);
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; min-height: 100dvh; overflow-x: hidden; }
-        .screen { position: absolute; top: 0; left: 0; right: 0; min-height: 100vh; min-height: 100dvh; display: none; opacity: 0; visibility: hidden; }
-        .screen.active { display: block; opacity: 1; visibility: visible; position: relative; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; }
+        .screen { display: none; min-height: 100vh; }
+        .screen.active { display: block; }
         .login-screen.active { display: flex; }
 
         /* LOGIN */
-        .login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 24px; background: radial-gradient(ellipse at 50% 0%, rgba(196, 30, 58, 0.15) 0%, transparent 50%), var(--bg-primary); }
-        .login-screen.active { display: flex; }
+        .login-screen { flex-direction: column; align-items: center; justify-content: center; padding: 40px 24px; background: var(--bg-primary); }
         .login-logo { width: 100px; height: 100px; background: linear-gradient(135deg, var(--accent) 0%, #8b1528 100%); border-radius: 24px; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; box-shadow: 0 0 60px var(--accent-glow); }
         .login-logo svg { width: 60px; height: 60px; fill: white; }
         .login-title { font-size: 36px; font-weight: 700; margin-bottom: 8px; text-align: center; letter-spacing: -1px; }
@@ -60,8 +59,7 @@
         .pin-dot.error { background: #e74c3c; border-color: #e74c3c; animation: shake 0.5s; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
         .pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-        .pin-key { height: 64px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 600; color: var(--text-primary); cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; }
-        .pin-key:hover { background: var(--border); }
+        .pin-key { height: 64px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 600; color: var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .pin-key:active { transform: scale(0.95); background: var(--accent); }
         .pin-key.empty { visibility: hidden; }
         .pin-key svg { width: 24px; height: 24px; fill: var(--text-secondary); }
@@ -187,10 +185,11 @@
         .signature-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; }
         .signature-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
         .signature-title svg { width: 24px; height: 24px; fill: var(--accent); }
-        .signature-canvas-container { position: relative; background: var(--bg-input); border: 2px dashed var(--border); border-radius: var(--radius); overflow: hidden; }
-        .signature-canvas { width: 100%; height: 200px; display: block; touch-action: none; }
+        .signature-canvas-container { position: relative; background: var(--bg-input); border: 2px dashed var(--border); border-radius: var(--radius); overflow: hidden; touch-action: none; }
+        .signature-canvas { width: 100%; height: 200px; display: block; touch-action: none; cursor: crosshair; -webkit-user-select: none; user-select: none; }
         .signature-placeholder { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--text-muted); font-size: 15px; pointer-events: none; transition: opacity 0.2s; }
         .signature-canvas-container.has-signature .signature-placeholder { opacity: 0; }
+        .signature-name { text-align: center; font-size: 14px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text-secondary); padding: 12px 0; border-top: 1px solid var(--border); margin-top: 8px; min-height: 20px; }
         .signature-actions { display: flex; gap: 12px; margin-top: 16px; }
 
         /* BUTTONS */
@@ -274,18 +273,18 @@
             <div class="pin-label">PIN eingeben</div>
             <div class="pin-display"><div class="pin-dot" id="dot0"></div><div class="pin-dot" id="dot1"></div><div class="pin-dot" id="dot2"></div><div class="pin-dot" id="dot3"></div></div>
             <div class="pin-pad">
-                <button class="pin-key" onclick="enterPin('1')">1</button>
-                <button class="pin-key" onclick="enterPin('2')">2</button>
-                <button class="pin-key" onclick="enterPin('3')">3</button>
-                <button class="pin-key" onclick="enterPin('4')">4</button>
-                <button class="pin-key" onclick="enterPin('5')">5</button>
-                <button class="pin-key" onclick="enterPin('6')">6</button>
-                <button class="pin-key" onclick="enterPin('7')">7</button>
-                <button class="pin-key" onclick="enterPin('8')">8</button>
-                <button class="pin-key" onclick="enterPin('9')">9</button>
-                <button class="pin-key empty"></button>
-                <button class="pin-key" onclick="enterPin('0')">0</button>
-                <button class="pin-key" onclick="deletePin()"><svg viewBox="0 0 24 24"><path d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.11c.36.53.9.89 1.59.89h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-3 12.59L17.59 17 14 13.41 10.41 17 9 15.59 12.59 12 9 8.41 10.41 7 14 10.59 17.59 7 19 8.41 15.41 12 19 15.59z"/></svg></button>
+                <button type="button" class="pin-key" onclick="enterPin('1')">1</button>
+                <button type="button" class="pin-key" onclick="enterPin('2')">2</button>
+                <button type="button" class="pin-key" onclick="enterPin('3')">3</button>
+                <button type="button" class="pin-key" onclick="enterPin('4')">4</button>
+                <button type="button" class="pin-key" onclick="enterPin('5')">5</button>
+                <button type="button" class="pin-key" onclick="enterPin('6')">6</button>
+                <button type="button" class="pin-key" onclick="enterPin('7')">7</button>
+                <button type="button" class="pin-key" onclick="enterPin('8')">8</button>
+                <button type="button" class="pin-key" onclick="enterPin('9')">9</button>
+                <button type="button" class="pin-key empty"></button>
+                <button type="button" class="pin-key" onclick="enterPin('0')">0</button>
+                <button type="button" class="pin-key" onclick="deletePin()"><svg viewBox="0 0 24 24"><path d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.11c.36.53.9.89 1.59.89h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-3 12.59L17.59 17 14 13.41 10.41 17 9 15.59 12.59 12 9 8.41 10.41 7 14 10.59 17.59 7 19 8.41 15.41 12 19 15.59z"/></svg></button>
             </div>
         </div>
     </div>
@@ -370,7 +369,7 @@
             <div class="progress-text"><span id="progressCount">0</span> / <span id="totalCount">0</span> erledigt</div>
         </header>
         <div class="checklist-container" id="checklistContainer"></div>
-        <div class="signature-section"><div class="signature-card"><h3 class="signature-title"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Unterschrift</h3><div class="signature-canvas-container" id="signatureContainer"><canvas class="signature-canvas" id="signatureCanvas"></canvas><span class="signature-placeholder">Hier unterschreiben</span></div><div class="signature-actions"><button class="btn btn-secondary" id="clearSignature"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>Löschen</button></div></div></div>
+        <div class="signature-section"><div class="signature-card"><h3 class="signature-title"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Unterschrift</h3><div class="signature-canvas-container" id="signatureContainer"><canvas class="signature-canvas" id="signatureCanvas"></canvas><span class="signature-placeholder">Hier unterschreiben</span></div><div class="signature-name" id="signatureName"></div><div class="signature-actions"><button class="btn btn-secondary" id="clearSignature"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>Löschen</button></div></div></div>
         <div class="submit-section"><button class="btn btn-primary" id="submitBtn" disabled><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>Check abschließen & speichern</button></div>
     </div>
 
@@ -413,8 +412,17 @@
         }
 
         // PIN
-        function enterPin(digit) { if (currentPin.length < 4) { currentPin += digit; updatePinDisplay(); if (currentPin.length === 4) setTimeout(checkPin, 200); } }
-        function deletePin() { currentPin = currentPin.slice(0, -1); updatePinDisplay(); }
+        function enterPin(digit) { 
+            if (currentPin.length < 4) { 
+                currentPin += digit; 
+                updatePinDisplay(); 
+                if (currentPin.length === 4) setTimeout(checkPin, 200); 
+            } 
+        }
+        function deletePin() { 
+            currentPin = currentPin.slice(0, -1); 
+            updatePinDisplay(); 
+        }
         function updatePinDisplay() { for (let i = 0; i < 4; i++) { const dot = document.getElementById('dot' + i); dot.classList.toggle('filled', i < currentPin.length); dot.classList.remove('error'); } }
         function checkPin() {
             if (USERS[currentPin]) {
@@ -447,7 +455,10 @@
             checklistState = {}; commentsState = {}; signatureData = null;
             checklistData.forEach(s => s.items.forEach((_, i) => { checklistState[`${s.id}-${i}`] = false; }));
             renderChecklist(); setupSignatureCanvas(); updateProgress();
-            document.getElementById('employeeName').addEventListener('input', validateForm);
+            document.getElementById('employeeName').addEventListener('input', function() {
+                validateForm();
+                document.getElementById('signatureName').textContent = this.value.toUpperCase();
+            });
         }
         function renderChecklist() {
             const c = document.getElementById('checklistContainer'), sun = new Date().getDay() === 0;
@@ -488,243 +499,258 @@
             document.getElementById('submitBtn').disabled = !signatureData || !all || !employeeName;
         }
         function setupSignatureCanvas() {
-            const canvas = document.getElementById('signatureCanvas'), cont = document.getElementById('signatureContainer'), ctx = canvas.getContext('2d');
-            let drawing = false, lastX = 0, lastY = 0;
+            const canvas = document.getElementById('signatureCanvas');
+            const cont = document.getElementById('signatureContainer');
+            const ctx = canvas.getContext('2d');
+            let isDrawing = false;
             
-            function resize() { 
-                const r = canvas.getBoundingClientRect(); 
-                canvas.width = r.width * 2; 
-                canvas.height = r.height * 2; 
-                ctx.scale(2, 2); 
-                ctx.strokeStyle = '#fff'; 
-                ctx.lineWidth = 2.5; 
-                ctx.lineCap = 'round'; 
+            // Set canvas size
+            function initCanvas() {
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width * 2;
+                canvas.height = rect.height * 2;
+                ctx.scale(2, 2);
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
             }
-            resize(); 
-            window.addEventListener('resize', resize);
+            initCanvas();
             
-            function getPos(e) { 
-                const r = canvas.getBoundingClientRect();
-                if (e.touches && e.touches.length > 0) {
-                    return { x: e.touches[0].clientX - r.left, y: e.touches[0].clientY - r.top };
+            function getXY(e) {
+                const rect = canvas.getBoundingClientRect();
+                let clientX, clientY;
+                if (e.touches && e.touches[0]) {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                } else {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
                 }
-                return { x: e.clientX - r.left, y: e.clientY - r.top }; 
+                return {
+                    x: clientX - rect.left,
+                    y: clientY - rect.top
+                };
             }
             
-            function startDrawing(e) { 
-                e.preventDefault(); 
-                drawing = true; 
-                const p = getPos(e); 
-                lastX = p.x; 
-                lastY = p.y; 
+            function startDraw(e) {
+                e.preventDefault();
+                isDrawing = true;
+                const pos = getXY(e);
                 ctx.beginPath();
-                ctx.moveTo(lastX, lastY);
+                ctx.moveTo(pos.x, pos.y);
             }
             
-            function draw(e) { 
-                if (!drawing) return; 
-                e.preventDefault(); 
-                const p = getPos(e); 
-                ctx.lineTo(p.x, p.y);
+            function doDraw(e) {
+                if (!isDrawing) return;
+                e.preventDefault();
+                const pos = getXY(e);
+                ctx.lineTo(pos.x, pos.y);
                 ctx.stroke();
                 ctx.beginPath();
-                ctx.moveTo(p.x, p.y);
-                lastX = p.x; 
-                lastY = p.y; 
-                cont.classList.add('has-signature'); 
-                signatureData = canvas.toDataURL('image/png'); 
-                validateForm(); 
+                ctx.moveTo(pos.x, pos.y);
+                cont.classList.add('has-signature');
+                signatureData = canvas.toDataURL('image/png');
+                validateForm();
             }
             
-            function stopDrawing() { 
-                drawing = false; 
-                ctx.beginPath();
+            function endDraw(e) {
+                isDrawing = false;
             }
             
             // Mouse events
-            canvas.addEventListener('mousedown', startDrawing);
-            canvas.addEventListener('mousemove', draw);
-            canvas.addEventListener('mouseup', stopDrawing);
-            canvas.addEventListener('mouseout', stopDrawing);
+            canvas.addEventListener('mousedown', startDraw);
+            canvas.addEventListener('mousemove', doDraw);
+            canvas.addEventListener('mouseup', endDraw);
+            canvas.addEventListener('mouseleave', endDraw);
             
-            // Touch events
-            canvas.addEventListener('touchstart', startDrawing, { passive: false });
-            canvas.addEventListener('touchmove', draw, { passive: false });
-            canvas.addEventListener('touchend', stopDrawing);
+            // Touch events - with passive: false to allow preventDefault
+            canvas.addEventListener('touchstart', startDraw, { passive: false });
+            canvas.addEventListener('touchmove', doDraw, { passive: false });
+            canvas.addEventListener('touchend', endDraw);
             
-            document.getElementById('clearSignature').addEventListener('click', () => { 
-                ctx.clearRect(0, 0, canvas.width, canvas.height); 
-                cont.classList.remove('has-signature'); 
-                signatureData = null; 
-                validateForm(); 
+            // Clear button
+            document.getElementById('clearSignature').addEventListener('click', function() {
+                initCanvas();
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                cont.classList.remove('has-signature');
+                signatureData = null;
+                validateForm();
             });
         }
 
         // PDF EXPORT
         function exportPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const sun = new Date().getDay() === 0;
-            const employeeName = document.getElementById('employeeName').value || 'Nicht angegeben';
-            const dateStr = new Date().toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
-            
-            let y = 20;
-            
-            // Header
-            doc.setFillColor(196, 30, 58);
-            doc.rect(0, 0, 210, 35, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(22);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Täglicher Ambulanzcheck', 105, 18, { align: 'center' });
-            doc.setFontSize(11);
-            doc.setFont('helvetica', 'normal');
-            doc.text('Gesundheitszentrum Mercedes-Benz Rastatt', 105, 28, { align: 'center' });
-            
-            y = 50;
-            
-            // Meta info
-            doc.setTextColor(0, 0, 0);
-            doc.setFontSize(11);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Datum:', 20, y);
-            doc.text('Mitarbeiter:', 110, y);
-            doc.setFont('helvetica', 'normal');
-            doc.text(dateStr, 45, y);
-            doc.text(employeeName, 140, y);
-            
-            y += 15;
-            
-            // Checklist sections
-            checklistData.forEach(section => {
-                if (section.isSunday && !sun) return;
-                
-                // Check if we need a new page
-                if (y > 250) {
-                    doc.addPage();
-                    y = 20;
+            try {
+                if (!window.jspdf) {
+                    alert('PDF Bibliothek nicht geladen. Bitte Seite neu laden.');
+                    return;
                 }
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                const sun = new Date().getDay() === 0;
+                const employeeName = document.getElementById('employeeName').value || 'Nicht angegeben';
+                const dateStr = new Date().toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
                 
-                // Section header
-                doc.setFillColor(36, 36, 36);
-                doc.rect(15, y - 5, 180, 10, 'F');
+                let y = 20;
+                
+                // Header
+                doc.setFillColor(196, 30, 58);
+                doc.rect(0, 0, 210, 35, 'F');
                 doc.setTextColor(255, 255, 255);
+                doc.setFontSize(22);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Täglicher Ambulanzcheck', 105, 18, { align: 'center' });
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'normal');
+                doc.text('Gesundheitszentrum Mercedes-Benz Rastatt', 105, 28, { align: 'center' });
+                
+                y = 50;
+                
+                // Meta info
+                doc.setTextColor(0, 0, 0);
                 doc.setFontSize(11);
                 doc.setFont('helvetica', 'bold');
-                doc.text(section.title, 20, y + 2);
-                y += 12;
-                
-                // Items
-                doc.setTextColor(0, 0, 0);
-                doc.setFontSize(10);
+                doc.text('Datum:', 20, y);
+                doc.text('Mitarbeiter:', 110, y);
                 doc.setFont('helvetica', 'normal');
+                doc.text(dateStr, 45, y);
+                doc.text(employeeName, 140, y);
                 
-                section.items.forEach((item, i) => {
-                    if (y > 270) {
+                y += 15;
+                
+                // Checklist sections
+                checklistData.forEach(function(section) {
+                    if (section.isSunday && !sun) return;
+                    
+                    if (y > 250) {
                         doc.addPage();
                         y = 20;
                     }
                     
-                    const key = `${section.id}-${i}`;
-                    const checked = checklistState[key];
-                    const comment = commentsState[key] || '';
+                    // Section header
+                    doc.setFillColor(36, 36, 36);
+                    doc.rect(15, y - 5, 180, 10, 'F');
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(11);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(section.title, 20, y + 2);
+                    y += 12;
                     
-                    // Checkbox
-                    if (checked) {
-                        // Green filled box with white checkmark
-                        doc.setFillColor(46, 204, 113);
-                        doc.rect(20, y - 4, 5, 5, 'F');
-                        // Draw checkmark
-                        doc.setDrawColor(255, 255, 255);
-                        doc.setLineWidth(0.6);
-                        doc.line(21, y - 1.5, 22.2, y);
-                        doc.line(22.2, y, 24.2, y - 3);
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    
+                    section.items.forEach(function(item, i) {
+                        if (y > 270) {
+                            doc.addPage();
+                            y = 20;
+                        }
+                        
+                        var key = section.id + '-' + i;
+                        var checked = checklistState[key];
+                        var comment = commentsState[key] || '';
+                        
+                        // Checkbox mit Haken
+                        if (checked) {
+                            doc.setFillColor(46, 204, 113);
+                            doc.rect(20, y - 4, 5, 5, 'F');
+                            // Weißer Haken als Linien
+                            doc.setDrawColor(255, 255, 255);
+                            doc.setLineWidth(0.7);
+                            doc.line(21.2, y - 1.2, 22.5, y + 0.2);
+                            doc.line(22.5, y + 0.2, 24.5, y - 3);
+                        } else {
+                            doc.setDrawColor(150, 150, 150);
+                            doc.setFillColor(240, 240, 240);
+                            doc.rect(20, y - 4, 5, 5, 'FD');
+                        }
+                        
+                        // Reset
+                        doc.setDrawColor(0, 0, 0);
                         doc.setLineWidth(0.2);
-                    } else {
-                        // Empty gray box
-                        doc.setDrawColor(150, 150, 150);
-                        doc.setFillColor(245, 245, 245);
-                        doc.rect(20, y - 4, 5, 5, 'FD');
-                    }
-                    
-                    // Item text
-                    const textColor = checked ? [80, 80, 80] : [0, 0, 0];
-                    doc.setTextColor(...textColor);
-                    doc.setDrawColor(0, 0, 0);
-                    
-                    // Truncate long items
-                    let displayItem = item;
-                    if (item.length > 55) {
-                        displayItem = item.substring(0, 52) + '...';
-                    }
-                    doc.text(displayItem, 28, y);
-                    y += 6;
-                    
-                    // Show comment if exists
-                    if (comment) {
-                        doc.setFontSize(9);
-                        doc.setTextColor(100, 100, 100);
-                        doc.setFont('helvetica', 'italic');
-                        const commentLines = doc.splitTextToSize('→ ' + comment, 160);
-                        commentLines.forEach(line => {
-                            if (y > 275) {
-                                doc.addPage();
-                                y = 20;
-                            }
-                            doc.text(line, 28, y);
+                        doc.setTextColor(checked ? 100 : 0, checked ? 100 : 0, checked ? 100 : 0);
+                        
+                        var displayItem = item.length > 55 ? item.substring(0, 52) + '...' : item;
+                        doc.text(displayItem, 28, y);
+                        y += 6;
+                        
+                        if (comment) {
+                            doc.setFontSize(9);
+                            doc.setTextColor(100, 100, 100);
+                            doc.setFont('helvetica', 'italic');
+                            doc.text('> ' + comment, 28, y);
+                            doc.setFont('helvetica', 'normal');
+                            doc.setFontSize(10);
                             y += 5;
-                        });
-                        doc.setFont('helvetica', 'normal');
-                        doc.setFontSize(10);
-                    }
-                    
-                    y += 2;
+                        }
+                        y += 2;
+                    });
+                    y += 5;
                 });
                 
-                y += 5;
-            });
-            
-            // Signature section
-            if (y > 200) {
-                doc.addPage();
-                y = 20;
-            }
-            
-            y += 10;
-            doc.setTextColor(0, 0, 0);
-            doc.setFontSize(11);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Unterschrift:', 20, y);
-            y += 8;
-            
-            if (signatureData) {
-                // Draw signature box
-                doc.setDrawColor(200, 200, 200);
-                doc.setFillColor(250, 250, 250);
-                doc.rect(20, y, 80, 35, 'FD');
+                // Signature
+                if (y > 200) {
+                    doc.addPage();
+                    y = 20;
+                }
                 
-                // Add signature image
-                doc.addImage(signatureData, 'PNG', 22, y + 2, 76, 31);
-                y += 40;
-            } else {
-                doc.setDrawColor(150, 150, 150);
-                doc.line(20, y + 20, 100, y + 20);
-                y += 30;
+                y += 10;
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Unterschrift:', 20, y);
+                y += 8;
+                
+                if (signatureData) {
+                    doc.setDrawColor(200, 200, 200);
+                    doc.setFillColor(255, 255, 255);
+                    doc.rect(20, y, 80, 35, 'FD');
+                    doc.addImage(signatureData, 'PNG', 22, y + 2, 76, 31);
+                    y += 38;
+                    // Name in Druckbuchstaben
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(80, 80, 80);
+                    doc.text(employeeName.toUpperCase(), 60, y, { align: 'center' });
+                } else {
+                    doc.setDrawColor(150, 150, 150);
+                    doc.line(20, y + 20, 100, y + 20);
+                    y += 25;
+                    // Name in Druckbuchstaben
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(80, 80, 80);
+                    doc.text(employeeName.toUpperCase(), 60, y, { align: 'center' });
+                }
+                
+                // Footer
+                var pageCount = doc.internal.getNumberOfPages();
+                for (var p = 1; p <= pageCount; p++) {
+                    doc.setPage(p);
+                    doc.setFontSize(8);
+                    doc.setTextColor(150, 150, 150);
+                    doc.text('MBWD App - Seite ' + p + ' von ' + pageCount, 105, 290, { align: 'center' });
+                }
+                
+                // Download - use blob for iPad compatibility
+                var fileName = 'Ambulanzcheck_' + new Date().toISOString().split('T')[0] + '_' + employeeName.replace(/\s+/g, '_') + '.pdf';
+                
+                // Check if iOS
+                var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                if (isIOS) {
+                    // On iOS, open PDF in new tab
+                    var pdfBlob = doc.output('blob');
+                    var blobUrl = URL.createObjectURL(pdfBlob);
+                    window.open(blobUrl, '_blank');
+                } else {
+                    // On other devices, download directly
+                    doc.save(fileName);
+                }
+                
+            } catch(err) {
+                alert('PDF Fehler: ' + err.message);
+                console.error(err);
             }
-            
-            // Footer on all pages
-            const pageCount = doc.internal.getNumberOfPages();
-            for (let i = 1; i <= pageCount; i++) {
-                doc.setPage(i);
-                doc.setFontSize(8);
-                doc.setTextColor(150, 150, 150);
-                doc.text(`MBWD App - Seite ${i} von ${pageCount} - Erstellt: ${new Date().toLocaleString('de-DE')}`, 105, 290, { align: 'center' });
-            }
-            
-            // Save
-            const fileName = `Ambulanzcheck_${new Date().toISOString().split('T')[0]}_${employeeName.replace(/\s+/g, '_')}.pdf`;
-            doc.save(fileName);
         }
 
         // SUBMIT

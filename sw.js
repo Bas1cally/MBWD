@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mbwd-app-v1';
+const CACHE_NAME = 'mbwd-app-v4';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -17,12 +17,18 @@ self.addEventListener('install', event => {
 
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request)
+    fetch(event.request)
       .then(response => {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
+        // Clone and cache the response
+        const responseClone = response.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, responseClone);
+        });
+        return response;
+      })
+      .catch(() => {
+        // Fallback to cache if offline
+        return caches.match(event.request);
       })
   );
 });
@@ -39,4 +45,5 @@ self.addEventListener('activate', event => {
       );
     })
   );
+  self.clients.claim();
 });
