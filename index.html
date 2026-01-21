@@ -33,6 +33,8 @@
             --orange-glow: rgba(230, 126, 34, 0.3);
             --purple: #9b59b6;
             --purple-glow: rgba(155, 89, 182, 0.3);
+            --teal: #1abc9c;
+            --teal-glow: rgba(26, 188, 156, 0.3);
             --border: #333333;
             --radius: 12px;
             --radius-lg: 20px;
@@ -94,23 +96,27 @@
         .tile.blue::before { background: var(--blue); }
         .tile.orange::before { background: var(--orange); }
         .tile.purple::before { background: var(--purple); }
+        .tile.teal::before { background: var(--teal); }
         .tile:hover.red { border-color: var(--accent); box-shadow: 0 8px 32px var(--accent-glow); }
         .tile:hover.green { border-color: var(--success); box-shadow: 0 8px 32px var(--success-glow); }
         .tile:hover.blue { border-color: var(--blue); box-shadow: 0 8px 32px var(--blue-glow); }
         .tile:hover.orange { border-color: var(--orange); box-shadow: 0 8px 32px var(--orange-glow); }
         .tile:hover.purple { border-color: var(--purple); box-shadow: 0 8px 32px var(--purple-glow); }
+        .tile:hover.teal { border-color: var(--teal); box-shadow: 0 8px 32px var(--teal-glow); }
         .tile-icon { width: 56px; height: 56px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
         .tile.red .tile-icon { background: rgba(196, 30, 58, 0.2); }
         .tile.green .tile-icon { background: rgba(46, 204, 113, 0.2); }
         .tile.blue .tile-icon { background: rgba(52, 152, 219, 0.2); }
         .tile.orange .tile-icon { background: rgba(230, 126, 34, 0.2); }
         .tile.purple .tile-icon { background: rgba(155, 89, 182, 0.2); }
+        .tile.teal .tile-icon { background: rgba(26, 188, 156, 0.2); }
         .tile-icon svg { width: 28px; height: 28px; }
         .tile.red .tile-icon svg { fill: var(--accent); }
         .tile.green .tile-icon svg { fill: var(--success); }
         .tile.blue .tile-icon svg { fill: var(--blue); }
         .tile.orange .tile-icon svg { fill: var(--orange); }
         .tile.purple .tile-icon svg { fill: var(--purple); }
+        .tile.teal .tile-icon svg { fill: var(--teal); }
         .tile-title { font-size: 17px; font-weight: 600; margin-bottom: 4px; }
         .tile-desc { font-size: 13px; color: var(--text-muted); line-height: 1.4; }
         .tile.disabled { opacity: 0.5; cursor: not-allowed; }
@@ -217,6 +223,88 @@
         .expiry-add-btn { padding: 12px 20px; background: var(--orange); border: none; border-radius: var(--radius); color: white; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: var(--transition); }
         .expiry-add-btn:hover { background: #d35400; }
         .expiry-add-btn svg { width: 18px; height: 18px; fill: white; }
+
+        /* REINIGUNGSPLAN STYLES */
+        .reinigung-container { padding: 20px; max-width: 900px; margin: 0 auto; }
+        .reinigung-day { margin-bottom: 32px; }
+        .reinigung-day-header { display: flex; align-items: center; gap: 12px; padding: 16px 20px; background: linear-gradient(135deg, var(--teal) 0%, #148f77 100%); border-radius: var(--radius); margin-bottom: 16px; }
+        .reinigung-day-icon { width: 44px; height: 44px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        .reinigung-day-icon svg { width: 24px; height: 24px; fill: white; }
+        .reinigung-day-name { font-size: 20px; font-weight: 700; color: white; }
+        .reinigung-day-count { font-size: 13px; color: rgba(255,255,255,0.8); margin-left: auto; }
+        .reinigung-task { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 12px; overflow: hidden; transition: var(--transition); }
+        .reinigung-task:hover { border-color: var(--teal); }
+        .reinigung-task.completed { border-color: var(--success); }
+        .reinigung-task-header { display: flex; align-items: center; gap: 12px; padding: 16px; background: var(--bg-secondary); border-bottom: 1px solid var(--border); }
+        .reinigung-task.completed .reinigung-task-header { background: rgba(46, 204, 113, 0.1); }
+        .schicht-badge { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; }
+        .schicht-badge.si { background: rgba(52, 152, 219, 0.2); color: var(--blue); }
+        .schicht-badge.fi { background: rgba(230, 126, 34, 0.2); color: var(--orange); }
+        .schicht-badge.di { background: rgba(155, 89, 182, 0.2); color: var(--purple); }
+        .schicht-badge.dii { background: rgba(155, 89, 182, 0.2); color: var(--purple); }
+        .schicht-badge.sek { background: rgba(149, 165, 166, 0.2); color: #95a5a6; }
+        .schicht-badge.bgf { background: rgba(46, 204, 113, 0.2); color: var(--success); }
+        .reinigung-bereich { font-size: 16px; font-weight: 600; flex: 1; }
+        .reinigung-info-btn { width: 32px; height: 32px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); }
+        .reinigung-info-btn:hover { background: var(--teal); border-color: var(--teal); }
+        .reinigung-info-btn svg { width: 18px; height: 18px; fill: var(--text-secondary); }
+        .reinigung-info-btn:hover svg { fill: white; }
+        .reinigung-task-body { padding: 16px; }
+        .reinigung-umfang { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px; padding: 12px; background: var(--bg-input); border-radius: 8px; }
+        .reinigung-completion { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+        .reinigung-checkbox { width: 32px; height: 32px; border-radius: 8px; border: 2px solid var(--border); background: var(--bg-input); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: var(--transition); }
+        .reinigung-checkbox:hover { border-color: var(--teal); }
+        .reinigung-checkbox.checked { background: var(--success); border-color: var(--success); }
+        .reinigung-checkbox svg { width: 18px; height: 18px; fill: white; opacity: 0; }
+        .reinigung-checkbox.checked svg { opacity: 1; }
+        .reinigung-name-input { flex: 1; min-width: 150px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-family: inherit; font-size: 14px; color: var(--text-primary); }
+        .reinigung-name-input::placeholder { color: var(--text-muted); }
+        .reinigung-name-input:focus { outline: none; border-color: var(--teal); }
+        .reinigung-timestamp { font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; background: var(--bg-secondary); padding: 6px 10px; border-radius: 6px; white-space: nowrap; }
+        .reinigung-timestamp.active { background: rgba(46, 204, 113, 0.2); color: var(--success); }
+        .reinigung-no-sign { font-size: 12px; color: var(--text-muted); font-style: italic; padding: 8px 0; }
+        .reinigung-sign-btn { width: 100%; margin-top: 12px; padding: 12px 16px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: var(--transition); }
+        .reinigung-sign-btn:hover { background: var(--teal); border-color: var(--teal); }
+        .reinigung-sign-btn svg { width: 18px; height: 18px; fill: currentColor; }
+        .reinigung-sign-btn.completed { background: rgba(46, 204, 113, 0.2); border-color: var(--success); color: var(--success); pointer-events: none; }
+        .reinigung-done-info { margin-top: 12px; padding: 12px; background: rgba(46, 204, 113, 0.1); border: 1px solid var(--success); border-radius: 8px; }
+        .reinigung-done-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-bottom: 6px; }
+        .reinigung-done-row:last-child { margin-bottom: 0; }
+        .reinigung-done-label { color: var(--text-muted); }
+        .reinigung-done-value { color: var(--success); font-weight: 600; }
+        .reinigung-done-sig { margin-top: 8px; background: var(--bg-input); border-radius: 6px; padding: 4px; }
+        .reinigung-done-sig img { width: 100%; height: 50px; object-fit: contain; border-radius: 4px; }
+        .sign-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .sign-modal.active { display: flex; }
+        .sign-modal-content { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 450px; width: 100%; max-height: 90vh; overflow-y: auto; }
+        .sign-modal-header { padding: 20px; border-bottom: 1px solid var(--border); }
+        .sign-modal-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+        .sign-modal-subtitle { font-size: 14px; color: var(--text-muted); }
+        .sign-modal-body { padding: 20px; }
+        .sign-modal-task { background: var(--bg-input); border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+        .sign-modal-field { margin-bottom: 16px; }
+        .sign-modal-label { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; display: block; }
+        .sign-modal-input { width: 100%; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-family: inherit; font-size: 15px; color: var(--text-primary); }
+        .sign-modal-input:focus { outline: none; border-color: var(--teal); }
+        .sign-modal-canvas-wrap { background: var(--bg-input); border: 2px dashed var(--border); border-radius: 8px; position: relative; overflow: hidden; }
+        .sign-modal-canvas-wrap.has-signature { border-style: solid; border-color: var(--teal); }
+        .sign-modal-canvas { width: 100%; height: 120px; display: block; touch-action: none; cursor: crosshair; }
+        .sign-modal-canvas-placeholder { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--text-muted); font-size: 14px; pointer-events: none; }
+        .sign-modal-canvas-wrap.has-signature .sign-modal-canvas-placeholder { display: none; }
+        .sign-modal-canvas-clear { position: absolute; top: 8px; right: 8px; padding: 6px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; font-size: 12px; color: var(--text-muted); cursor: pointer; }
+        .sign-modal-footer { padding: 20px; border-top: 1px solid var(--border); display: flex; gap: 12px; }
+        .sign-modal-btn { flex: 1; padding: 14px; border-radius: 10px; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; border: none; transition: var(--transition); }
+        .sign-modal-btn svg { width: 18px; height: 18px; fill: currentColor; }
+        .sign-modal-btn.cancel { background: var(--bg-input); color: var(--text-secondary); }
+        .sign-modal-btn.confirm { background: var(--teal); color: white; }
+        .sign-modal-btn.confirm:disabled { opacity: 0.5; cursor: not-allowed; }
+        .info-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .info-modal.active { display: flex; }
+        .info-modal-content { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 400px; width: 100%; padding: 24px; }
+        .info-modal-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+        .info-modal-title svg { width: 24px; height: 24px; fill: var(--teal); }
+        .info-modal-text { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px; }
+        .info-modal-close { width: 100%; padding: 12px; background: var(--teal); border: none; border-radius: 8px; color: white; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; }
 
         /* SIGNATURE */
         .signature-section { margin: 32px 20px; max-width: 800px; margin-left: auto; margin-right: auto; }
@@ -363,6 +451,11 @@
                     <div class="tile-title">RTW Wochencheck</div>
                     <div class="tile-desc">Wöchentliche Fahrzeugprüfung</div>
                 </div>
+                <div class="tile teal" onclick="openApp('reinigungsplan')">
+                    <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M19.36 2.72L20.78 4.14l-1.08 1.08c.63.96.91 2.12.64 3.34-.38 1.72-1.8 3.04-3.55 3.31-1.13.18-2.18-.12-3.02-.72L8 16.91V19H6v-2.5l1.5-1.5 1.91-1.91-.85-.85L2 18.8V21h3v-1.69l1.42-1.42L12.5 13c-.6-.84-.9-1.89-.72-3.02.27-1.75 1.59-3.17 3.31-3.55 1.22-.27 2.38.01 3.34.64l1.08-1.08zM17.17 8.83l-2.34-2.34c-.39-.39-.39-1.02 0-1.41l1.41-1.41c.39-.39 1.02-.39 1.41 0l2.34 2.34c.39.39.39 1.02 0 1.41l-1.41 1.41c-.39.39-1.02.39-1.41 0z"/></svg></div>
+                    <div class="tile-title">Reinigungsplan</div>
+                    <div class="tile-desc">Wöchentlicher Reinigungsplan GZ</div>
+                </div>
                 <div class="tile green disabled">
                     <span class="tile-badge coming">Bald</span>
                     <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></div>
@@ -487,6 +580,67 @@
         <div class="submit-section"><button class="btn btn-primary" id="wochenSubmitBtn" disabled onclick="submitCheck('wochen')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>Check abschließen & speichern</button></div>
     </div>
 
+    <!-- REINIGUNGSPLAN -->
+    <div class="screen app-screen" id="reinigungsplanScreen">
+        <header class="app-header">
+            <div class="header-top">
+                <button class="back-btn" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+                <h1 class="header-title">Reinigungsplan</h1>
+                <div class="header-actions">
+                    <button class="header-btn" onclick="exportPDF('reinigung')" title="Als PDF exportieren"><svg viewBox="0 0 24 24"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg></button>
+                </div>
+            </div>
+            <div class="header-meta">
+                <span class="header-date" id="reinigungKW"></span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" id="reinigungProgressFill" style="width: 0%"></div></div>
+            <div class="progress-text"><span id="reinigungProgressCount">0</span> / <span id="reinigungTotalCount">0</span> erledigt</div>
+        </header>
+        <div class="reinigung-container" id="reinigungContainer"></div>
+        <div class="submit-section"><button class="btn btn-primary" id="reinigungSubmitBtn" disabled onclick="submitCheck('reinigung')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>Woche abschließen & speichern</button></div>
+    </div>
+
+    <!-- Info Modal -->
+    <div class="info-modal" id="infoModal">
+        <div class="info-modal-content">
+            <div class="info-modal-title"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>Reinigungsmittel</div>
+            <div class="info-modal-text" id="infoModalText"></div>
+            <button class="info-modal-close" onclick="closeInfoModal()">Verstanden</button>
+        </div>
+    </div>
+
+    <!-- Signatur Modal für Reinigungsplan -->
+    <div class="sign-modal" id="signModal">
+        <div class="sign-modal-content">
+            <div class="sign-modal-header">
+                <div class="sign-modal-title" id="signModalTitle">Aufgabe bestätigen</div>
+                <div class="sign-modal-subtitle" id="signModalSubtitle">Schicht: SI</div>
+            </div>
+            <div class="sign-modal-body">
+                <div class="sign-modal-task" id="signModalTask">Aufgabenbeschreibung...</div>
+                <div class="sign-modal-field">
+                    <label class="sign-modal-label">Name</label>
+                    <input type="text" class="sign-modal-input" id="signModalName" placeholder="Vollständiger Name..." oninput="validateSignModal()">
+                </div>
+                <div class="sign-modal-field">
+                    <label class="sign-modal-label">Unterschrift</label>
+                    <div class="sign-modal-canvas-wrap" id="signModalCanvasWrap">
+                        <canvas class="sign-modal-canvas" id="signModalCanvas"></canvas>
+                        <span class="sign-modal-canvas-placeholder">Hier unterschreiben</span>
+                        <button class="sign-modal-canvas-clear" onclick="clearSignModal()">Löschen</button>
+                    </div>
+                </div>
+            </div>
+            <div class="sign-modal-footer">
+                <button class="sign-modal-btn cancel" onclick="closeSignModal()">Abbrechen</button>
+                <button class="sign-modal-btn confirm" id="signModalConfirm" onclick="confirmSignModal()" disabled>
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+                    Bestätigen
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- ARCHIV -->
     <div class="screen app-screen" id="archivScreen">
         <header class="app-header">
@@ -516,6 +670,7 @@
         let currentUser = null, currentPin = '', checklistState = {}, commentsState = {}, signatureData = null, currentDetailId = null;
         let mpgChecklistState = {}, mpgCommentsState = {}, mpgSignatureData = null;
         let currentCheckType = 'ambulanz';
+        let reinigungState = {};
 
         // AMBULANZ CHECKLIST DATA
         const checklistData=[{id:'corpuls',title:'Corpuls 3',icon:`<svg viewBox="0 0 24 24"><path d="M19.5 6c-1.31 0-2.37 1.01-2.48 2.3-1.88-.5-2.84-.52-4.52.02C12.4 7.01 11.34 6 10.03 6 8.69 6 7.58 7.11 7.58 8.45c0 .65.26 1.24.68 1.68-2.21 1.87-2.62 4.29-2.62 6.37 0 1.1.9 2 2 2h8.72c1.1 0 2-.9 2-2 0-2.08-.41-4.5-2.62-6.37.42-.44.68-1.03.68-1.68C16.42 7.11 15.31 6 13.97 6z"/></svg>`,items:['EKG-Kabel (6- und 12-Kanal) + Rasierer','EKG-Elektroden > 12 Stück','corPatch-Elektroden Erwachsener','CPR-Feedback-Sensor','CO2-Sensor und 1 Küvette','NIBD-Manschette und Schlauch','SpO2-Sensor und Zwischenkabel','Druckerpapier im Druckerfach vorhanden','Testschock mit 200J + Kontrolle Stromabgabe','Ladekonsole (Laden aktiv)','Kommunikation zwischen den Modulen','Batteriestatus der Module','Gerät einschalten (Selbsttest)']},{id:'absaugpumpe',title:'Elektrische Absaugpumpe',icon:`<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>`,items:['Funktion','Pumpe hält Sog bei erreichtem Vakuum','Absaugkatheter (je 2x) + Schlauch & Fingertip','Pumpe lädt in Halterung']},{id:'notfallzimmer',title:'Notfallzimmer',icon:`<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/></svg>`,items:['O2-Flaschendruck >50bar (10L)','Rucksack Rot vorhanden','EKG-Rechner eingeschaltet','Rucksack Gelb vorhanden','OP-Leuchte Funktion','Gelb: O2>80bar, Laryngoskop Funktion','Infusionsständer mit 2x Infusion + Besteck','Zentrifuge Funktion / Blut kühlen','Kühl- und Gefrierschrank Funktion','SicSac in Spender >5 Stück']},{id:'ambulanz1',title:'Ambulanz 1',icon:`<svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm6 11h-3v3h-2v-3H8v-2h3v-3h2v3h3v2z"/></svg>`,items:['OP-Leuchte Funktion','Ambulanzwagen sauber, befüllt','Spaltlampe Funktion','Otoskop Funktion','Kryo-Fos Funktion/Akku/Ladung','Augenspülflasche in Spiegelschrank']},{id:'ambulanz2',title:'Ambulanz 2',icon:`<svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm6 11h-3v3h-2v-3H8v-2h3v-3h2v3h3v2z"/></svg>`,items:['OP-Leuchte Funktion','Ambulanzwagen sauber, befüllt','Desinfektionsbad leer','Otoskop Funktion','Kryo-Fos Funktion/Akku/Ladung']},{id:'ruheraum',title:'Ruheraum',icon:`<svg viewBox="0 0 24 24"><path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V7H1v10h22v-6c0-2.21-1.79-4-4-4z"/></svg>`,items:['Liegen sauber / Decken vorhanden','SicSac in Spender >5 Stück']},{id:'physio',title:'Physikalische Therapie',icon:`<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`,items:['Liegen sauber / Ärztekrepp vorhanden','Reizstromgerät Funktion/Sauberkeit','Rotlicht vorne Funktion/Sauberkeit','Rotlicht mittig Funktion/Sauberkeit','SicSac in Spender >5 Stück','Elacur + Voltaren vorhanden','Schwämme abkochen']},{id:'aufenthalt',title:'Aufenthaltsraum',icon:`<svg viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>`,items:['Schalter "Patientenklingel" eingeschaltet','Schwesternruf grüne Leuchte an']},{id:'sonntag',title:'Nur Sonntag',icon:`<svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>`,items:['Notruftelefon Funktion überprüft','Dokumente Leitstelle abholen'],isSunday:true}];
@@ -551,6 +706,28 @@
                 {text:'Check mit Verfall durchgeführt?'}
             ],isLastWeek:true}
         ];
+
+        // REINIGUNGSPLAN DATA
+        const reinigungsPlanData = {
+            montag: [
+                { schicht: 'SI', bereich: 'Ruheraum', umfang: 'Liege, Schränke, Tabletts', womit: 'Mikrobac Tissues\nEinwirkzeit 1-5 Minuten' },
+                { schicht: 'SI', bereich: 'EKG/Notfall', umfang: 'Komplettes Inventar\nEKG Saugelektroden umstülpen und von innen Desinfizieren!', womit: 'Mikrobac Tissues\nEinwirkzeit 1-5 Minuten' }
+            ],
+            mittwoch: [
+                { schicht: 'SI', bereich: 'Physikalische Therapie', umfang: 'Liege, Schränke, Tabletts', womit: 'Mikrobac Tissues\nEinwirkzeit 1-5 Minuten' }
+            ],
+            donnerstag: [
+                { schicht: 'FI', bereich: 'Ambulanz 2', umfang: 'Schreibtisch, Stühle, alle Oberflächen, Behandlungsplatz mit allen Tabletts', womit: 'Mikrobac Tissues\nEinwirkzeit 1-5 Minuten', hinweis: 'FII wenn anwesend' },
+                { schicht: 'DI', bereich: 'Diagnostik 1', umfang: 'Schreibtisch, Liege, Geräte, alle Oberflächen', womit: 'Mikrobac Tissues\nEinwirkzeit 1-5 Minuten' },
+                { schicht: 'DII', bereich: 'Diagnostik 2', umfang: 'Schreibtisch, Liege, Geräte, alle Oberflächen', womit: 'Mikrobac Tissues\nEinwirkzeit 1-5 Minuten' }
+            ],
+            freitag: [
+                { schicht: 'SI', bereich: 'Ambulanz 1 + Toilette Diagnostik', umfang: 'Schreibtisch, Stühle, alle Oberflächen, Behandlungsplatz mit allen Tabletts, Ablageschale, Ablage vom Tisch, Schlitten Urisys', womit: 'Mikrobac Tissues\nEinwirkzeit 1-5 Minuten' },
+                { schicht: 'Sek.', bereich: 'Wartezone', umfang: 'Auf Sauberkeit und Ordnung achten.\nBlumen gießen.\nGläser Ablage reinigen und Gläser wechseln', womit: 'Mikrobac Tissues\nEinwirkzeit 1-5 Minuten\nOder Schonreiniger', noSign: true },
+                { schicht: 'BGF', bereich: 'Besprechungszimmer', umfang: 'Auf Sauberkeit und Ordnung achten.', womit: '', noSign: true },
+                { schicht: 'SI', bereich: 'Ambulanz 2 - Desinfektion', umfang: 'Desinfektionslösung Ansetzen und Gegenstände einlegen.\nNach 60 Min. Einwirkzeit gründlich mit kaltem Wasser abspülen.', womit: '0,5% Lösung lt. Plan\nEinwirkzeit 60 Min.\ngigasept® Instru AF' }
+            ]
+        };
 
         // SCREENS
         function showScreen(name) { 
@@ -595,6 +772,7 @@
             if (app === 'ambulanzcheck') { currentCheckType = 'ambulanz'; initAmbulanzcheck(); showScreen('ambulanzcheck'); }
             else if (app === 'mpgcheck') { currentCheckType = 'mpg'; initMpgCheck(); showScreen('mpgcheck'); }
             else if (app === 'wochencheck') { currentCheckType = 'wochen'; initWochenCheck(); showScreen('wochencheck'); }
+            else if (app === 'reinigungsplan') { currentCheckType = 'reinigung'; initReinigungsplan(); showScreen('reinigungsplan'); }
             else if (app === 'archiv') { loadArchive(); showScreen('archiv'); }
         }
 
@@ -1160,6 +1338,10 @@
                     docId = '054_CL_Wöchentlicher_RTW_Check_1-83-1';
                     pdfTitle = 'Wöchentlicher RTW Check';
                     headerColor = [230, 126, 34];
+                } else if (type === 'reinigung') {
+                    // Special PDF export for Reinigungsplan
+                    exportReinigungPDF();
+                    return;
                 }
                 
                 const { jsPDF } = window.jspdf;
@@ -1428,6 +1610,67 @@
                 storageKey = 'wochencheck_archive';
                 checkTitle = 'RTW Wochencheck';
                 progressCountId = 'wochenProgressCount';
+            } else if (type === 'reinigung') {
+                // Special handling for Reinigungsplan
+                btn = document.getElementById('reinigungSubmitBtn');
+                btn.disabled = true;
+                btn.innerHTML = '<svg class="spinner" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z"/></svg> Speichern...';
+                
+                var now = new Date(), ds = now.toISOString().split('T')[0], ts = now.toLocaleTimeString('de-DE');
+                var kw = getWeekNumber(now);
+                
+                // Build reinigung results
+                var reinigungResults = {};
+                Object.entries(reinigungsPlanData).forEach(function([day, tasks]) {
+                    reinigungResults[day] = [];
+                    tasks.forEach(function(task, idx) {
+                        var taskId = day + '-' + idx;
+                        var state = reinigungState[taskId] || {};
+                        reinigungResults[day].push({
+                            schicht: task.schicht,
+                            bereich: task.bereich,
+                            umfang: task.umfang,
+                            noSign: task.noSign || false,
+                            checked: state.checked || false,
+                            name: state.name || '',
+                            timestamp: state.timestamp || '',
+                            signature: state.signature || null
+                        });
+                    });
+                });
+                
+                var data = {
+                    id: Date.now(),
+                    type: 'reinigung',
+                    meta: {
+                        datum: ds,
+                        uhrzeit: ts,
+                        mitarbeiter: 'Siehe Einträge',
+                        user: currentUser.name,
+                        standort: 'Mercedes-Benz Rastatt',
+                        kw: kw
+                    },
+                    reinigung: reinigungResults
+                    // Keine globale Unterschrift - jede Aufgabe hat ihre eigene
+                };
+                
+                try {
+                    var archive = JSON.parse(localStorage.getItem('reinigung_archive') || '[]');
+                    archive.unshift(data);
+                    if (archive.length > 100) archive = archive.slice(0, 100);
+                    localStorage.setItem('reinigung_archive', JSON.stringify(archive));
+                    
+                    document.getElementById('successDate').textContent = 'KW ' + kw + ' / ' + ds;
+                    document.getElementById('successEmployee').textContent = 'Siehe Einzeleinträge';
+                    document.getElementById('successItems').textContent = document.getElementById('reinigungProgressCount').textContent;
+                    document.querySelector('.success-message').textContent = 'Der Reinigungsplan wurde erfolgreich abgeschlossen.';
+                    showScreen('success');
+                } catch (e) {
+                    alert('Fehler beim Speichern: ' + e.message);
+                    btn.disabled = false;
+                    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>Woche abschließen & speichern';
+                }
+                return;
             }
             
             btn.disabled = true; 
@@ -1481,6 +1724,407 @@
             }
         }
 
+        // REINIGUNGSPLAN
+        function initReinigungsplan() {
+            reinigungState = {};
+            const kw = getWeekNumber(new Date());
+            document.getElementById('reinigungKW').textContent = 'KW ' + kw;
+            
+            // Count total tasks (excluding noSign)
+            let total = 0;
+            Object.values(reinigungsPlanData).forEach(tasks => {
+                tasks.forEach(task => { if (!task.noSign) total++; });
+            });
+            document.getElementById('reinigungTotalCount').textContent = total;
+            
+            renderReinigungsplan();
+            updateReinigungProgress();
+        }
+        
+        function renderReinigungsplan() {
+            const container = document.getElementById('reinigungContainer');
+            const dayNames = { montag: 'Montag', dienstag: 'Dienstag', mittwoch: 'Mittwoch', donnerstag: 'Donnerstag', freitag: 'Freitag' };
+            const dayIcon = '<svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>';
+            
+            let html = '';
+            Object.entries(reinigungsPlanData).forEach(([day, tasks]) => {
+                const taskCount = tasks.filter(t => !t.noSign).length;
+                html += `<div class="reinigung-day">
+                    <div class="reinigung-day-header">
+                        <div class="reinigung-day-icon">${dayIcon}</div>
+                        <div class="reinigung-day-name">${dayNames[day]}</div>
+                        <div class="reinigung-day-count">${taskCount} Aufgaben</div>
+                    </div>`;
+                
+                tasks.forEach((task, idx) => {
+                    const taskId = `${day}-${idx}`;
+                    const schichtClass = task.schicht.toLowerCase().replace('.', '').replace(' ', '');
+                    const hasWomit = task.womit && task.womit.trim() !== '';
+                    const state = reinigungState[taskId];
+                    const isCompleted = state && state.checked && state.name && state.signature;
+                    
+                    html += `<div class="reinigung-task ${isCompleted ? 'completed' : ''}" id="task-${taskId}">
+                        <div class="reinigung-task-header">
+                            <span class="schicht-badge ${schichtClass}">${task.schicht}</span>
+                            <span class="reinigung-bereich">${task.bereich}</span>
+                            ${hasWomit ? `<button class="reinigung-info-btn" onclick="showInfoModal('${encodeURIComponent(task.womit)}')" title="Reinigungsmittel"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></button>` : ''}
+                        </div>
+                        <div class="reinigung-task-body">
+                            <div class="reinigung-umfang">${task.umfang.replace(/\n/g, '<br>')}</div>
+                            ${task.hinweis ? `<div style="font-size:12px;color:var(--orange);margin-bottom:12px;">* ${task.hinweis}</div>` : ''}
+                            ${task.noSign ? `<div class="reinigung-no-sign">Keine Dokumentation erforderlich</div>` : 
+                                (isCompleted ? `
+                                    <div class="reinigung-done-info">
+                                        <div class="reinigung-done-row">
+                                            <span class="reinigung-done-label">Name:</span>
+                                            <span class="reinigung-done-value">${state.name}</span>
+                                        </div>
+                                        <div class="reinigung-done-row">
+                                            <span class="reinigung-done-label">Zeit:</span>
+                                            <span class="reinigung-done-value">${state.timestamp}</span>
+                                        </div>
+                                        <div class="reinigung-done-sig">
+                                            <img src="${state.signature}" alt="Unterschrift">
+                                        </div>
+                                    </div>
+                                ` : `
+                                    <button class="reinigung-sign-btn" onclick="openSignModal('${taskId}')">
+                                        <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                                        Erledigt + Unterschreiben
+                                    </button>
+                                `)
+                            }
+                        </div>
+                    </div>`;
+                });
+                html += '</div>';
+            });
+            container.innerHTML = html;
+        }
+        
+        // Sign Modal State
+        var currentSignTaskId = null;
+        var signModalSignature = null;
+        
+        function openSignModal(taskId) {
+            currentSignTaskId = taskId;
+            signModalSignature = null;
+            
+            // Find task data
+            const parts = taskId.split('-');
+            const day = parts[0];
+            const idx = parseInt(parts[1]);
+            const task = reinigungsPlanData[day][idx];
+            const dayNames = { montag: 'Montag', dienstag: 'Dienstag', mittwoch: 'Mittwoch', donnerstag: 'Donnerstag', freitag: 'Freitag' };
+            
+            // Populate modal
+            document.getElementById('signModalTitle').textContent = task.bereich;
+            document.getElementById('signModalSubtitle').textContent = dayNames[day] + ' • Schicht: ' + task.schicht;
+            document.getElementById('signModalTask').innerHTML = task.umfang.replace(/\n/g, '<br>');
+            document.getElementById('signModalName').value = '';
+            document.getElementById('signModalConfirm').disabled = true;
+            document.getElementById('signModalCanvasWrap').classList.remove('has-signature');
+            
+            // Show modal
+            document.getElementById('signModal').classList.add('active');
+            
+            // Setup canvas after modal is visible
+            setTimeout(setupSignModalCanvas, 100);
+            
+            // Focus name input
+            setTimeout(() => document.getElementById('signModalName').focus(), 200);
+        }
+        
+        function closeSignModal() {
+            document.getElementById('signModal').classList.remove('active');
+            currentSignTaskId = null;
+            signModalSignature = null;
+        }
+        
+        function setupSignModalCanvas() {
+            const canvas = document.getElementById('signModalCanvas');
+            const container = document.getElementById('signModalCanvasWrap');
+            if (!canvas || !container) return;
+            
+            const ctx = canvas.getContext('2d');
+            const rect = container.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = 120;
+            ctx.fillStyle = '#2a2a2a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            let drawing = false;
+            
+            function getPos(e) {
+                const r = canvas.getBoundingClientRect();
+                const t = e.touches ? e.touches[0] : e;
+                return { x: t.clientX - r.left, y: t.clientY - r.top };
+            }
+            
+            function startDraw(e) {
+                drawing = true;
+                ctx.beginPath();
+                const p = getPos(e);
+                ctx.moveTo(p.x, p.y);
+            }
+            
+            function doDraw(e) {
+                if (!drawing) return;
+                const p = getPos(e);
+                ctx.lineTo(p.x, p.y);
+                ctx.stroke();
+                container.classList.add('has-signature');
+            }
+            
+            function endDraw() {
+                if (drawing) {
+                    drawing = false;
+                    signModalSignature = canvas.toDataURL();
+                    validateSignModal();
+                }
+            }
+            
+            // Remove old listeners by cloning
+            const newCanvas = canvas.cloneNode(true);
+            canvas.parentNode.replaceChild(newCanvas, canvas);
+            
+            // Re-setup context on new canvas
+            const newCtx = newCanvas.getContext('2d');
+            newCtx.fillStyle = '#2a2a2a';
+            newCtx.fillRect(0, 0, newCanvas.width, newCanvas.height);
+            newCtx.strokeStyle = '#ffffff';
+            newCtx.lineWidth = 2;
+            newCtx.lineCap = 'round';
+            newCtx.lineJoin = 'round';
+            
+            newCanvas.addEventListener('mousedown', startDraw);
+            newCanvas.addEventListener('mousemove', doDraw);
+            newCanvas.addEventListener('mouseup', endDraw);
+            newCanvas.addEventListener('mouseleave', endDraw);
+            newCanvas.addEventListener('touchstart', e => { e.preventDefault(); startDraw(e); }, { passive: false });
+            newCanvas.addEventListener('touchmove', e => { e.preventDefault(); doDraw(e); }, { passive: false });
+            newCanvas.addEventListener('touchend', endDraw);
+        }
+        
+        function clearSignModal() {
+            const canvas = document.getElementById('signModalCanvas');
+            const container = document.getElementById('signModalCanvasWrap');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#2a2a2a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            container.classList.remove('has-signature');
+            signModalSignature = null;
+            validateSignModal();
+        }
+        
+        function validateSignModal() {
+            const name = document.getElementById('signModalName').value.trim();
+            const hasSignature = signModalSignature !== null;
+            document.getElementById('signModalConfirm').disabled = !(name && hasSignature);
+        }
+        
+        function confirmSignModal() {
+            if (!currentSignTaskId) return;
+            
+            const name = document.getElementById('signModalName').value.trim();
+            if (!name || !signModalSignature) return;
+            
+            const now = new Date();
+            const timestamp = now.toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+            
+            // Save to state
+            reinigungState[currentSignTaskId] = {
+                checked: true,
+                name: name,
+                timestamp: timestamp,
+                signature: signModalSignature
+            };
+            
+            // Close modal and re-render
+            closeSignModal();
+            renderReinigungsplan();
+            updateReinigungProgress();
+            validateReinigungForm();
+        }
+        
+        function updateReinigungProgress() {
+            let checked = 0, total = 0;
+            Object.entries(reinigungsPlanData).forEach(([day, tasks]) => {
+                tasks.forEach((task, idx) => {
+                    if (!task.noSign) {
+                        total++;
+                        const taskId = `${day}-${idx}`;
+                        if (reinigungState[taskId] && reinigungState[taskId].checked && reinigungState[taskId].name && reinigungState[taskId].signature) {
+                            checked++;
+                        }
+                    }
+                });
+            });
+            const pct = total > 0 ? Math.round((checked / total) * 100) : 0;
+            document.getElementById('reinigungProgressFill').style.width = pct + '%';
+            document.getElementById('reinigungProgressCount').textContent = checked;
+        }
+        
+        function validateReinigungForm() {
+            let allComplete = true;
+            Object.entries(reinigungsPlanData).forEach(([day, tasks]) => {
+                tasks.forEach((task, idx) => {
+                    if (!task.noSign) {
+                        const taskId = `${day}-${idx}`;
+                        if (!reinigungState[taskId] || !reinigungState[taskId].checked || !reinigungState[taskId].name || !reinigungState[taskId].signature) {
+                            allComplete = false;
+                        }
+                    }
+                });
+            });
+            document.getElementById('reinigungSubmitBtn').disabled = !allComplete;
+        }
+        
+        function showInfoModal(womitEncoded) {
+            const womit = decodeURIComponent(womitEncoded);
+            document.getElementById('infoModalText').innerHTML = womit.replace(/\n/g, '<br>');
+            document.getElementById('infoModal').classList.add('active');
+        }
+        
+        function closeInfoModal() {
+            document.getElementById('infoModal').classList.remove('active');
+        }
+        
+        function exportReinigungPDF() {
+            try {
+                if (!window.jspdf) {
+                    alert('PDF Bibliothek nicht geladen. Bitte Seite neu laden.');
+                    return;
+                }
+                
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                const now = new Date();
+                const kw = getWeekNumber(now);
+                const dateStr = now.toLocaleDateString('de-DE');
+                const dayNames = { montag: 'Montag', dienstag: 'Dienstag', mittwoch: 'Mittwoch', donnerstag: 'Donnerstag', freitag: 'Freitag' };
+                
+                let y = 20;
+                
+                // Header
+                doc.setFontSize(8);
+                doc.setTextColor(120, 120, 120);
+                doc.text('054_FB_Wöchentlicher_Reinigungsplan', 195, 10, { align: 'right' });
+                
+                doc.setFillColor(26, 188, 156);
+                doc.rect(0, 15, 210, 30, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(20);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Wöchentlicher Reinigungsplan', 105, 30, { align: 'center' });
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.text('Gesundheitszentrum Mercedes-Benz Rastatt', 105, 40, { align: 'center' });
+                
+                y = 55;
+                
+                // Meta info
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'bold');
+                doc.text('KW:', 20, y);
+                doc.setFont('helvetica', 'normal');
+                doc.text(kw.toString(), 35, y);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Erstellt:', 100, y);
+                doc.setFont('helvetica', 'normal');
+                doc.text(dateStr, 125, y);
+                
+                y += 12;
+                
+                // Content by day
+                Object.entries(reinigungsPlanData).forEach(function([day, tasks]) {
+                    if (y > 250) {
+                        doc.addPage();
+                        y = 25;
+                        doc.setFontSize(8);
+                        doc.setTextColor(120, 120, 120);
+                        doc.text('054_FB_Wöchentlicher_Reinigungsplan', 195, 10, { align: 'right' });
+                        doc.setFillColor(26, 188, 156);
+                        doc.rect(0, 12, 210, 8, 'F');
+                    }
+                    
+                    // Day header
+                    doc.setFillColor(26, 188, 156);
+                    doc.rect(15, y - 4, 180, 8, 'F');
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(11);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(dayNames[day] || day, 20, y + 1);
+                    y += 10;
+                    
+                    tasks.forEach(function(task, idx) {
+                        if (y > 250) {
+                            doc.addPage();
+                            y = 25;
+                        }
+                        
+                        var taskId = day + '-' + idx;
+                        var state = reinigungState[taskId] || {};
+                        var checked = state.checked ? '✓' : (task.noSign ? '-' : '○');
+                        
+                        doc.setTextColor(0, 0, 0);
+                        doc.setFontSize(9);
+                        doc.setFont('helvetica', 'bold');
+                        doc.text(checked + '  [' + task.schicht + '] ' + task.bereich, 20, y);
+                        doc.setFont('helvetica', 'normal');
+                        y += 5;
+                        
+                        // Umfang (first line only)
+                        doc.setTextColor(80, 80, 80);
+                        doc.setFontSize(8);
+                        var umfangLine = task.umfang.split('\n')[0];
+                        if (umfangLine.length > 80) umfangLine = umfangLine.substring(0, 80) + '...';
+                        doc.text(umfangLine, 25, y);
+                        y += 4;
+                        
+                        if (!task.noSign && state.name) {
+                            doc.setTextColor(60, 60, 60);
+                            doc.text('Name: ' + state.name + '  |  ' + (state.timestamp || ''), 25, y);
+                            y += 4;
+                            
+                            // Individual signature
+                            if (state.signature) {
+                                try {
+                                    doc.addImage(state.signature, 'PNG', 25, y, 40, 15);
+                                    y += 18;
+                                } catch (sigErr) {
+                                    console.warn('Signatur konnte nicht geladen werden:', sigErr);
+                                }
+                            }
+                        }
+                        y += 3;
+                    });
+                    y += 5;
+                });
+                
+                // Footer
+                var pageCount = doc.internal.getNumberOfPages();
+                for (var i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(8);
+                    doc.setTextColor(120, 120, 120);
+                    doc.text('Seite ' + i + ' von ' + pageCount, 105, 290, { align: 'center' });
+                }
+                
+                doc.save('Reinigungsplan_KW' + kw + '_' + dateStr.replace(/\./g, '-') + '.pdf');
+            } catch (e) {
+                console.error('PDF Export Error:', e);
+                alert('Fehler beim PDF Export: ' + e.message);
+            }
+        }
+
         // ARCHIVE
         function loadArchive() {
             const c = document.getElementById('archiveContainer');
@@ -1490,7 +2134,8 @@
                 const ambulanzArchive = JSON.parse(localStorage.getItem('ambulanzcheck_archive') || '[]').map(x => ({...x, type: 'ambulanz'}));
                 const mpgArchive = JSON.parse(localStorage.getItem('mpgcheck_archive') || '[]').map(x => ({...x, type: 'mpg'}));
                 const wochenArchive = JSON.parse(localStorage.getItem('wochencheck_archive') || '[]').map(x => ({...x, type: 'wochen'}));
-                const archive = [...ambulanzArchive, ...mpgArchive, ...wochenArchive].sort((a, b) => b.id - a.id);
+                const reinigungArchive = JSON.parse(localStorage.getItem('reinigung_archive') || '[]').map(x => ({...x, type: 'reinigung'}));
+                const archive = [...ambulanzArchive, ...mpgArchive, ...wochenArchive, ...reinigungArchive].sort((a, b) => b.id - a.id);
                 
                 if (!archive.length) { 
                     c.innerHTML = '<div class="archive-empty"><div class="archive-empty-icon"><svg viewBox="0 0 24 24"><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27z"/></svg></div><p class="archive-empty-text">Noch keine Checks gespeichert.</p></div>'; 
@@ -1512,6 +2157,9 @@
                     } else if (x.type === 'wochen') {
                         badgeColor = '#e67e22';
                         typeName = 'Woche' + (kw ? ' KW' + kw : '');
+                    } else if (x.type === 'reinigung') {
+                        badgeColor = '#1abc9c';
+                        typeName = 'Reinigung KW' + (kw || '');
                     }
                     return `<div class="archive-item" onclick="showCheckDetail(${x.id}, '${x.type}')">
                         <div class="archive-item-header">
@@ -1540,6 +2188,8 @@
                     storageKey = 'mpgcheck_archive';
                 } else if (currentArchiveType === 'wochen') {
                     storageKey = 'wochencheck_archive';
+                } else if (currentArchiveType === 'reinigung') {
+                    storageKey = 'reinigung_archive';
                 }
                 const archive = JSON.parse(localStorage.getItem(storageKey) || '[]');
                 const c = archive.find(x => x.id === id);
@@ -1553,25 +2203,52 @@
                     typeName = 'MPG-Check RTW';
                 } else if (currentArchiveType === 'wochen') {
                     typeName = 'RTW Wochencheck';
+                } else if (currentArchiveType === 'reinigung') {
+                    typeName = 'Reinigungsplan';
                 }
-                const dateDisplay = currentArchiveType === 'wochen' && c.meta.kw ? `KW ${c.meta.kw} (${c.meta.datum})` : c.meta.datum;
+                const dateDisplay = (currentArchiveType === 'wochen' || currentArchiveType === 'reinigung') && c.meta.kw ? `KW ${c.meta.kw} (${c.meta.datum})` : c.meta.datum;
                 document.getElementById('detailTitle').textContent = `${typeName} vom ${dateDisplay}`;
-                document.getElementById('detailSubtitle').textContent = `${c.meta.mitarbeiter || ''} • ${c.meta.uhrzeit}`;
+                document.getElementById('detailSubtitle').textContent = `${c.meta.mitarbeiter || 'Siehe Einträge'} • ${c.meta.uhrzeit}`;
                 
                 // Show delete button only for admin
                 document.getElementById('deleteCheckBtn').style.display = currentUser && currentUser.role === 'admin' ? 'flex' : 'none';
                 
-                let h = ''; 
-                Object.entries(c.checkliste).forEach(([sec, items]) => { 
-                    h += `<div class="detail-section"><div class="detail-section-title">${sec}</div>`; 
-                    Object.entries(items).forEach(([it, val]) => { 
-                        const isNewFormat = typeof val === 'object';
-                        const status = isNewFormat ? val.checked : val;
-                        const comment = isNewFormat ? val.comment : '';
-                        h += `<div class="detail-item"><span class="detail-item-label">${it}${comment ? `<br><small style="color:var(--text-muted);font-style:italic;">→ ${comment}</small>` : ''}</span><span class="detail-item-value ${status === '✓' ? 'success' : ''}">${status}</span></div>`; 
-                    }); 
-                    h += '</div>'; 
-                });
+                let h = '';
+                
+                if (currentArchiveType === 'reinigung' && c.reinigung) {
+                    // Special rendering for Reinigungsplan
+                    const dayNames = { montag: 'Montag', dienstag: 'Dienstag', mittwoch: 'Mittwoch', donnerstag: 'Donnerstag', freitag: 'Freitag' };
+                    Object.entries(c.reinigung).forEach(([day, tasks]) => {
+                        h += `<div class="detail-section"><div class="detail-section-title">${dayNames[day] || day}</div>`;
+                        tasks.forEach(task => {
+                            if (task.noSign) {
+                                h += `<div class="detail-item"><span class="detail-item-label">[${task.schicht}] ${task.bereich}<br><small style="color:var(--text-muted);">${task.umfang.substring(0, 50)}...</small></span><span class="detail-item-value" style="color:var(--text-muted);">-</span></div>`;
+                            } else {
+                                const status = task.checked ? '✓' : '✗';
+                                h += `<div class="detail-item" style="flex-direction:column;align-items:stretch;">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                                        <span class="detail-item-label">[${task.schicht}] ${task.bereich}</span>
+                                        <span class="detail-item-value ${task.checked ? 'success' : ''}">${status}</span>
+                                    </div>
+                                    <small style="color:var(--text-muted);margin-top:4px;">${task.name || 'Kein Name'} • ${task.timestamp || '--:--'}</small>
+                                    ${task.signature ? `<div style="margin-top:8px;background:var(--bg-input);border-radius:6px;padding:4px;"><img src="${task.signature}" style="width:100%;height:40px;object-fit:contain;" alt="Unterschrift"></div>` : ''}
+                                </div>`;
+                            }
+                        });
+                        h += '</div>';
+                    });
+                } else if (c.checkliste) {
+                    Object.entries(c.checkliste).forEach(([sec, items]) => { 
+                        h += `<div class="detail-section"><div class="detail-section-title">${sec}</div>`; 
+                        Object.entries(items).forEach(([it, val]) => { 
+                            const isNewFormat = typeof val === 'object';
+                            const status = isNewFormat ? val.checked : val;
+                            const comment = isNewFormat ? val.comment : '';
+                            h += `<div class="detail-item"><span class="detail-item-label">${it}${comment ? `<br><small style="color:var(--text-muted);font-style:italic;">→ ${comment}</small>` : ''}</span><span class="detail-item-value ${status === '✓' ? 'success' : ''}">${status}</span></div>`; 
+                        }); 
+                        h += '</div>'; 
+                    });
+                }
                 
                 if (c.unterschrift) h += `<div class="detail-section"><div class="detail-section-title">Unterschrift</div><div class="detail-signature"><img src="${c.unterschrift}" alt=""></div></div>`;
                 
@@ -1590,6 +2267,8 @@
                     storageKey = 'mpgcheck_archive';
                 } else if (currentArchiveType === 'wochen') {
                     storageKey = 'wochencheck_archive';
+                } else if (currentArchiveType === 'reinigung') {
+                    storageKey = 'reinigung_archive';
                 }
                 let archive = JSON.parse(localStorage.getItem(storageKey) || '[]');
                 archive = archive.filter(x => x.id !== currentDetailId);
@@ -1601,9 +2280,15 @@
 
         // INIT
         function initApp() {
-            // Setup modal close handler
+            // Setup modal close handlers
             document.getElementById('detailModal').addEventListener('click', e => { 
                 if (e.target.id === 'detailModal') e.target.classList.remove('active'); 
+            });
+            document.getElementById('infoModal').addEventListener('click', e => { 
+                if (e.target.id === 'infoModal') e.target.classList.remove('active'); 
+            });
+            document.getElementById('signModal').addEventListener('click', e => { 
+                if (e.target.id === 'signModal') closeSignModal(); 
             });
             
             // Register service worker
