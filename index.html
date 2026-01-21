@@ -3010,8 +3010,25 @@
                         var key = s.id + '-' + i;
                         var itemText = typeof it === 'object' ? it.text : it;
                         var checked = theChecklistState[key];
-                        doc.text(checked ? '☑' : '☐', 17, y);
-                        doc.text(itemText.substring(0, 80), 25, y);
+                        
+                        // Graphische Checkbox
+                        if (checked) {
+                            doc.setFillColor(46, 204, 113);
+                            doc.rect(17, y - 3, 4, 4, 'F');
+                            doc.setDrawColor(255, 255, 255);
+                            doc.setLineWidth(0.5);
+                            doc.line(18, y - 0.8, 19, y + 0.3);
+                            doc.line(19, y + 0.3, 20.5, y - 2.2);
+                        } else {
+                            doc.setDrawColor(150, 150, 150);
+                            doc.setFillColor(245, 245, 245);
+                            doc.rect(17, y - 3, 4, 4, 'FD');
+                        }
+                        doc.setDrawColor(0, 0, 0);
+                        doc.setLineWidth(0.1);
+                        doc.setTextColor(0, 0, 0);
+                        
+                        doc.text(itemText.substring(0, 75), 24, y);
                         y += 6;
                     });
                     y += 5;
