@@ -341,6 +341,21 @@
         .submit-section { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(13, 13, 13, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border); padding: 16px 20px; padding-bottom: max(16px, env(safe-area-inset-bottom)); }
         .submit-section .btn-primary { max-width: 800px; margin: 0 auto; }
 
+        /* AUDIT-LOG */
+        .audit-container { padding: 20px; max-width: 800px; margin: 0 auto; }
+        .audit-entry { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; }
+        .audit-entry-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+        .audit-entry-action { font-weight: 700; font-size: 14px; color: var(--text-primary); }
+        .audit-entry-time { font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+        .audit-entry-user { font-size: 13px; color: var(--accent); margin-bottom: 4px; }
+        .audit-entry-details { font-size: 13px; color: var(--text-secondary); }
+        .audit-empty { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+        .audit-entry.delete { border-left: 3px solid #e74c3c; }
+        .audit-entry.login { border-left: 3px solid #27ae60; }
+        .audit-entry.logout { border-left: 3px solid #f39c12; }
+        .audit-entry.create { border-left: 3px solid #3498db; }
+        .audit-entry.export { border-left: 3px solid #9b59b6; }
+
         /* BENUTZERVERWALTUNG */
         .benutzer-container { padding: 20px; max-width: 600px; margin: 0 auto; }
         .benutzer-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 20px; }
@@ -500,6 +515,7 @@
             <div class="tiles-section-title" id="adminSection" style="display:none;">Administration</div>
             <div class="tiles-grid" id="adminTiles" style="display:none;">
                 <div class="tile purple" onclick="openApp('archiv')">
+                    <span class="tile-badge export" id="exportBadge" style="display:none;background:#e74c3c;">0</span>
                     <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5l.81-1h12l.94 1H5.12z"/></svg></div>
                     <div class="tile-title">Archiv</div>
                     <div class="tile-desc">Alle gespeicherten Checks einsehen</div>
@@ -508,6 +524,16 @@
                     <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>
                     <div class="tile-title">Benutzer</div>
                     <div class="tile-desc">Zugänge verwalten</div>
+                </div>
+                <div class="tile purple" onclick="openApp('auditlog')">
+                    <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></div>
+                    <div class="tile-title">Audit-Log</div>
+                    <div class="tile-desc">Änderungsprotokoll einsehen</div>
+                </div>
+                <div class="tile purple" onclick="openApp('deletelog')">
+                    <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></div>
+                    <div class="tile-title">Lösch-Protokoll</div>
+                    <div class="tile-desc">Gelöschte Dokumente einsehen</div>
                 </div>
             </div>
         </div>
@@ -729,12 +755,44 @@
         </div>
     </div>
 
+    <!-- AUDIT-LOG -->
+    <div class="screen app-screen" id="auditlogScreen">
+        <header class="app-header">
+            <div class="header-top">
+                <button class="back-btn" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+                <h1 class="header-title">Audit-Log</h1>
+                <div class="header-actions">
+                    <button class="header-btn" onclick="exportAuditLog()" title="Exportieren"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></button>
+                </div>
+            </div>
+        </header>
+        <div class="audit-container" id="auditContainer">
+            <div class="audit-loading">Lade...</div>
+        </div>
+    </div>
+
+    <!-- LÖSCH-PROTOKOLL -->
+    <div class="screen app-screen" id="deletelogScreen">
+        <header class="app-header">
+            <div class="header-top">
+                <button class="back-btn" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+                <h1 class="header-title">Lösch-Protokoll</h1>
+                <div class="header-actions">
+                    <button class="header-btn" onclick="exportDeleteLog()" title="Exportieren"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></button>
+                </div>
+            </div>
+        </header>
+        <div class="audit-container" id="deletelogContainer">
+            <div class="audit-loading">Lade...</div>
+        </div>
+    </div>
+
     <!-- SUCCESS -->
     <div class="screen success-screen" id="successScreen">
         <div class="success-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
         <h1 class="success-title">Gespeichert!</h1>
         <p class="success-message">Der Ambulanzcheck wurde erfolgreich abgeschlossen.</p>
-        <div class="success-details"><div class="success-detail"><span class="success-detail-label">Datum</span><span class="success-detail-value" id="successDate"></span></div><div class="success-detail"><span class="success-detail-label">Mitarbeiter</span><span class="success-detail-value" id="successEmployee"></span></div><div class="success-detail"><span class="success-detail-label">Punkte</span><span class="success-detail-value" id="successItems"></span></div></div>
+        <div class="success-details"><div class="success-detail"><span class="success-detail-label">Dokument-ID</span><span class="success-detail-value" id="successDocId" style="font-family:'JetBrains Mono',monospace;color:var(--accent);"></span></div><div class="success-detail"><span class="success-detail-label">Datum</span><span class="success-detail-value" id="successDate"></span></div><div class="success-detail"><span class="success-detail-label">Mitarbeiter</span><span class="success-detail-value" id="successEmployee"></span></div><div class="success-detail"><span class="success-detail-label">Punkte</span><span class="success-detail-value" id="successItems"></span></div></div>
         <div class="success-actions">
             <button class="btn btn-share" onclick="shareProtocol()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>In Teams/OneDrive ablegen</button>
             <button class="btn btn-secondary" onclick="openApp('archiv')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27z"/></svg>Archiv</button>
@@ -748,6 +806,11 @@
     <script>
         // USERS - Admin ist fest, andere aus localStorage
         const ADMIN_PIN = '5400';
+        const SESSION_TIMEOUT_MIN = 15; // Automatischer Logout nach 15 Minuten
+        const SHAREPOINT_ARCHIV_URL = 'https://mercedesbenz.sharepoint.com/:f:/r/sites/msteams_dbfa96/Freigegebene%20Dokumente/Archiv';
+        let sessionTimer = null;
+        let lastActivity = Date.now();
+        
         function getUsers() {
             try {
                 return JSON.parse(localStorage.getItem('mbwd_users') || '{}');
@@ -757,6 +820,152 @@
         }
         function saveUsers(users) {
             localStorage.setItem('mbwd_users', JSON.stringify(users));
+        }
+        
+        // ============ AUDIT LOG ============
+        function getAuditLog() {
+            try {
+                return JSON.parse(localStorage.getItem('mbwd_audit_log') || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+        
+        function addAuditEntry(action, details) {
+            const log = getAuditLog();
+            const entry = {
+                id: Date.now(),
+                timestamp: new Date().toISOString(),
+                user: currentUser ? currentUser.kuerzel : 'SYSTEM',
+                userName: currentUser ? currentUser.name : 'System',
+                action: action,
+                details: details
+            };
+            log.unshift(entry);
+            // Maximal 1000 Einträge behalten
+            if (log.length > 1000) log.length = 1000;
+            localStorage.setItem('mbwd_audit_log', JSON.stringify(log));
+        }
+        
+        // ============ FORTLAUFENDE DOKUMENTEN-ID ============
+        function getNextDocId(type) {
+            const year = new Date().getFullYear();
+            const counterKey = `mbwd_doc_counter_${type}_${year}`;
+            let counter = parseInt(localStorage.getItem(counterKey) || '0') + 1;
+            localStorage.setItem(counterKey, counter.toString());
+            
+            const typePrefix = {
+                'ambulanz': 'AMB',
+                'mpg': 'MPG', 
+                'wochen': 'RTW',
+                'reinigung': 'RGP'
+            };
+            
+            return `054-${typePrefix[type] || 'DOC'}-${year}-${counter.toString().padStart(5, '0')}`;
+        }
+        
+        // ============ LÖSCH-PROTOKOLL ============
+        function getDeleteLog() {
+            try {
+                return JSON.parse(localStorage.getItem('mbwd_delete_log') || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+        
+        function addDeleteEntry(docId, docType, docMeta) {
+            const log = getDeleteLog();
+            const entry = {
+                id: Date.now(),
+                timestamp: new Date().toISOString(),
+                deletedBy: currentUser ? currentUser.kuerzel : 'UNKNOWN',
+                deletedByName: currentUser ? currentUser.name : 'Unbekannt',
+                documentId: docId,
+                documentType: docType,
+                documentMeta: docMeta
+            };
+            log.unshift(entry);
+            localStorage.setItem('mbwd_delete_log', JSON.stringify(log));
+            addAuditEntry('DOKUMENT_GELÖSCHT', `Dokument ${docId} (${docType}) gelöscht`);
+        }
+        
+        // ============ EXPORT-TRACKING ============
+        function getUnexportedCount() {
+            const keys = ['ambulanzcheck_archive', 'mpgcheck_archive', 'wochencheck_archive', 'reinigung_archive'];
+            let count = 0;
+            keys.forEach(key => {
+                try {
+                    const archive = JSON.parse(localStorage.getItem(key) || '[]');
+                    archive.forEach(item => {
+                        if (!item.exported) count++;
+                    });
+                } catch (e) {}
+            });
+            return count;
+        }
+        
+        function markAsExported(storageKey, docId) {
+            try {
+                const archive = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                const item = archive.find(x => x.id === docId);
+                if (item) {
+                    item.exported = true;
+                    item.exportedAt = new Date().toISOString();
+                    item.exportedBy = currentUser ? currentUser.kuerzel : 'UNKNOWN';
+                    localStorage.setItem(storageKey, JSON.stringify(archive));
+                    addAuditEntry('DOKUMENT_EXPORTIERT', `Dokument ${item.docId || docId} exportiert`);
+                }
+            } catch (e) {}
+        }
+        
+        function updateExportBadge() {
+            const count = getUnexportedCount();
+            const badge = document.getElementById('exportBadge');
+            if (badge) {
+                badge.textContent = count;
+                badge.style.display = count > 0 ? 'flex' : 'none';
+            }
+        }
+        
+        // ============ MANIPULATIONSSCHUTZ (Hash) ============
+        function generateChecksum(data) {
+            // Simple hash function for integrity check
+            const str = JSON.stringify(data);
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convert to 32bit integer
+            }
+            // Convert to hex and combine with length for extra security
+            return Math.abs(hash).toString(16).toUpperCase().padStart(8, '0') + '-' + str.length.toString(16).toUpperCase();
+        }
+        
+        function verifyChecksum(data, checksum) {
+            return generateChecksum(data) === checksum;
+        }
+        
+        // ============ SESSION TIMEOUT ============
+        function resetSessionTimer() {
+            lastActivity = Date.now();
+            if (sessionTimer) clearTimeout(sessionTimer);
+            if (currentUser) {
+                sessionTimer = setTimeout(sessionTimeout, SESSION_TIMEOUT_MIN * 60 * 1000);
+            }
+        }
+        
+        function sessionTimeout() {
+            if (currentUser) {
+                addAuditEntry('SESSION_TIMEOUT', 'Automatischer Logout wegen Inaktivität');
+                alert('Sie wurden wegen Inaktivität automatisch abgemeldet.');
+                logout();
+            }
+        }
+        
+        function setupActivityListeners() {
+            ['click', 'touchstart', 'keypress', 'scroll'].forEach(event => {
+                document.addEventListener(event, resetSessionTimer, { passive: true });
+            });
         }
         
         let currentUser = null, currentPin = '', checklistState = {}, commentsState = {}, signatureData = null, currentDetailId = null;
@@ -893,9 +1102,19 @@
             currentPin = '';
             document.getElementById('loginKuerzel').value = '';
             updatePinDisplay();
+            
+            // Audit Log & Session
+            addAuditEntry('LOGIN', `Benutzer ${currentUser.kuerzel} angemeldet`);
+            resetSessionTimer();
+            updateExportBadge();
+            
             showScreen('dashboard');
         }
         function logout() { 
+            if (currentUser) {
+                addAuditEntry('LOGOUT', `Benutzer ${currentUser.kuerzel} abgemeldet`);
+            }
+            if (sessionTimer) clearTimeout(sessionTimer);
             currentUser = null; 
             currentPin = ''; 
             document.getElementById('loginKuerzel').value = '';
@@ -971,6 +1190,108 @@
             else if (app === 'reinigungsplan') { currentCheckType = 'reinigung'; initReinigungsplan(); showScreen('reinigungsplan'); }
             else if (app === 'archiv') { loadArchive(); showScreen('archiv'); }
             else if (app === 'benutzer') { loadBenutzerList(); showScreen('benutzer'); }
+            else if (app === 'auditlog') { loadAuditLog(); showScreen('auditlog'); }
+            else if (app === 'deletelog') { loadDeleteLog(); showScreen('deletelog'); }
+        }
+        
+        // AUDIT-LOG FUNKTIONEN
+        function loadAuditLog() {
+            const log = getAuditLog();
+            const container = document.getElementById('auditContainer');
+            
+            if (log.length === 0) {
+                container.innerHTML = '<div class="audit-empty">Keine Einträge vorhanden.</div>';
+                return;
+            }
+            
+            container.innerHTML = log.slice(0, 200).map(entry => {
+                let entryClass = '';
+                if (entry.action.includes('LOGIN')) entryClass = 'login';
+                else if (entry.action.includes('LOGOUT') || entry.action.includes('TIMEOUT')) entryClass = 'logout';
+                else if (entry.action.includes('GELÖSCHT')) entryClass = 'delete';
+                else if (entry.action.includes('ERSTELLT') || entry.action.includes('ABGESCHLOSSEN')) entryClass = 'create';
+                else if (entry.action.includes('EXPORT')) entryClass = 'export';
+                
+                const date = new Date(entry.timestamp);
+                const dateStr = date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                const timeStr = date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                
+                return `
+                    <div class="audit-entry ${entryClass}">
+                        <div class="audit-entry-header">
+                            <span class="audit-entry-action">${entry.action}</span>
+                            <span class="audit-entry-time">${dateStr} ${timeStr}</span>
+                        </div>
+                        <div class="audit-entry-user">👤 ${entry.user} (${entry.userName})</div>
+                        <div class="audit-entry-details">${entry.details}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function loadDeleteLog() {
+            const log = getDeleteLog();
+            const container = document.getElementById('deletelogContainer');
+            
+            if (log.length === 0) {
+                container.innerHTML = '<div class="audit-empty">Keine gelöschten Dokumente.</div>';
+                return;
+            }
+            
+            container.innerHTML = log.map(entry => {
+                const date = new Date(entry.timestamp);
+                const dateStr = date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                const timeStr = date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+                
+                return `
+                    <div class="audit-entry delete">
+                        <div class="audit-entry-header">
+                            <span class="audit-entry-action">🗑️ ${entry.documentId}</span>
+                            <span class="audit-entry-time">${dateStr} ${timeStr}</span>
+                        </div>
+                        <div class="audit-entry-user">Gelöscht von: ${entry.deletedBy} (${entry.deletedByName})</div>
+                        <div class="audit-entry-details">
+                            Typ: ${entry.documentType}<br>
+                            Original-Datum: ${entry.documentMeta?.datum || 'Unbekannt'}<br>
+                            Original-Mitarbeiter: ${entry.documentMeta?.mitarbeiter || entry.documentMeta?.user || 'Unbekannt'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function exportAuditLog() {
+            const log = getAuditLog();
+            let csv = 'Zeitstempel;Benutzer;Name;Aktion;Details\n';
+            log.forEach(entry => {
+                csv += `${entry.timestamp};${entry.user};${entry.userName};${entry.action};"${entry.details}"\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Audit_Log_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            addAuditEntry('AUDIT_LOG_EXPORTIERT', 'Audit-Log als CSV exportiert');
+        }
+        
+        function exportDeleteLog() {
+            const log = getDeleteLog();
+            let csv = 'Zeitstempel;Gelöscht von;Name;Dokument-ID;Typ;Original-Datum;Original-Mitarbeiter\n';
+            log.forEach(entry => {
+                csv += `${entry.timestamp};${entry.deletedBy};${entry.deletedByName};${entry.documentId};${entry.documentType};${entry.documentMeta?.datum || ''};${entry.documentMeta?.mitarbeiter || entry.documentMeta?.user || ''}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Loesch_Protokoll_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            addAuditEntry('LÖSCH_LOG_EXPORTIERT', 'Lösch-Protokoll als CSV exportiert');
         }
 
         // AMBULANZCHECK
@@ -1841,18 +2162,22 @@
                 
                 var data = {
                     id: Date.now(),
+                    docId: getNextDocId('reinigung'),
                     type: 'reinigung',
                     meta: {
                         datum: ds,
                         uhrzeit: ts,
                         mitarbeiter: 'Siehe Einträge',
-                        user: currentUser.name,
+                        user: currentUser ? currentUser.name : 'Unbekannt',
+                        userKuerzel: currentUser ? currentUser.kuerzel : 'UNKNOWN',
                         standort: 'Mercedes-Benz Rastatt',
                         kw: kw
                     },
-                    reinigung: reinigungResults
-                    // Keine globale Unterschrift - jede Aufgabe hat ihre eigene
+                    reinigung: reinigungResults,
+                    exported: false
                 };
+                // Manipulationsschutz: Checksum generieren
+                data.checksum = generateChecksum({ meta: data.meta, reinigung: data.reinigung });
                 
                 try {
                     var archive = JSON.parse(localStorage.getItem('reinigung_archive') || '[]');
@@ -1864,7 +2189,10 @@
                     localStorage.removeItem('reinigung_current_kw' + kw);
                     reinigungState = {};
                     
-                    // Store for email sending
+                    // Audit Log
+                    addAuditEntry('CHECK_ABGESCHLOSSEN', `Reinigungsplan KW ${kw} abgeschlossen (${data.docId})`);
+                    
+                    // Store for share function
                     lastSavedCheck = {
                         type: 'reinigung',
                         title: 'Reinigungsplan',
@@ -1876,6 +2204,7 @@
                     document.getElementById('successEmployee').textContent = 'Siehe Einzeleinträge';
                     document.getElementById('successItems').textContent = document.getElementById('reinigungProgressCount').textContent;
                     document.querySelector('.success-message').textContent = 'Der Reinigungsplan wurde erfolgreich abgeschlossen.';
+                    document.getElementById('successDocId').textContent = data.docId;
                     showScreen('success');
                 } catch (e) {
                     alert('Fehler beim Speichern: ' + e.message);
@@ -1905,18 +2234,23 @@
             
             var data = { 
                 id: Date.now(),
+                docId: getNextDocId(type),
                 type: type,
                 meta: { 
                     datum: ds, 
                     uhrzeit: ts, 
                     mitarbeiter: employeeName, 
-                    user: currentUser.name, 
+                    user: currentUser ? currentUser.name : 'Unbekannt',
+                    userKuerzel: currentUser ? currentUser.kuerzel : 'UNKNOWN',
                     standort: 'Mercedes-Benz Rastatt',
                     kw: type === 'wochen' ? kw : null
                 }, 
                 checkliste: res, 
-                unterschrift: theSignatureData 
+                unterschrift: theSignatureData,
+                exported: false
             };
+            // Manipulationsschutz: Checksum generieren
+            data.checksum = generateChecksum({ meta: data.meta, checkliste: data.checkliste });
             
             try {
                 var archive = JSON.parse(localStorage.getItem(storageKey) || '[]');
@@ -1924,7 +2258,10 @@
                 if (archive.length > 100) archive = archive.slice(0, 100);
                 localStorage.setItem(storageKey, JSON.stringify(archive));
                 
-                // Store for email sending
+                // Audit Log
+                addAuditEntry('CHECK_ABGESCHLOSSEN', `${checkTitle} abgeschlossen (${data.docId})`);
+                
+                // Store for share function
                 lastSavedCheck = {
                     type: type,
                     title: checkTitle,
@@ -1936,6 +2273,7 @@
                 document.getElementById('successEmployee').textContent = employeeName;
                 document.getElementById('successItems').textContent = document.getElementById(progressCountId).textContent;
                 document.querySelector('.success-message').textContent = 'Der ' + checkTitle + ' wurde erfolgreich abgeschlossen.';
+                document.getElementById('successDocId').textContent = data.docId;
                 showScreen('success');
             } catch (e) { 
                 alert('Fehler beim Speichern: ' + e.message); 
@@ -2535,23 +2873,39 @@
         }
         
         function deleteCheck() {
-            if (!confirm('Check wirklich löschen?')) return;
+            if (!confirm('Check wirklich löschen?\n\nDiese Aktion wird protokolliert.')) return;
             try {
-                let storageKey;
+                let storageKey, typeName;
                 if (currentArchiveType === 'ambulanz') {
                     storageKey = 'ambulanzcheck_archive';
+                    typeName = 'Ambulanzcheck';
                 } else if (currentArchiveType === 'mpg') {
                     storageKey = 'mpgcheck_archive';
+                    typeName = 'MPG-Check RTW';
                 } else if (currentArchiveType === 'wochen') {
                     storageKey = 'wochencheck_archive';
+                    typeName = 'RTW Wochencheck';
                 } else if (currentArchiveType === 'reinigung') {
                     storageKey = 'reinigung_archive';
+                    typeName = 'Reinigungsplan';
                 }
                 let archive = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                const deletedItem = archive.find(x => x.id === currentDetailId);
+                
+                // Lösch-Protokoll eintragen
+                if (deletedItem) {
+                    addDeleteEntry(
+                        deletedItem.docId || `LEGACY-${deletedItem.id}`,
+                        typeName,
+                        deletedItem.meta
+                    );
+                }
+                
                 archive = archive.filter(x => x.id !== currentDetailId);
                 localStorage.setItem(storageKey, JSON.stringify(archive));
                 document.getElementById('detailModal').classList.remove('active');
                 loadArchive();
+                updateExportBadge();
             } catch (e) { alert('Fehler: ' + e.message); }
         }
 
@@ -2689,15 +3043,22 @@
             const meta = check.data.meta;
             const dateStr = meta.datum || new Date().toLocaleDateString('de-DE');
             const kwStr = meta.kw ? `KW ${meta.kw}` : '';
-            const fileName = `${check.title.replace(/\s+/g, '_')}_${dateStr.replace(/\./g, '-')}_${(meta.mitarbeiter || meta.user || 'Unbekannt').replace(/\s+/g, '_')}.pdf`;
+            const docId = check.data.docId || 'UNKNOWN';
+            const fileName = `${docId}_${check.title.replace(/\s+/g, '_')}_${dateStr.replace(/\./g, '-')}.pdf`;
             
             try {
                 // Generate PDF
                 let pdfBlob;
                 if (check.type === 'reinigung') {
-                    // For Reinigung, use the existing export function logic
                     exportReinigungPDF();
-                    alert('PDF wurde heruntergeladen.\n\nBitte über die Dateien-App in Teams/OneDrive hochladen.');
+                    markAsExported(check.storageKey, check.data.id);
+                    updateExportBadge();
+                    // Open SharePoint after short delay
+                    setTimeout(() => {
+                        if (confirm('PDF heruntergeladen!\n\nSharePoint Archiv-Ordner öffnen?')) {
+                            window.open(SHAREPOINT_ARCHIV_URL, '_blank');
+                        }
+                    }, 500);
                     return;
                 } else {
                     pdfBlob = await generatePDFBlob(check.type);
@@ -2705,22 +3066,31 @@
                 
                 const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
                 
-                // Check if Web Share API with files is supported
+                // Check if Web Share API with files is supported (iOS)
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                     await navigator.share({
                         files: [file],
                         title: `${check.title} - ${kwStr || dateStr}`,
-                        text: `Protokoll: ${check.title}\nDatum: ${dateStr}\nMitarbeiter: ${meta.mitarbeiter || meta.user}`
+                        text: `Dokument: ${docId}\nProtokoll: ${check.title}\nDatum: ${dateStr}\nMitarbeiter: ${meta.mitarbeiter || meta.user}`
                     });
+                    markAsExported(check.storageKey, check.data.id);
+                    updateExportBadge();
                 } else {
-                    // Fallback: Download + Hinweis
+                    // Fallback: Download + SharePoint öffnen
                     const url = URL.createObjectURL(pdfBlob);
                     const a = document.createElement('a');
                     a.href = url;
                     a.download = fileName;
                     a.click();
                     URL.revokeObjectURL(url);
-                    alert('PDF wurde heruntergeladen.\n\nBitte über die Dateien-App in Teams/OneDrive hochladen.');
+                    markAsExported(check.storageKey, check.data.id);
+                    updateExportBadge();
+                    // Open SharePoint after short delay
+                    setTimeout(() => {
+                        if (confirm('PDF heruntergeladen!\n\nSharePoint Archiv-Ordner öffnen?')) {
+                            window.open(SHAREPOINT_ARCHIV_URL, '_blank');
+                        }
+                    }, 500);
                 }
             } catch (err) {
                 if (err.name !== 'AbortError') {
@@ -2856,10 +3226,16 @@
                 if (e.target.id === 'signModal') closeSignModal(); 
             });
             
+            // Setup session timeout activity listeners
+            setupActivityListeners();
+            
             // Register service worker
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('sw.js').catch(() => {});
             }
+            
+            // Log app start
+            addAuditEntry('APP_GESTARTET', 'MBWD App geöffnet');
         }
         
         initApp();
