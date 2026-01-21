@@ -454,7 +454,7 @@
                 <div class="tile teal" onclick="openApp('reinigungsplan')">
                     <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M19.36 2.72L20.78 4.14l-1.08 1.08c.63.96.91 2.12.64 3.34-.38 1.72-1.8 3.04-3.55 3.31-1.13.18-2.18-.12-3.02-.72L8 16.91V19H6v-2.5l1.5-1.5 1.91-1.91-.85-.85L2 18.8V21h3v-1.69l1.42-1.42L12.5 13c-.6-.84-.9-1.89-.72-3.02.27-1.75 1.59-3.17 3.31-3.55 1.22-.27 2.38.01 3.34.64l1.08-1.08zM17.17 8.83l-2.34-2.34c-.39-.39-.39-1.02 0-1.41l1.41-1.41c.39-.39 1.02-.39 1.41 0l2.34 2.34c.39.39.39 1.02 0 1.41l-1.41 1.41c-.39.39-1.02.39-1.41 0z"/></svg></div>
                     <div class="tile-title">Reinigungsplan</div>
-                    <div class="tile-desc">Wöchentlicher Reinigungsplan GZ</div>
+                    <div class="tile-desc">Woechentlicher Reinigungsplan GZ</div>
                 </div>
                 <div class="tile green disabled">
                     <span class="tile-badge coming">Bald</span>
@@ -697,9 +697,9 @@
             {id:'wochen-checklisten',title:'Checklisten prüfen',icon:`<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`,items:[
                 {text:'Nach Checkliste „Corpuls3_EKG_Defibrillator"', doc:'054_CL_Corpuls3_EKG_Defibrillator.pdf'},
                 {text:'Nach Checkliste „AccuvacRescue_Absaugpumpe"', doc:'054_CL_AccuvacRescue_Absaugpumpe.pdf'},
-                {text:'Nach Checkliste „Medumat_Standard_Beatmungsgerät"', doc:'054_CL_Medumat_Standard_Beatmungsgerät.pdf'},
+                {text:'Nach Checkliste „Medumat_Standard_Beatmungsgeraet"', doc:'054_CL_Medumat_Standard_Beatmungsgeraet.pdf'},
                 {text:'Nach Checkliste „MANV_Tasche_RTW"', doc:'054_CL_MANV_Tasche_RTW.pdf'},
-                {text:'Nach Checkliste „Notfallrucksäcke_Rot&Gelb"', doc:'054_CL_Notfallrucksäcke_Rot_Gelb.pdf'},
+                {text:'Nach Checkliste „Notfallrucksaecke_Rot&Gelb"', doc:'054_CL_Notfallrucksaecke_Rot_Gelb.pdf'},
                 {text:'Nach Checkliste „Notfallrucksack_Kinder"', doc:'054_CL_Notfallrucksack_Kinder.pdf'}
             ]},
             {id:'wochen-verfall',title:'Verfall prüfen (letzte KW des Monats)',icon:`<svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>`,items:[
@@ -1335,8 +1335,8 @@
                     theCommentsState = wochenCommentsState;
                     theSignatureData = wochenSignatureData;
                     employeeName = document.getElementById('wochenEmployeeName').value || 'Nicht angegeben';
-                    docId = '054_CL_Wöchentlicher_RTW_Check_1-83-1';
-                    pdfTitle = 'Wöchentlicher RTW Check';
+                    docId = '054_CL_Woechentlicher_RTW_Check_1-83-1';
+                    pdfTitle = 'Woechentlicher RTW Check';
                     headerColor = [230, 126, 34];
                 } else if (type === 'reinigung') {
                     // Special PDF export for Reinigungsplan
@@ -1660,6 +1660,10 @@
                     if (archive.length > 100) archive = archive.slice(0, 100);
                     localStorage.setItem('reinigung_archive', JSON.stringify(archive));
                     
+                    // Clear current week's state after archiving
+                    localStorage.removeItem('reinigung_current_kw' + kw);
+                    reinigungState = {};
+                    
                     document.getElementById('successDate').textContent = 'KW ' + kw + ' / ' + ds;
                     document.getElementById('successEmployee').textContent = 'Siehe Einzeleinträge';
                     document.getElementById('successItems').textContent = document.getElementById('reinigungProgressCount').textContent;
@@ -1726,9 +1730,20 @@
 
         // REINIGUNGSPLAN
         function initReinigungsplan() {
-            reinigungState = {};
             const kw = getWeekNumber(new Date());
             document.getElementById('reinigungKW').textContent = 'KW ' + kw;
+            
+            // Load saved state from localStorage (persists through the week)
+            const savedState = localStorage.getItem('reinigung_current_kw' + kw);
+            if (savedState) {
+                try {
+                    reinigungState = JSON.parse(savedState);
+                } catch (e) {
+                    reinigungState = {};
+                }
+            } else {
+                reinigungState = {};
+            }
             
             // Count total tasks (excluding noSign)
             let total = 0;
@@ -1739,6 +1754,12 @@
             
             renderReinigungsplan();
             updateReinigungProgress();
+            validateReinigungForm();
+        }
+        
+        function saveReinigungState() {
+            const kw = getWeekNumber(new Date());
+            localStorage.setItem('reinigung_current_kw' + kw, JSON.stringify(reinigungState));
         }
         
         function renderReinigungsplan() {
@@ -1842,10 +1863,13 @@
         }
         
         function setupSignModalCanvas() {
-            const canvas = document.getElementById('signModalCanvas');
             const container = document.getElementById('signModalCanvasWrap');
-            if (!canvas || !container) return;
+            if (!container) return;
             
+            // Remove old canvas and create fresh one
+            container.innerHTML = '<canvas class="sign-modal-canvas" id="signModalCanvas"></canvas><span class="sign-modal-canvas-placeholder">Hier unterschreiben</span><button class="sign-modal-canvas-clear" onclick="clearSignModal()">Löschen</button>';
+            
+            const canvas = document.getElementById('signModalCanvas');
             const ctx = canvas.getContext('2d');
             const rect = container.getBoundingClientRect();
             canvas.width = rect.width;
@@ -1858,6 +1882,7 @@
             ctx.lineJoin = 'round';
             
             let drawing = false;
+            let lastX = 0, lastY = 0;
             
             function getPos(e) {
                 const r = canvas.getBoundingClientRect();
@@ -1865,49 +1890,73 @@
                 return { x: t.clientX - r.left, y: t.clientY - r.top };
             }
             
-            function startDraw(e) {
+            canvas.onmousedown = function(e) {
                 drawing = true;
-                ctx.beginPath();
                 const p = getPos(e);
-                ctx.moveTo(p.x, p.y);
-            }
+                lastX = p.x;
+                lastY = p.y;
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+            };
             
-            function doDraw(e) {
+            canvas.onmousemove = function(e) {
                 if (!drawing) return;
                 const p = getPos(e);
                 ctx.lineTo(p.x, p.y);
                 ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                lastX = p.x;
+                lastY = p.y;
                 container.classList.add('has-signature');
-            }
+            };
             
-            function endDraw() {
+            canvas.onmouseup = function() {
                 if (drawing) {
                     drawing = false;
                     signModalSignature = canvas.toDataURL();
                     validateSignModal();
                 }
-            }
+            };
             
-            // Remove old listeners by cloning
-            const newCanvas = canvas.cloneNode(true);
-            canvas.parentNode.replaceChild(newCanvas, canvas);
+            canvas.onmouseleave = function() {
+                if (drawing) {
+                    drawing = false;
+                    signModalSignature = canvas.toDataURL();
+                    validateSignModal();
+                }
+            };
             
-            // Re-setup context on new canvas
-            const newCtx = newCanvas.getContext('2d');
-            newCtx.fillStyle = '#2a2a2a';
-            newCtx.fillRect(0, 0, newCanvas.width, newCanvas.height);
-            newCtx.strokeStyle = '#ffffff';
-            newCtx.lineWidth = 2;
-            newCtx.lineCap = 'round';
-            newCtx.lineJoin = 'round';
+            canvas.ontouchstart = function(e) {
+                e.preventDefault();
+                drawing = true;
+                const p = getPos(e);
+                lastX = p.x;
+                lastY = p.y;
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+            };
             
-            newCanvas.addEventListener('mousedown', startDraw);
-            newCanvas.addEventListener('mousemove', doDraw);
-            newCanvas.addEventListener('mouseup', endDraw);
-            newCanvas.addEventListener('mouseleave', endDraw);
-            newCanvas.addEventListener('touchstart', e => { e.preventDefault(); startDraw(e); }, { passive: false });
-            newCanvas.addEventListener('touchmove', e => { e.preventDefault(); doDraw(e); }, { passive: false });
-            newCanvas.addEventListener('touchend', endDraw);
+            canvas.ontouchmove = function(e) {
+                e.preventDefault();
+                if (!drawing) return;
+                const p = getPos(e);
+                ctx.lineTo(p.x, p.y);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                lastX = p.x;
+                lastY = p.y;
+                container.classList.add('has-signature');
+            };
+            
+            canvas.ontouchend = function() {
+                if (drawing) {
+                    drawing = false;
+                    signModalSignature = canvas.toDataURL();
+                    validateSignModal();
+                }
+            };
         }
         
         function clearSignModal() {
@@ -1918,6 +1967,10 @@
             const ctx = canvas.getContext('2d');
             ctx.fillStyle = '#2a2a2a';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
             container.classList.remove('has-signature');
             signModalSignature = null;
             validateSignModal();
@@ -1945,6 +1998,9 @@
                 timestamp: timestamp,
                 signature: signModalSignature
             };
+            
+            // Persist to localStorage
+            saveReinigungState();
             
             // Close modal and re-render
             closeSignModal();
@@ -2015,14 +2071,14 @@
                 // Header
                 doc.setFontSize(8);
                 doc.setTextColor(120, 120, 120);
-                doc.text('054_FB_Wöchentlicher_Reinigungsplan', 195, 10, { align: 'right' });
+                doc.text('054_FB_Woechentlicher_Reinigungsplan', 195, 10, { align: 'right' });
                 
                 doc.setFillColor(26, 188, 156);
                 doc.rect(0, 15, 210, 30, 'F');
                 doc.setTextColor(255, 255, 255);
                 doc.setFontSize(20);
                 doc.setFont('helvetica', 'bold');
-                doc.text('Wöchentlicher Reinigungsplan', 105, 30, { align: 'center' });
+                doc.text('Woechentlicher Reinigungsplan', 105, 30, { align: 'center' });
                 doc.setFontSize(10);
                 doc.setFont('helvetica', 'normal');
                 doc.text('Gesundheitszentrum Mercedes-Benz Rastatt', 105, 40, { align: 'center' });
@@ -2050,7 +2106,7 @@
                         y = 25;
                         doc.setFontSize(8);
                         doc.setTextColor(120, 120, 120);
-                        doc.text('054_FB_Wöchentlicher_Reinigungsplan', 195, 10, { align: 'right' });
+                        doc.text('054_FB_Woechentlicher_Reinigungsplan', 195, 10, { align: 'right' });
                         doc.setFillColor(26, 188, 156);
                         doc.rect(0, 12, 210, 8, 'F');
                     }
