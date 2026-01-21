@@ -794,7 +794,7 @@
         <p class="success-message">Der Ambulanzcheck wurde erfolgreich abgeschlossen.</p>
         <div class="success-details"><div class="success-detail"><span class="success-detail-label">Dokument-ID</span><span class="success-detail-value" id="successDocId" style="font-family:'JetBrains Mono',monospace;color:var(--accent);"></span></div><div class="success-detail"><span class="success-detail-label">Datum</span><span class="success-detail-value" id="successDate"></span></div><div class="success-detail"><span class="success-detail-label">Mitarbeiter</span><span class="success-detail-value" id="successEmployee"></span></div><div class="success-detail"><span class="success-detail-label">Punkte</span><span class="success-detail-value" id="successItems"></span></div></div>
         <div class="success-actions">
-            <button class="btn btn-primary" onclick="downloadProtocolPDF()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>PDF herunterladen</button>
+            <button class="btn btn-primary" onclick="downloadProtocolPDF()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>PDF öffnen & speichern</button>
             <button class="btn btn-share" onclick="openSharePoint()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>SharePoint Archiv öffnen</button>
         </div>
         <div class="success-actions" style="margin-top:12px;">
@@ -2918,6 +2918,12 @@
             }
             
             const check = lastSavedCheck;
+            
+            // iPad/iOS Hinweis
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            if (isIOS) {
+                alert('PDF wird geöffnet.\n\nZum Speichern:\n1. Tippe auf das Teilen-Symbol (⬆️)\n2. Wähle "In Dateien sichern"\n3. Wähle einen Ordner');
+            }
             
             // Use the existing exportPDF functions
             if (check.type === 'reinigung') {
