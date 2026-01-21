@@ -333,8 +333,8 @@
         .btn-secondary { background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border); }
         .btn-secondary:hover { background: var(--border); }
         .btn-success { background: linear-gradient(135deg, var(--success) 0%, #27ae60 100%); color: white; }
-        .btn-email { background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%); color: white; box-shadow: 0 4px 16px rgba(0, 120, 212, 0.3); }
-        .btn-email:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0, 120, 212, 0.4); }
+        .btn-share { background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%); color: white; box-shadow: 0 4px 16px rgba(0, 120, 212, 0.3); }
+        .btn-share:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0, 120, 212, 0.4); }
         .btn svg { width: 20px; height: 20px; }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
 
@@ -681,8 +681,8 @@
                 <button class="back-btn" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
                 <h1 class="header-title">Archiv</h1>
                 <div class="header-actions">
-                    <button class="header-btn" onclick="exportWeeklyArchive()" title="Wochenexport per E-Mail" style="background:linear-gradient(135deg, #0078d4 0%, #005a9e 100%);">
-                        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                    <button class="header-btn" onclick="shareWeeklyExport()" title="Wochenexport teilen" style="background:linear-gradient(135deg, #0078d4 0%, #005a9e 100%);">
+                        <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
                     </button>
                 </div>
             </div>
@@ -736,14 +736,14 @@
         <p class="success-message">Der Ambulanzcheck wurde erfolgreich abgeschlossen.</p>
         <div class="success-details"><div class="success-detail"><span class="success-detail-label">Datum</span><span class="success-detail-value" id="successDate"></span></div><div class="success-detail"><span class="success-detail-label">Mitarbeiter</span><span class="success-detail-value" id="successEmployee"></span></div><div class="success-detail"><span class="success-detail-label">Punkte</span><span class="success-detail-value" id="successItems"></span></div></div>
         <div class="success-actions">
-            <button class="btn btn-email" onclick="sendProtocolEmail()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>Per E-Mail senden</button>
+            <button class="btn btn-share" onclick="shareProtocol()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>In Teams/OneDrive ablegen</button>
             <button class="btn btn-secondary" onclick="openApp('archiv')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27z"/></svg>Archiv</button>
             <button class="btn btn-primary" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Dashboard</button>
         </div>
     </div>
 
     <!-- DETAIL MODAL -->
-    <div class="modal-overlay" id="detailModal"><div class="modal" style="max-width:600px;"><h2 class="modal-title" id="detailTitle">Details</h2><p class="modal-subtitle" id="detailSubtitle"></p><div id="detailContent"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="document.getElementById('detailModal').classList.remove('active')">Schließen</button><button class="btn btn-email" id="emailCheckBtn" onclick="sendArchivedCheckEmail()" style="display:none;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>Per E-Mail</button><button class="btn btn-primary" id="deleteCheckBtn" onclick="deleteCheck()" style="background:#e74c3c;display:none;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>Löschen</button></div></div></div>
+    <div class="modal-overlay" id="detailModal"><div class="modal" style="max-width:600px;"><h2 class="modal-title" id="detailTitle">Details</h2><p class="modal-subtitle" id="detailSubtitle"></p><div id="detailContent"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="document.getElementById('detailModal').classList.remove('active')">Schließen</button><button class="btn btn-share" id="shareCheckBtn" onclick="shareArchivedCheck()" style="display:none;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>Teilen</button><button class="btn btn-primary" id="deleteCheckBtn" onclick="deleteCheck()" style="background:#e74c3c;display:none;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>Löschen</button></div></div></div>
 
     <script>
         // USERS - Admin ist fest, andere aus localStorage
@@ -763,9 +763,8 @@
         let mpgChecklistState = {}, mpgCommentsState = {}, mpgSignatureData = null;
         let currentCheckType = 'ambulanz';
         let reinigungState = {};
-        let lastSavedCheck = null; // Für E-Mail-Versand
-        let currentArchivedCheck = null; // Für Archiv-E-Mail-Versand
-        const TEAM_EMAIL = 'ambulanz-protokolle@mercedes-benz.com'; // Team E-Mail Adresse
+        let lastSavedCheck = null; // Für Share-Funktion
+        let currentArchivedCheck = null; // Für Archiv-Share-Funktion
 
         // AMBULANZ CHECKLIST DATA
         const checklistData=[{id:'corpuls',title:'Corpuls 3',icon:`<svg viewBox="0 0 24 24"><path d="M19.5 6c-1.31 0-2.37 1.01-2.48 2.3-1.88-.5-2.84-.52-4.52.02C12.4 7.01 11.34 6 10.03 6 8.69 6 7.58 7.11 7.58 8.45c0 .65.26 1.24.68 1.68-2.21 1.87-2.62 4.29-2.62 6.37 0 1.1.9 2 2 2h8.72c1.1 0 2-.9 2-2 0-2.08-.41-4.5-2.62-6.37.42-.44.68-1.03.68-1.68C16.42 7.11 15.31 6 13.97 6z"/></svg>`,items:['EKG-Kabel (6- und 12-Kanal) + Rasierer','EKG-Elektroden > 12 Stück','corPatch-Elektroden Erwachsener','CPR-Feedback-Sensor','CO2-Sensor und 1 Küvette','NIBD-Manschette und Schlauch','SpO2-Sensor und Zwischenkabel','Druckerpapier im Druckerfach vorhanden','Testschock mit 200J + Kontrolle Stromabgabe','Ladekonsole (Laden aktiv)','Kommunikation zwischen den Modulen','Batteriestatus der Module','Gerät einschalten (Selbsttest)']},{id:'absaugpumpe',title:'Elektrische Absaugpumpe',icon:`<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>`,items:['Funktion','Pumpe hält Sog bei erreichtem Vakuum','Absaugkatheter (je 2x) + Schlauch & Fingertip','Pumpe lädt in Halterung']},{id:'notfallzimmer',title:'Notfallzimmer',icon:`<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/></svg>`,items:['O2-Flaschendruck >50bar (10L)','Rucksack Rot vorhanden','EKG-Rechner eingeschaltet','Rucksack Gelb vorhanden','OP-Leuchte Funktion','Gelb: O2>80bar, Laryngoskop Funktion','Infusionsständer mit 2x Infusion + Besteck','Zentrifuge Funktion / Blut kühlen','Kühl- und Gefrierschrank Funktion','SicSac in Spender >5 Stück']},{id:'ambulanz1',title:'Ambulanz 1',icon:`<svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm6 11h-3v3h-2v-3H8v-2h3v-3h2v3h3v2z"/></svg>`,items:['OP-Leuchte Funktion','Ambulanzwagen sauber, befüllt','Spaltlampe Funktion','Otoskop Funktion','Kryo-Fos Funktion/Akku/Ladung','Augenspülflasche in Spiegelschrank']},{id:'ambulanz2',title:'Ambulanz 2',icon:`<svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm6 11h-3v3h-2v-3H8v-2h3v-3h2v3h3v2z"/></svg>`,items:['OP-Leuchte Funktion','Ambulanzwagen sauber, befüllt','Desinfektionsbad leer','Otoskop Funktion','Kryo-Fos Funktion/Akku/Ladung']},{id:'ruheraum',title:'Ruheraum',icon:`<svg viewBox="0 0 24 24"><path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V7H1v10h22v-6c0-2.21-1.79-4-4-4z"/></svg>`,items:['Liegen sauber / Decken vorhanden','SicSac in Spender >5 Stück']},{id:'physio',title:'Physikalische Therapie',icon:`<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`,items:['Liegen sauber / Ärztekrepp vorhanden','Reizstromgerät Funktion/Sauberkeit','Rotlicht vorne Funktion/Sauberkeit','Rotlicht mittig Funktion/Sauberkeit','SicSac in Spender >5 Stück','Elacur + Voltaren vorhanden','Schwämme abkochen']},{id:'aufenthalt',title:'Aufenthaltsraum',icon:`<svg viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>`,items:['Schalter "Patientenklingel" eingeschaltet','Schwesternruf grüne Leuchte an']},{id:'sonntag',title:'Nur Sonntag',icon:`<svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>`,items:['Notruftelefon Funktion überprüft','Dokumente Leitstelle abholen'],isSunday:true}];
@@ -2489,7 +2488,7 @@
                 // Show delete button only for admin
                 document.getElementById('deleteCheckBtn').style.display = currentUser && currentUser.role === 'admin' ? 'flex' : 'none';
                 // Show email button always
-                document.getElementById('emailCheckBtn').style.display = 'flex';
+                document.getElementById('shareCheckBtn').style.display = 'flex';
                 
                 let h = '';
                 
@@ -2556,10 +2555,133 @@
             } catch (e) { alert('Fehler: ' + e.message); }
         }
 
-        // E-MAIL FUNKTIONEN
-        function sendProtocolEmail() {
+        // SHARE FUNKTIONEN (Web Share API für Teams/OneDrive)
+        async function generatePDFBlob(type) {
+            // Generate PDF and return as blob
+            return new Promise((resolve) => {
+                var theChecklistData, theChecklistState, theCommentsState, theSignatureData, employeeName, docId, pdfTitle, headerColor;
+                
+                if (type === 'ambulanz') {
+                    theChecklistData = checklistData;
+                    theChecklistState = checklistState;
+                    theCommentsState = commentsState;
+                    theSignatureData = signatureData;
+                    employeeName = document.getElementById('employeeName').value || 'Nicht angegeben';
+                    docId = '054-CL-001';
+                    pdfTitle = 'Ambulanzcheck';
+                    headerColor = [200, 30, 45];
+                } else if (type === 'mpg') {
+                    theChecklistData = mpgChecklistData;
+                    theChecklistState = mpgChecklistState;
+                    theCommentsState = mpgCommentsState;
+                    theSignatureData = mpgSignatureData;
+                    employeeName = document.getElementById('mpgEmployeeName').value || 'Nicht angegeben';
+                    docId = '054-CL-002';
+                    pdfTitle = 'MPG-Check RTW';
+                    headerColor = [41, 128, 185];
+                } else if (type === 'wochen') {
+                    theChecklistData = wochenChecklistData;
+                    theChecklistState = wochenChecklistState;
+                    theCommentsState = wochenCommentsState;
+                    theSignatureData = wochenSignatureData;
+                    employeeName = document.getElementById('wochenEmployeeName').value || 'Nicht angegeben';
+                    docId = '054-CL-003';
+                    pdfTitle = 'RTW Wochencheck';
+                    headerColor = [230, 126, 34];
+                }
+                
+                var { jsPDF } = window.jspdf;
+                var doc = new jsPDF();
+                var now = new Date();
+                var kw = getWeekNumber(now);
+                var dateStr = now.toLocaleDateString('de-DE');
+                var timeStr = now.toLocaleTimeString('de-DE');
+                var shortDate = now.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' });
+                
+                // Header
+                doc.setFillColor(headerColor[0], headerColor[1], headerColor[2]);
+                doc.rect(0, 0, 210, 35, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(20);
+                doc.setFont('helvetica', 'bold');
+                doc.text(pdfTitle, 15, 18);
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'normal');
+                doc.text('Mercedes-Benz Gesundheitszentrum Rastatt', 15, 28);
+                doc.setFontSize(10);
+                if (type === 'wochen') {
+                    doc.text('KW ' + kw, 195, 15, { align: 'right' });
+                } else {
+                    doc.text(dateStr, 195, 15, { align: 'right' });
+                }
+                doc.text(timeStr, 195, 22, { align: 'right' });
+                
+                // Meta info
+                doc.setTextColor(0, 0, 0);
+                var y = 45;
+                doc.setFontSize(10);
+                if (type === 'wochen') {
+                    doc.text('Kalenderwoche:', 15, y);
+                    doc.text('KW ' + kw, 50, y);
+                    doc.text('Mitarbeiter:', 110, y);
+                } else {
+                    doc.text('Datum:', 15, y);
+                    doc.text(dateStr + ' ' + timeStr, 35, y);
+                    doc.text('Mitarbeiter:', 110, y);
+                }
+                doc.text(employeeName, 140, y);
+                
+                y = 55;
+                
+                // Build content (simplified for blob generation)
+                theChecklistData.forEach(function(s) {
+                    if (y > 250) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    doc.setFillColor(240, 240, 240);
+                    doc.rect(15, y - 5, 180, 8, 'F');
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(11);
+                    doc.text(s.title, 17, y);
+                    y += 10;
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(9);
+                    
+                    s.items.forEach(function(it, i) {
+                        if (y > 270) {
+                            doc.addPage();
+                            y = 20;
+                        }
+                        var key = s.id + '-' + i;
+                        var itemText = typeof it === 'object' ? it.text : it;
+                        var checked = theChecklistState[key];
+                        doc.text(checked ? '☑' : '☐', 17, y);
+                        doc.text(itemText.substring(0, 80), 25, y);
+                        y += 6;
+                    });
+                    y += 5;
+                });
+                
+                // Signature
+                if (theSignatureData) {
+                    if (y > 240) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    y += 5;
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('Unterschrift:', 15, y);
+                    doc.addImage(theSignatureData, 'PNG', 15, y + 2, 50, 20);
+                }
+                
+                resolve(doc.output('blob'));
+            });
+        }
+        
+        async function shareProtocol() {
             if (!lastSavedCheck) {
-                alert('Kein Protokoll zum Senden vorhanden.');
+                alert('Kein Protokoll zum Teilen vorhanden.');
                 return;
             }
             
@@ -2567,46 +2689,56 @@
             const meta = check.data.meta;
             const dateStr = meta.datum || new Date().toLocaleDateString('de-DE');
             const kwStr = meta.kw ? `KW ${meta.kw}` : '';
+            const fileName = `${check.title.replace(/\s+/g, '_')}_${dateStr.replace(/\./g, '-')}_${(meta.mitarbeiter || meta.user || 'Unbekannt').replace(/\s+/g, '_')}.pdf`;
             
-            // Generate PDF first
-            if (check.type === 'reinigung') {
-                exportReinigungPDF();
-            } else {
-                exportPDF(check.type);
+            try {
+                // Generate PDF
+                let pdfBlob;
+                if (check.type === 'reinigung') {
+                    // For Reinigung, use the existing export function logic
+                    exportReinigungPDF();
+                    alert('PDF wurde heruntergeladen.\n\nBitte über die Dateien-App in Teams/OneDrive hochladen.');
+                    return;
+                } else {
+                    pdfBlob = await generatePDFBlob(check.type);
+                }
+                
+                const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
+                
+                // Check if Web Share API with files is supported
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: `${check.title} - ${kwStr || dateStr}`,
+                        text: `Protokoll: ${check.title}\nDatum: ${dateStr}\nMitarbeiter: ${meta.mitarbeiter || meta.user}`
+                    });
+                } else {
+                    // Fallback: Download + Hinweis
+                    const url = URL.createObjectURL(pdfBlob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    alert('PDF wurde heruntergeladen.\n\nBitte über die Dateien-App in Teams/OneDrive hochladen.');
+                }
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    console.error('Share error:', err);
+                    alert('Teilen fehlgeschlagen. PDF wird heruntergeladen.');
+                    exportPDF(check.type);
+                }
             }
-            
-            // Build email
-            const subject = encodeURIComponent(`${check.title} - ${kwStr || dateStr} - ${meta.mitarbeiter || meta.user}`);
-            const body = encodeURIComponent(
-`Guten Tag,
-
-anbei das Protokoll des ${check.title}.
-
-Datum: ${dateStr}${kwStr ? `\nKalenderwoche: ${kwStr}` : ''}
-Mitarbeiter: ${meta.mitarbeiter || meta.user}
-Standort: ${meta.standort}
-
-Bitte die heruntergeladene PDF-Datei an diese E-Mail anhängen.
-
-Mit freundlichen Grüßen
-${currentUser ? currentUser.name : 'Gesundheitszentrum Rastatt'}`
-            );
-            
-            // Short delay to let PDF download start, then open email
-            setTimeout(() => {
-                window.location.href = `mailto:${TEAM_EMAIL}?subject=${subject}&body=${body}`;
-            }, 500);
         }
         
-        function exportWeeklyArchive() {
+        async function shareWeeklyExport() {
             const kw = getWeekNumber(new Date());
             const now = new Date();
             const weekStart = new Date(now);
-            weekStart.setDate(now.getDate() - now.getDay() + 1); // Monday
+            weekStart.setDate(now.getDate() - now.getDay() + 1);
             const weekEnd = new Date(weekStart);
-            weekEnd.setDate(weekStart.getDate() + 6); // Sunday
+            weekEnd.setDate(weekStart.getDate() + 6);
             
-            // Collect all checks from this week
             const storageKeys = ['ambulanzcheck_archive', 'mpgcheck_archive', 'wochencheck_archive', 'reinigung_archive'];
             const typeNames = { 'ambulanzcheck_archive': 'Ambulanzcheck', 'mpgcheck_archive': 'MPG-Check', 'wochencheck_archive': 'Wochencheck', 'reinigung_archive': 'Reinigungsplan' };
             
@@ -2614,7 +2746,6 @@ ${currentUser ? currentUser.name : 'Gesundheitszentrum Rastatt'}`
             let summary = `WOCHENEXPORT KW ${kw}\n`;
             summary += `Zeitraum: ${weekStart.toLocaleDateString('de-DE')} - ${weekEnd.toLocaleDateString('de-DE')}\n`;
             summary += `Erstellt: ${now.toLocaleString('de-DE')}\n\n`;
-            summary += `ÜBERSICHT:\n${'='.repeat(40)}\n\n`;
             
             storageKeys.forEach(key => {
                 try {
@@ -2626,17 +2757,14 @@ ${currentUser ? currentUser.name : 'Gesundheitszentrum Rastatt'}`
                     });
                     
                     if (thisWeek.length > 0) {
-                        summary += `${typeNames[key]}: ${thisWeek.length} Einträge\n`;
+                        summary += `${typeNames[key]}: ${thisWeek.length}\n`;
                         thisWeek.forEach(check => {
-                            const kwInfo = check.meta.kw ? ` (KW ${check.meta.kw})` : '';
-                            summary += `  • ${check.meta.datum}${kwInfo} - ${check.meta.mitarbeiter || check.meta.user}\n`;
+                            summary += `  • ${check.meta.datum} - ${check.meta.mitarbeiter || check.meta.user}\n`;
                         });
                         summary += '\n';
-                        weeklyChecks = weeklyChecks.concat(thisWeek.map(c => ({...c, sourceType: typeNames[key]})));
+                        weeklyChecks = weeklyChecks.concat(thisWeek);
                     }
-                } catch (e) {
-                    console.error('Error loading ' + key, e);
-                }
+                } catch (e) {}
             });
             
             if (weeklyChecks.length === 0) {
@@ -2644,18 +2772,38 @@ ${currentUser ? currentUser.name : 'Gesundheitszentrum Rastatt'}`
                 return;
             }
             
-            summary += `\nGesamt: ${weeklyChecks.length} Protokolle\n`;
-            summary += `\n${'='.repeat(40)}\n`;
-            summary += `Bitte die einzelnen PDF-Dateien aus dem Archiv exportieren\nund als Anhang zu dieser E-Mail hinzufügen.`;
+            summary += `Gesamt: ${weeklyChecks.length} Protokolle`;
             
-            // Open email
-            const subject = encodeURIComponent(`Wochenexport KW ${kw} - Gesundheitszentrum Rastatt`);
-            const body = encodeURIComponent(summary);
+            // Create text file for summary
+            const blob = new Blob([summary], { type: 'text/plain' });
+            const fileName = `Wochenexport_KW${kw}_${now.toISOString().split('T')[0]}.txt`;
+            const file = new File([blob], fileName, { type: 'text/plain' });
             
-            window.location.href = `mailto:${TEAM_EMAIL}?subject=${subject}&body=${body}`;
+            try {
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: `Wochenexport KW ${kw}`,
+                        text: summary
+                    });
+                } else {
+                    // Fallback
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    alert('Export wurde heruntergeladen.\n\nBitte in Teams/OneDrive hochladen.');
+                }
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    alert('Export:\n\n' + summary);
+                }
+            }
         }
         
-        function sendArchivedCheckEmail() {
+        async function shareArchivedCheck() {
             if (!currentArchivedCheck) {
                 alert('Kein Protokoll ausgewählt.');
                 return;
@@ -2672,28 +2820,27 @@ ${currentUser ? currentUser.name : 'Gesundheitszentrum Rastatt'}`
             else if (type === 'reinigung') typeName = 'Reinigungsplan';
             
             const dateStr = meta.datum || new Date().toLocaleDateString('de-DE');
-            const kwStr = meta.kw ? `KW ${meta.kw}` : '';
+            const fileName = `${typeName.replace(/\s+/g, '_')}_${dateStr.replace(/\./g, '-')}_${(meta.mitarbeiter || meta.user || 'Unbekannt').replace(/\s+/g, '_')}.pdf`;
             
-            // Build email
-            const subject = encodeURIComponent(`${typeName} - ${kwStr || dateStr} - ${meta.mitarbeiter || meta.user}`);
-            const body = encodeURIComponent(
-`Guten Tag,
-
-anbei das Protokoll des ${typeName}.
-
-Datum: ${dateStr}${kwStr ? `\nKalenderwoche: ${kwStr}` : ''}
-Mitarbeiter: ${meta.mitarbeiter || meta.user}
-Standort: ${meta.standort}
-Uhrzeit: ${meta.uhrzeit}
-
-Hinweis: Bitte exportieren Sie die PDF-Datei aus dem Archiv
-und fügen Sie diese als Anhang hinzu.
-
-Mit freundlichen Grüßen
-Gesundheitszentrum Rastatt`
-            );
+            // Create summary text
+            const summary = `${typeName}\nDatum: ${dateStr}\nMitarbeiter: ${meta.mitarbeiter || meta.user}\nStandort: ${meta.standort}`;
             
-            window.location.href = `mailto:${TEAM_EMAIL}?subject=${subject}&body=${body}`;
+            // For archived checks, we need to regenerate or use stored data
+            // Simplified: just share the info and prompt to export PDF
+            try {
+                if (navigator.share) {
+                    await navigator.share({
+                        title: `${typeName} - ${dateStr}`,
+                        text: summary + '\n\nBitte das PDF aus dem Archiv exportieren und in Teams/OneDrive ablegen.'
+                    });
+                } else {
+                    alert(summary + '\n\nBitte das PDF exportieren und in Teams/OneDrive ablegen.');
+                }
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    alert('Bitte das PDF exportieren und manuell in Teams/OneDrive ablegen.');
+                }
+            }
         }
 
         // INIT
