@@ -426,6 +426,10 @@
         .success-detail-label { color: var(--text-secondary); }
         .success-detail-value { font-weight: 600; font-family: 'JetBrains Mono', monospace; }
         .success-actions { display: flex; gap: 12px; width: 100%; max-width: 400px; }
+        .success-hint { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; margin: 20px 0 0 0; text-align: left; width: 100%; max-width: 400px; }
+        .success-hint p { margin: 0 0 8px 0; font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
+        .success-hint p:last-child { margin-bottom: 0; }
+        .success-hint strong { color: var(--text-primary); }
         .success-actions .btn { flex: 1; }
 
         @media (max-width: 600px) { .tiles-grid { grid-template-columns: 1fr; } .tile { padding: 20px; } .toggle-switch { width: 64px; height: 40px; } .toggle-slider:before { height: 32px; width: 32px; } .toggle-switch input:checked + .toggle-slider:before { transform: translateX(24px); } }
@@ -706,11 +710,6 @@
             <div class="header-top">
                 <button class="back-btn" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
                 <h1 class="header-title">Archiv</h1>
-                <div class="header-actions">
-                    <button class="header-btn" onclick="openSharePoint()" title="SharePoint Archiv öffnen" style="background:linear-gradient(135deg, #0078d4 0%, #005a9e 100%);">
-                        <svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
-                    </button>
-                </div>
             </div>
         </header>
         <div class="archive-container" id="archiveContainer"><div class="archive-loading">Lade...</div></div>
@@ -794,23 +793,24 @@
         <p class="success-message">Der Ambulanzcheck wurde erfolgreich abgeschlossen.</p>
         <div class="success-details"><div class="success-detail"><span class="success-detail-label">Dokument-ID</span><span class="success-detail-value" id="successDocId" style="font-family:'JetBrains Mono',monospace;color:var(--accent);"></span></div><div class="success-detail"><span class="success-detail-label">Datum</span><span class="success-detail-value" id="successDate"></span></div><div class="success-detail"><span class="success-detail-label">Mitarbeiter</span><span class="success-detail-value" id="successEmployee"></span></div><div class="success-detail"><span class="success-detail-label">Punkte</span><span class="success-detail-value" id="successItems"></span></div></div>
         <div class="success-actions">
-            <button class="btn btn-primary" onclick="downloadProtocolPDF()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>PDF öffnen & speichern</button>
-            <button class="btn btn-share" onclick="openSharePoint()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>SharePoint Archiv öffnen</button>
+            <button class="btn btn-primary" onclick="openProtocolPDF()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg>PDF öffnen</button>
         </div>
-        <div class="success-actions" style="margin-top:12px;">
+        <div class="success-hint">
+            <p>📤 Auf <strong>⬆️ Teilen</strong> drücken → <strong>Teams</strong> wählen → An <strong>Archiv</strong> senden!</p>
+        </div>
+        <div class="success-actions" style="margin-top:16px;">
             <button class="btn btn-secondary" onclick="openApp('archiv')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27z"/></svg>Archiv</button>
             <button class="btn btn-secondary" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Dashboard</button>
         </div>
     </div>
 
     <!-- DETAIL MODAL -->
-    <div class="modal-overlay" id="detailModal"><div class="modal" style="max-width:600px;"><h2 class="modal-title" id="detailTitle">Details</h2><p class="modal-subtitle" id="detailSubtitle"></p><div id="detailContent"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="document.getElementById('detailModal').classList.remove('active')">Schließen</button><button class="btn btn-share" onclick="openSharePoint()"><svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>SharePoint</button><button class="btn btn-primary" id="deleteCheckBtn" onclick="deleteCheck()" style="background:#e74c3c;display:none;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>Löschen</button></div></div></div>
+    <div class="modal-overlay" id="detailModal"><div class="modal" style="max-width:600px;"><h2 class="modal-title" id="detailTitle">Details</h2><p class="modal-subtitle" id="detailSubtitle"></p><div id="detailContent"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="document.getElementById('detailModal').classList.remove('active')">Schließen</button><button class="btn btn-primary" id="deleteCheckBtn" onclick="deleteCheck()" style="background:#e74c3c;display:none;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>Löschen</button></div></div></div>
 
     <script>
         // USERS - Admin ist fest, andere aus localStorage
         const ADMIN_PIN = '5400';
         const SESSION_TIMEOUT_MIN = 15; // Automatischer Logout nach 15 Minuten
-        const SHAREPOINT_ARCHIV_URL = 'https://corpdir.sharepoint.com/:f:/r/sites/DWT_Gesundheitszentrum_Rastatt-Sani-Reko/Shared%20Documents/Archiv?csf=1&web=1&e=QRezU2';
         let sessionTimer = null;
         let lastActivity = Date.now();
         
@@ -2910,8 +2910,8 @@
             } catch (e) { alert('Fehler: ' + e.message); }
         }
 
-        // EINFACHE DOWNLOAD & SHAREPOINT FUNKTIONEN
-        function downloadProtocolPDF() {
+        // EINFACHE PDF & SHAREPOINT FUNKTIONEN
+        function openProtocolPDF() {
             if (!lastSavedCheck) {
                 alert('Kein Protokoll vorhanden.');
                 return;
@@ -2919,13 +2919,7 @@
             
             const check = lastSavedCheck;
             
-            // iPad/iOS Hinweis
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            if (isIOS) {
-                alert('PDF wird geöffnet.\n\nZum Speichern:\n1. Tippe auf das Teilen-Symbol (⬆️)\n2. Wähle "In Dateien sichern"\n3. Wähle einen Ordner');
-            }
-            
-            // Use the existing exportPDF functions
+            // PDF öffnen
             if (check.type === 'reinigung') {
                 exportReinigungPDF();
             } else {
@@ -2935,12 +2929,7 @@
             // Mark as exported
             markAsExported(check.storageKey, check.data.id);
             updateExportBadge();
-            addAuditEntry('PDF_HERUNTERGELADEN', `${check.title} (${check.data.docId}) als PDF exportiert`);
-        }
-        
-        function openSharePoint() {
-            window.open(SHAREPOINT_ARCHIV_URL, '_blank');
-            addAuditEntry('SHAREPOINT_GEÖFFNET', 'SharePoint Archiv-Ordner geöffnet');
+            addAuditEntry('PDF_EXPORTIERT', `${check.title} (${check.data.docId}) als PDF exportiert`);
         }
 
         // INIT
