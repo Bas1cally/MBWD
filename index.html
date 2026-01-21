@@ -707,8 +707,8 @@
                 <button class="back-btn" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
                 <h1 class="header-title">Archiv</h1>
                 <div class="header-actions">
-                    <button class="header-btn" onclick="shareWeeklyExport()" title="Wochenexport teilen" style="background:linear-gradient(135deg, #0078d4 0%, #005a9e 100%);">
-                        <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
+                    <button class="header-btn" onclick="openSharePoint()" title="SharePoint Archiv öffnen" style="background:linear-gradient(135deg, #0078d4 0%, #005a9e 100%);">
+                        <svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
                     </button>
                 </div>
             </div>
@@ -794,14 +794,17 @@
         <p class="success-message">Der Ambulanzcheck wurde erfolgreich abgeschlossen.</p>
         <div class="success-details"><div class="success-detail"><span class="success-detail-label">Dokument-ID</span><span class="success-detail-value" id="successDocId" style="font-family:'JetBrains Mono',monospace;color:var(--accent);"></span></div><div class="success-detail"><span class="success-detail-label">Datum</span><span class="success-detail-value" id="successDate"></span></div><div class="success-detail"><span class="success-detail-label">Mitarbeiter</span><span class="success-detail-value" id="successEmployee"></span></div><div class="success-detail"><span class="success-detail-label">Punkte</span><span class="success-detail-value" id="successItems"></span></div></div>
         <div class="success-actions">
-            <button class="btn btn-share" onclick="shareProtocol()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>In Teams/OneDrive ablegen</button>
+            <button class="btn btn-primary" onclick="downloadProtocolPDF()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>PDF herunterladen</button>
+            <button class="btn btn-share" onclick="openSharePoint()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>SharePoint Archiv öffnen</button>
+        </div>
+        <div class="success-actions" style="margin-top:12px;">
             <button class="btn btn-secondary" onclick="openApp('archiv')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27z"/></svg>Archiv</button>
-            <button class="btn btn-primary" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Dashboard</button>
+            <button class="btn btn-secondary" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Dashboard</button>
         </div>
     </div>
 
     <!-- DETAIL MODAL -->
-    <div class="modal-overlay" id="detailModal"><div class="modal" style="max-width:600px;"><h2 class="modal-title" id="detailTitle">Details</h2><p class="modal-subtitle" id="detailSubtitle"></p><div id="detailContent"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="document.getElementById('detailModal').classList.remove('active')">Schließen</button><button class="btn btn-share" id="shareCheckBtn" onclick="shareArchivedCheck()" style="display:none;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>Teilen</button><button class="btn btn-primary" id="deleteCheckBtn" onclick="deleteCheck()" style="background:#e74c3c;display:none;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>Löschen</button></div></div></div>
+    <div class="modal-overlay" id="detailModal"><div class="modal" style="max-width:600px;"><h2 class="modal-title" id="detailTitle">Details</h2><p class="modal-subtitle" id="detailSubtitle"></p><div id="detailContent"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="document.getElementById('detailModal').classList.remove('active')">Schließen</button><button class="btn btn-share" onclick="openSharePoint()"><svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>SharePoint</button><button class="btn btn-primary" id="deleteCheckBtn" onclick="deleteCheck()" style="background:#e74c3c;display:none;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>Löschen</button></div></div></div>
 
     <script>
         // USERS - Admin ist fest, andere aus localStorage
@@ -2825,8 +2828,6 @@
                 
                 // Show delete button only for admin
                 document.getElementById('deleteCheckBtn').style.display = currentUser && currentUser.role === 'admin' ? 'flex' : 'none';
-                // Show email button always
-                document.getElementById('shareCheckBtn').style.display = 'flex';
                 
                 let h = '';
                 
@@ -2909,325 +2910,31 @@
             } catch (e) { alert('Fehler: ' + e.message); }
         }
 
-        // SHARE FUNKTIONEN (Web Share API für Teams/OneDrive)
-        async function generatePDFBlob(type) {
-            // Generate PDF and return as blob
-            return new Promise((resolve) => {
-                var theChecklistData, theChecklistState, theCommentsState, theSignatureData, employeeName, docId, pdfTitle, headerColor;
-                
-                if (type === 'ambulanz') {
-                    theChecklistData = checklistData;
-                    theChecklistState = checklistState;
-                    theCommentsState = commentsState;
-                    theSignatureData = signatureData;
-                    employeeName = document.getElementById('employeeName').value || 'Nicht angegeben';
-                    docId = '054-CL-001';
-                    pdfTitle = 'Ambulanzcheck';
-                    headerColor = [200, 30, 45];
-                } else if (type === 'mpg') {
-                    theChecklistData = mpgChecklistData;
-                    theChecklistState = mpgChecklistState;
-                    theCommentsState = mpgCommentsState;
-                    theSignatureData = mpgSignatureData;
-                    employeeName = document.getElementById('mpgEmployeeName').value || 'Nicht angegeben';
-                    docId = '054-CL-002';
-                    pdfTitle = 'MPG-Check RTW';
-                    headerColor = [41, 128, 185];
-                } else if (type === 'wochen') {
-                    theChecklistData = wochenChecklistData;
-                    theChecklistState = wochenChecklistState;
-                    theCommentsState = wochenCommentsState;
-                    theSignatureData = wochenSignatureData;
-                    employeeName = document.getElementById('wochenEmployeeName').value || 'Nicht angegeben';
-                    docId = '054-CL-003';
-                    pdfTitle = 'RTW Wochencheck';
-                    headerColor = [230, 126, 34];
-                }
-                
-                var { jsPDF } = window.jspdf;
-                var doc = new jsPDF();
-                var now = new Date();
-                var kw = getWeekNumber(now);
-                var dateStr = now.toLocaleDateString('de-DE');
-                var timeStr = now.toLocaleTimeString('de-DE');
-                var shortDate = now.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' });
-                
-                // Header
-                doc.setFillColor(headerColor[0], headerColor[1], headerColor[2]);
-                doc.rect(0, 0, 210, 35, 'F');
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(20);
-                doc.setFont('helvetica', 'bold');
-                doc.text(pdfTitle, 15, 18);
-                doc.setFontSize(11);
-                doc.setFont('helvetica', 'normal');
-                doc.text('Mercedes-Benz Gesundheitszentrum Rastatt', 15, 28);
-                doc.setFontSize(10);
-                if (type === 'wochen') {
-                    doc.text('KW ' + kw, 195, 15, { align: 'right' });
-                } else {
-                    doc.text(dateStr, 195, 15, { align: 'right' });
-                }
-                doc.text(timeStr, 195, 22, { align: 'right' });
-                
-                // Meta info
-                doc.setTextColor(0, 0, 0);
-                var y = 45;
-                doc.setFontSize(10);
-                if (type === 'wochen') {
-                    doc.text('Kalenderwoche:', 15, y);
-                    doc.text('KW ' + kw, 50, y);
-                    doc.text('Mitarbeiter:', 110, y);
-                } else {
-                    doc.text('Datum:', 15, y);
-                    doc.text(dateStr + ' ' + timeStr, 35, y);
-                    doc.text('Mitarbeiter:', 110, y);
-                }
-                doc.text(employeeName, 140, y);
-                
-                y = 55;
-                
-                // Build content (simplified for blob generation)
-                theChecklistData.forEach(function(s) {
-                    if (y > 250) {
-                        doc.addPage();
-                        y = 20;
-                    }
-                    doc.setFillColor(240, 240, 240);
-                    doc.rect(15, y - 5, 180, 8, 'F');
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(11);
-                    doc.text(s.title, 17, y);
-                    y += 10;
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(9);
-                    
-                    s.items.forEach(function(it, i) {
-                        if (y > 270) {
-                            doc.addPage();
-                            y = 20;
-                        }
-                        var key = s.id + '-' + i;
-                        var itemText = typeof it === 'object' ? it.text : it;
-                        var checked = theChecklistState[key];
-                        
-                        // Graphische Checkbox
-                        if (checked) {
-                            doc.setFillColor(46, 204, 113);
-                            doc.rect(17, y - 3, 4, 4, 'F');
-                            doc.setDrawColor(255, 255, 255);
-                            doc.setLineWidth(0.5);
-                            doc.line(18, y - 0.8, 19, y + 0.3);
-                            doc.line(19, y + 0.3, 20.5, y - 2.2);
-                        } else {
-                            doc.setDrawColor(150, 150, 150);
-                            doc.setFillColor(245, 245, 245);
-                            doc.rect(17, y - 3, 4, 4, 'FD');
-                        }
-                        doc.setDrawColor(0, 0, 0);
-                        doc.setLineWidth(0.1);
-                        doc.setTextColor(0, 0, 0);
-                        
-                        doc.text(itemText.substring(0, 75), 24, y);
-                        y += 6;
-                    });
-                    y += 5;
-                });
-                
-                // Signature
-                if (theSignatureData) {
-                    if (y > 240) {
-                        doc.addPage();
-                        y = 20;
-                    }
-                    y += 5;
-                    doc.setFont('helvetica', 'bold');
-                    doc.text('Unterschrift:', 15, y);
-                    doc.addImage(theSignatureData, 'PNG', 15, y + 2, 50, 20);
-                }
-                
-                resolve(doc.output('blob'));
-            });
-        }
-        
-        async function shareProtocol() {
+        // EINFACHE DOWNLOAD & SHAREPOINT FUNKTIONEN
+        function downloadProtocolPDF() {
             if (!lastSavedCheck) {
-                alert('Kein Protokoll zum Teilen vorhanden.');
+                alert('Kein Protokoll vorhanden.');
                 return;
             }
             
             const check = lastSavedCheck;
-            const meta = check.data.meta;
-            const dateStr = meta.datum || new Date().toLocaleDateString('de-DE');
-            const kwStr = meta.kw ? `KW ${meta.kw}` : '';
-            const docId = check.data.docId || 'UNKNOWN';
-            const fileName = `${docId}_${check.title.replace(/\s+/g, '_')}_${dateStr.replace(/\./g, '-')}.pdf`;
             
-            try {
-                // Generate PDF
-                let pdfBlob;
-                if (check.type === 'reinigung') {
-                    exportReinigungPDF();
-                    markAsExported(check.storageKey, check.data.id);
-                    updateExportBadge();
-                    // Open SharePoint after short delay
-                    setTimeout(() => {
-                        if (confirm('PDF heruntergeladen!\n\nSharePoint Archiv-Ordner öffnen?')) {
-                            window.open(SHAREPOINT_ARCHIV_URL, '_blank');
-                        }
-                    }, 500);
-                    return;
-                } else {
-                    pdfBlob = await generatePDFBlob(check.type);
-                }
-                
-                const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
-                
-                // Check if Web Share API with files is supported (iOS)
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({
-                        files: [file],
-                        title: `${check.title} - ${kwStr || dateStr}`,
-                        text: `Dokument: ${docId}\nProtokoll: ${check.title}\nDatum: ${dateStr}\nMitarbeiter: ${meta.mitarbeiter || meta.user}`
-                    });
-                    markAsExported(check.storageKey, check.data.id);
-                    updateExportBadge();
-                } else {
-                    // Fallback: Download + SharePoint öffnen
-                    const url = URL.createObjectURL(pdfBlob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = fileName;
-                    a.click();
-                    URL.revokeObjectURL(url);
-                    markAsExported(check.storageKey, check.data.id);
-                    updateExportBadge();
-                    // Open SharePoint after short delay
-                    setTimeout(() => {
-                        if (confirm('PDF heruntergeladen!\n\nSharePoint Archiv-Ordner öffnen?')) {
-                            window.open(SHAREPOINT_ARCHIV_URL, '_blank');
-                        }
-                    }, 500);
-                }
-            } catch (err) {
-                if (err.name !== 'AbortError') {
-                    console.error('Share error:', err);
-                    alert('Teilen fehlgeschlagen. PDF wird heruntergeladen.');
-                    exportPDF(check.type);
-                }
+            // Use the existing exportPDF functions
+            if (check.type === 'reinigung') {
+                exportReinigungPDF();
+            } else {
+                exportPDF(check.type);
             }
+            
+            // Mark as exported
+            markAsExported(check.storageKey, check.data.id);
+            updateExportBadge();
+            addAuditEntry('PDF_HERUNTERGELADEN', `${check.title} (${check.data.docId}) als PDF exportiert`);
         }
         
-        async function shareWeeklyExport() {
-            const kw = getWeekNumber(new Date());
-            const now = new Date();
-            const weekStart = new Date(now);
-            weekStart.setDate(now.getDate() - now.getDay() + 1);
-            const weekEnd = new Date(weekStart);
-            weekEnd.setDate(weekStart.getDate() + 6);
-            
-            const storageKeys = ['ambulanzcheck_archive', 'mpgcheck_archive', 'wochencheck_archive', 'reinigung_archive'];
-            const typeNames = { 'ambulanzcheck_archive': 'Ambulanzcheck', 'mpgcheck_archive': 'MPG-Check', 'wochencheck_archive': 'Wochencheck', 'reinigung_archive': 'Reinigungsplan' };
-            
-            let weeklyChecks = [];
-            let summary = `WOCHENEXPORT KW ${kw}\n`;
-            summary += `Zeitraum: ${weekStart.toLocaleDateString('de-DE')} - ${weekEnd.toLocaleDateString('de-DE')}\n`;
-            summary += `Erstellt: ${now.toLocaleString('de-DE')}\n\n`;
-            
-            storageKeys.forEach(key => {
-                try {
-                    const archive = JSON.parse(localStorage.getItem(key) || '[]');
-                    const thisWeek = archive.filter(check => {
-                        if (!check.meta || !check.meta.datum) return false;
-                        const checkDate = new Date(check.meta.datum);
-                        return checkDate >= weekStart && checkDate <= weekEnd;
-                    });
-                    
-                    if (thisWeek.length > 0) {
-                        summary += `${typeNames[key]}: ${thisWeek.length}\n`;
-                        thisWeek.forEach(check => {
-                            summary += `  • ${check.meta.datum} - ${check.meta.mitarbeiter || check.meta.user}\n`;
-                        });
-                        summary += '\n';
-                        weeklyChecks = weeklyChecks.concat(thisWeek);
-                    }
-                } catch (e) {}
-            });
-            
-            if (weeklyChecks.length === 0) {
-                alert('Keine Protokolle für diese Woche gefunden.');
-                return;
-            }
-            
-            summary += `Gesamt: ${weeklyChecks.length} Protokolle`;
-            
-            // Create text file for summary
-            const blob = new Blob([summary], { type: 'text/plain' });
-            const fileName = `Wochenexport_KW${kw}_${now.toISOString().split('T')[0]}.txt`;
-            const file = new File([blob], fileName, { type: 'text/plain' });
-            
-            try {
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({
-                        files: [file],
-                        title: `Wochenexport KW ${kw}`,
-                        text: summary
-                    });
-                } else {
-                    // Fallback
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = fileName;
-                    a.click();
-                    URL.revokeObjectURL(url);
-                    alert('Export wurde heruntergeladen.\n\nBitte in Teams/OneDrive hochladen.');
-                }
-            } catch (err) {
-                if (err.name !== 'AbortError') {
-                    alert('Export:\n\n' + summary);
-                }
-            }
-        }
-        
-        async function shareArchivedCheck() {
-            if (!currentArchivedCheck) {
-                alert('Kein Protokoll ausgewählt.');
-                return;
-            }
-            
-            const check = currentArchivedCheck.check;
-            const type = currentArchivedCheck.type;
-            const meta = check.meta;
-            
-            let typeName;
-            if (type === 'ambulanz') typeName = 'Ambulanzcheck';
-            else if (type === 'mpg') typeName = 'MPG-Check RTW';
-            else if (type === 'wochen') typeName = 'RTW Wochencheck';
-            else if (type === 'reinigung') typeName = 'Reinigungsplan';
-            
-            const dateStr = meta.datum || new Date().toLocaleDateString('de-DE');
-            const fileName = `${typeName.replace(/\s+/g, '_')}_${dateStr.replace(/\./g, '-')}_${(meta.mitarbeiter || meta.user || 'Unbekannt').replace(/\s+/g, '_')}.pdf`;
-            
-            // Create summary text
-            const summary = `${typeName}\nDatum: ${dateStr}\nMitarbeiter: ${meta.mitarbeiter || meta.user}\nStandort: ${meta.standort}`;
-            
-            // For archived checks, we need to regenerate or use stored data
-            // Simplified: just share the info and prompt to export PDF
-            try {
-                if (navigator.share) {
-                    await navigator.share({
-                        title: `${typeName} - ${dateStr}`,
-                        text: summary + '\n\nBitte das PDF aus dem Archiv exportieren und in Teams/OneDrive ablegen.'
-                    });
-                } else {
-                    alert(summary + '\n\nBitte das PDF exportieren und in Teams/OneDrive ablegen.');
-                }
-            } catch (err) {
-                if (err.name !== 'AbortError') {
-                    alert('Bitte das PDF exportieren und manuell in Teams/OneDrive ablegen.');
-                }
-            }
+        function openSharePoint() {
+            window.open(SHAREPOINT_ARCHIV_URL, '_blank');
+            addAuditEntry('SHAREPOINT_GEÖFFNET', 'SharePoint Archiv-Ordner geöffnet');
         }
 
         // INIT
