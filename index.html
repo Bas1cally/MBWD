@@ -384,6 +384,13 @@
         .meldung-meta { font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
         .meldung-zustaendig { font-size: 11px; padding: 3px 8px; border-radius: 4px; background: var(--bg-secondary); color: var(--text-muted); }
         .meldung-zustaendig.fuer-mich { background: #f39c12; color: #000; font-weight: 600; }
+        .meldung-zustaendig.in-bearbeitung { background: #27ae60; color: #fff; font-weight: 600; }
+        .meldung-rueckmeldung { background: rgba(39, 174, 96, 0.15); border: 1px solid rgba(39, 174, 96, 0.3); border-radius: var(--radius); padding: 12px; margin: 10px 0; font-size: 13px; line-height: 1.5; }
+        .meldung-rueckmeldung strong { color: #27ae60; }
+        .rueckmeldung-zeit { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+        .meldung-action-btn.rueckmeldung:hover { color: #3498db; }
+        .meldung-action-btn.erledigt:hover { color: #27ae60; }
+        .status-bearbeitung { border-left: 4px solid #27ae60 !important; }
         .meldung-blink { animation: meldungBlink 1.5s ease-in-out infinite; }
         @keyframes meldungBlink { 0%, 100% { box-shadow: 0 0 0 0 rgba(243, 156, 18, 0); } 50% { box-shadow: 0 0 20px 4px rgba(243, 156, 18, 0.6); } }
         .meldung-actions { display: flex; gap: 8px; }
@@ -425,7 +432,13 @@
         .benutzer-item-info { flex: 1; }
         .benutzer-item-kuerzel { font-size: 14px; font-weight: 700; color: var(--accent); font-family: 'JetBrains Mono', monospace; }
         .benutzer-item-name { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
-        .benutzer-item-funktion { font-size: 11px; color: var(--text-muted); margin-top: 4px; padding: 2px 8px; background: var(--bg-secondary); border-radius: 4px; display: inline-block; }
+        .benutzer-item-funktion { font-size: 11px; color: var(--text-muted); margin-top: 4px; padding: 2px 8px; background: var(--bg-secondary); border-radius: 4px; display: inline-block; margin-right: 4px; margin-bottom: 4px; }
+        .benutzer-item-funktionen { margin-top: 6px; }
+        .funktionen-checkboxes { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+        .funktion-checkbox { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; font-size: 14px; }
+        .funktion-checkbox:hover { border-color: var(--text-muted); }
+        .funktion-checkbox input { cursor: pointer; width: 18px; height: 18px; }
+        .funktion-checkbox input:checked + span { color: var(--accent); }
         .benutzer-item-delete { width: 36px; height: 36px; background: rgba(231, 76, 60, 0.2); border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
         .benutzer-item-delete:hover { background: #e74c3c; }
         .benutzer-item-delete svg { width: 18px; height: 18px; fill: #e74c3c; }
@@ -808,6 +821,14 @@
                     Digitale Einsatzdokumentation nach<br>
                     docyou & SAA-NFS 2026 Standard
                 </p>
+                <div class="einsatz-features">
+                    <div class="einsatz-feature">📋 Einsatzdaten</div>
+                    <div class="einsatz-feature">👤 Patientendaten</div>
+                    <div class="einsatz-feature">💓 Vitalwerte</div>
+                    <div class="einsatz-feature">💊 Maßnahmen</div>
+                    <div class="einsatz-feature">🏥 Übergabe</div>
+                    <div class="einsatz-feature">✍️ Unterschriften</div>
+                </div>
             </div>
         </div>
     </div>
@@ -847,12 +868,15 @@
                     <label class="meldung-label">Zuständig</label>
                     <select class="meldung-select" id="meldungZustaendig">
                         <option value="alle">👥 Alle</option>
-                        <option value="schichtleiter">📋 Schichtleiter</option>
+                        <option value="arzt">👨‍⚕️ Arzt</option>
+                        <option value="koordinator">📋 Koordinator / Dienstplaner</option>
                         <option value="mpg">🔧 MPG-Beauftragter</option>
                         <option value="fahrzeug">🚑 Fahrzeug-Beauftragter</option>
                         <option value="medikamente">💊 Medikamenten-Beauftragter</option>
                         <option value="hygiene">🧴 Hygiene-Beauftragter</option>
-                        <option value="geraete">📟 Geräte-Beauftragter</option>
+                        <option value="lager">📦 Lager / Verbandsmaterial</option>
+                        <option value="it">💻 IT Admin</option>
+                        <option value="banf">📝 BANF-Ersteller</option>
                     </select>
                 </div>
                 <div class="meldung-field">
@@ -878,34 +902,21 @@
             </div>
         </div>
     </div>
-        <header class="app-header" style="border-left: 4px solid #dc2626;">
-            <div class="header-top">
-                <button class="back-btn" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
-                <h1 class="header-title">Einsatzprotokoll</h1>
-            </div>
-            <div class="header-meta">
-                <span style="color: var(--text-muted);">WD Rastatt - Sani-Reko</span>
-            </div>
-        </header>
-        <div class="einsatz-container">
-            <div class="einsatz-coming-soon">
-                <div class="einsatz-icon">
-                    <svg viewBox="0 0 24 24" width="80" height="80" fill="#dc2626"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm6 11h-3v3h-2v-3H8v-2h3v-3h2v3h3v2z"/></svg>
+
+    <!-- RÜCKMELDUNG MODAL -->
+    <div class="modal-overlay" id="rueckmeldungModal">
+        <div class="modal" style="max-width:450px;">
+            <h2 class="modal-title">📝 Rückmeldung geben</h2>
+            <p class="modal-subtitle" id="rueckmeldungTitel" style="color:var(--text-secondary);margin-bottom:16px;"></p>
+            <div class="meldung-form">
+                <div class="meldung-field">
+                    <label class="meldung-label">Deine Rückmeldung</label>
+                    <textarea class="meldung-textarea" id="rueckmeldungText" placeholder="z.B. Neues Gerät bestellt, kommt voraussichtlich Montag..." rows="4"></textarea>
                 </div>
-                <h2>Einsatzprotokoll</h2>
-                <p>In Entwicklung</p>
-                <p style="font-size: 13px; color: var(--text-muted); margin-top: 16px;">
-                    Digitale Einsatzdokumentation nach<br>
-                    docyou & SAA-NFS 2026 Standard
-                </p>
-                <div class="einsatz-features">
-                    <div class="einsatz-feature">📋 Einsatzdaten</div>
-                    <div class="einsatz-feature">👤 Patientendaten</div>
-                    <div class="einsatz-feature">💓 Vitalwerte</div>
-                    <div class="einsatz-feature">💊 Maßnahmen</div>
-                    <div class="einsatz-feature">🏥 Übergabe</div>
-                    <div class="einsatz-feature">✍️ Unterschriften</div>
-                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeRueckmeldungModal()">Abbrechen</button>
+                <button class="btn btn-primary" onclick="saveRueckmeldung()" style="background:#27ae60;">Rückmeldung speichern</button>
             </div>
         </div>
     </div>
@@ -952,16 +963,18 @@
                         <input type="password" class="benutzer-input" id="newUserPin" placeholder="****" maxlength="4" pattern="[0-9]*" inputmode="numeric">
                     </div>
                     <div class="benutzer-field">
-                        <label class="benutzer-label">Funktion / Zuständigkeit</label>
-                        <select class="benutzer-input" id="newUserFunktion">
-                            <option value="sanitaeter">👨‍⚕️ Sanitäter</option>
-                            <option value="schichtleiter">📋 Schichtleiter</option>
-                            <option value="mpg">🔧 MPG-Beauftragter</option>
-                            <option value="fahrzeug">🚑 Fahrzeug-Beauftragter</option>
-                            <option value="medikamente">💊 Medikamenten-Beauftragter</option>
-                            <option value="hygiene">🧴 Hygiene-Beauftragter</option>
-                            <option value="geraete">📟 Geräte-Beauftragter</option>
-                        </select>
+                        <label class="benutzer-label">Funktionen / Zuständigkeiten (Mehrfachauswahl)</label>
+                        <div class="funktionen-checkboxes" id="newUserFunktionen">
+                            <label class="funktion-checkbox"><input type="checkbox" value="arzt"> 👨‍⚕️ Arzt</label>
+                            <label class="funktion-checkbox"><input type="checkbox" value="koordinator"> 📋 Koordinator / Dienstplaner</label>
+                            <label class="funktion-checkbox"><input type="checkbox" value="mpg"> 🔧 MPG-Beauftragter</label>
+                            <label class="funktion-checkbox"><input type="checkbox" value="fahrzeug"> 🚑 Fahrzeug-Beauftragter</label>
+                            <label class="funktion-checkbox"><input type="checkbox" value="medikamente"> 💊 Medikamenten-Beauftragter</label>
+                            <label class="funktion-checkbox"><input type="checkbox" value="hygiene"> 🧴 Hygiene-Beauftragter</label>
+                            <label class="funktion-checkbox"><input type="checkbox" value="lager"> 📦 Lager / Verbandsmaterial</label>
+                            <label class="funktion-checkbox"><input type="checkbox" value="it"> 💻 IT Admin</label>
+                            <label class="funktion-checkbox"><input type="checkbox" value="banf"> 📝 BANF-Ersteller</label>
+                        </div>
                     </div>
                     <button class="btn btn-primary" onclick="addUser()">
                         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
@@ -1300,7 +1313,7 @@
             // User Login
             const users = getUsers();
             if (users[kuerzel] && users[kuerzel].pin === currentPin) {
-                currentUser = { role: 'user', name: users[kuerzel].name, kuerzel: kuerzel, funktion: users[kuerzel].funktion || 'sanitaeter' };
+                currentUser = { role: 'user', name: users[kuerzel].name, kuerzel: kuerzel, funktionen: users[kuerzel].funktionen || (users[kuerzel].funktion ? [users[kuerzel].funktion] : []) };
                 loginSuccess();
                 return;
             }
@@ -1351,13 +1364,15 @@
         // BENUTZERVERWALTUNG
         // Funktionen-Labels
         const FUNKTIONEN = {
-            'sanitaeter': '👨‍⚕️ Sanitäter',
-            'schichtleiter': '📋 Schichtleiter',
+            'arzt': '👨‍⚕️ Arzt',
+            'koordinator': '📋 Koordinator / Dienstplaner',
             'mpg': '🔧 MPG-Beauftragter',
             'fahrzeug': '🚑 Fahrzeug-Beauftragter',
             'medikamente': '💊 Medikamenten-Beauftragter',
             'hygiene': '🧴 Hygiene-Beauftragter',
-            'geraete': '📟 Geräte-Beauftragter'
+            'lager': '📦 Lager / Verbandsmaterial',
+            'it': '💻 IT Admin',
+            'banf': '📝 BANF-Ersteller'
         };
         
         function loadBenutzerList() {
@@ -1372,13 +1387,18 @@
             
             list.innerHTML = userKeys.map(kuerzel => {
                 const user = users[kuerzel];
-                const funktionLabel = FUNKTIONEN[user.funktion] || '👨‍⚕️ Sanitäter';
+                // Unterstütze beide Formate: alte (funktion) und neue (funktionen)
+                const userFunktionen = user.funktionen || (user.funktion ? [user.funktion] : []);
+                const funktionenLabels = userFunktionen.map(f => FUNKTIONEN[f] || f).join('</span><span class="benutzer-item-funktion">');
+                const funktionenHtml = userFunktionen.length > 0 
+                    ? `<span class="benutzer-item-funktion">${funktionenLabels}</span>` 
+                    : '<span class="benutzer-item-funktion" style="opacity:0.5;">Keine Funktion</span>';
                 return `
                 <div class="benutzer-item">
                     <div class="benutzer-item-info">
                         <div class="benutzer-item-kuerzel">${kuerzel}</div>
                         <div class="benutzer-item-name">${user.name}</div>
-                        <div class="benutzer-item-funktion">${funktionLabel}</div>
+                        <div class="benutzer-item-funktionen">${funktionenHtml}</div>
                     </div>
                     <button class="benutzer-item-delete" onclick="deleteUser('${kuerzel}')" title="Löschen">
                         <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
@@ -1391,7 +1411,10 @@
             const kuerzel = document.getElementById('newUserKuerzel').value.trim().toUpperCase();
             const name = document.getElementById('newUserName').value.trim();
             const pin = document.getElementById('newUserPin').value.trim();
-            const funktion = document.getElementById('newUserFunktion').value;
+            
+            // Alle ausgewählten Funktionen sammeln
+            const checkboxes = document.querySelectorAll('#newUserFunktionen input[type="checkbox"]:checked');
+            const funktionen = Array.from(checkboxes).map(cb => cb.value);
             
             if (!kuerzel) { alert('Bitte Kürzel eingeben'); return; }
             if (!name) { alert('Bitte Namen eingeben'); return; }
@@ -1403,14 +1426,14 @@
                 if (!confirm(`Benutzer "${kuerzel}" existiert bereits. Überschreiben?`)) return;
             }
             
-            users[kuerzel] = { name: name, pin: pin, funktion: funktion };
+            users[kuerzel] = { name: name, pin: pin, funktionen: funktionen };
             saveUsers(users);
             
             // Felder leeren
             document.getElementById('newUserKuerzel').value = '';
             document.getElementById('newUserName').value = '';
             document.getElementById('newUserPin').value = '';
-            document.getElementById('newUserFunktion').value = 'sanitaeter';
+            document.querySelectorAll('#newUserFunktionen input[type="checkbox"]').forEach(cb => cb.checked = false);
             
             loadBenutzerList();
             alert(`Benutzer "${kuerzel}" wurde angelegt.`);
@@ -1455,17 +1478,20 @@
         
         function updateMeldungenBadge() {
             const meldungen = getMeldungen();
-            const userFunktion = currentUser ? (currentUser.funktion || 'sanitaeter') : 'sanitaeter';
+            const userFunktionen = currentUser ? (currentUser.funktionen || []) : [];
+            
+            // Hilfsfunktion: Hat User diese Funktion?
+            const hatFunktion = (zustaendig) => userFunktionen.includes(zustaendig);
             
             // Alle aktiven Meldungen die für diesen User relevant sind
             const aktiveMeldungen = meldungen.filter(m => {
                 if (m.erledigt) return false;
-                // Alle sehen "alle" Meldungen oder die für ihre Funktion
-                return !m.zustaendig || m.zustaendig === 'alle' || m.zustaendig === userFunktion;
+                // Alle sehen "alle" Meldungen oder die für ihre Funktion(en)
+                return !m.zustaendig || m.zustaendig === 'alle' || hatFunktion(m.zustaendig);
             });
             
             // Meldungen speziell für mich (blinkend)
-            const fuerMich = meldungen.filter(m => !m.erledigt && m.zustaendig && m.zustaendig !== 'alle' && m.zustaendig === userFunktion);
+            const fuerMich = meldungen.filter(m => !m.erledigt && m.zustaendig && m.zustaendig !== 'alle' && hatFunktion(m.zustaendig));
             
             const badge = document.getElementById('meldungenBadge');
             const preview = document.getElementById('meldungenPreview');
@@ -1501,14 +1527,20 @@
         function loadMeldungen() {
             const meldungen = getMeldungen();
             const container = document.getElementById('meldungenContainer');
-            const userFunktion = currentUser ? (currentUser.funktion || 'sanitaeter') : 'sanitaeter';
+            const userFunktionen = currentUser ? (currentUser.funktionen || []) : [];
             const isAdmin = currentUser && currentUser.role === 'admin';
             
-            if (meldungen.length === 0) {
+            // Hilfsfunktion: Hat User diese Funktion?
+            const hatFunktion = (zustaendig) => userFunktionen.includes(zustaendig);
+            
+            // Nur nicht-erledigte Meldungen anzeigen
+            const aktiveMeldungen = meldungen.filter(m => !m.erledigt);
+            
+            if (aktiveMeldungen.length === 0) {
                 container.innerHTML = `
                     <div class="meldungen-empty">
                         <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                        <p>Keine Meldungen vorhanden.</p>
+                        <p>Keine offenen Meldungen.</p>
                         <p style="font-size:13px;">Tippe auf + um eine neue Meldung zu erstellen.</p>
                     </div>
                 `;
@@ -1524,7 +1556,10 @@
             };
             
             // Sortieren: Hohe Priorität zuerst, dann nach Datum
-            const sorted = [...meldungen].sort((a, b) => {
+            const sorted = [...aktiveMeldungen].sort((a, b) => {
+                // In Bearbeitung nach unten
+                if (a.rueckmeldung && !b.rueckmeldung) return 1;
+                if (!a.rueckmeldung && b.rueckmeldung) return -1;
                 const prioOrder = { 'hoch': 0, 'mittel': 1, 'niedrig': 2 };
                 if (prioOrder[a.prioritaet] !== prioOrder[b.prioritaet]) {
                     return prioOrder[a.prioritaet] - prioOrder[b.prioritaet];
@@ -1539,24 +1574,34 @@
                 
                 // Prüfen ob User zuständig ist
                 const zustaendigLabel = FUNKTIONEN[m.zustaendig] || '👥 Alle';
-                const istZustaendig = !m.zustaendig || m.zustaendig === 'alle' || m.zustaendig === userFunktion || isAdmin;
-                const istFuerMich = m.zustaendig && m.zustaendig !== 'alle' && m.zustaendig === userFunktion;
+                const istZustaendig = !m.zustaendig || m.zustaendig === 'alle' || hatFunktion(m.zustaendig) || isAdmin;
+                const istFuerMich = m.zustaendig && m.zustaendig !== 'alle' && hatFunktion(m.zustaendig);
                 
-                // Blinkend wenn für mich und nicht erledigt
-                const blinkClass = (istFuerMich && !m.erledigt) ? 'meldung-blink' : '';
+                // Status bestimmen
+                const hatRueckmeldung = m.rueckmeldung && m.rueckmeldung.length > 0;
+                const statusClass = hatRueckmeldung ? 'status-bearbeitung' : (istFuerMich ? 'meldung-blink' : '');
+                const statusBorder = hatRueckmeldung ? 'border-left-color: #27ae60 !important;' : '';
                 
                 return `
-                    <div class="meldung-card priority-${m.prioritaet} ${m.erledigt ? 'erledigt' : ''} ${blinkClass}" style="${m.erledigt ? 'opacity:0.6;' : ''}">
+                    <div class="meldung-card priority-${m.prioritaet} ${statusClass}" style="${statusBorder}">
                         <div class="meldung-header">
                             <span class="meldung-kategorie">${kategorieEmoji[m.kategorie] || '📋'} ${m.kategorie}</span>
-                            <span class="meldung-zustaendig ${istFuerMich ? 'fuer-mich' : ''}">${zustaendigLabel}</span>
+                            <span class="meldung-zustaendig ${istFuerMich ? 'fuer-mich' : ''} ${hatRueckmeldung ? 'in-bearbeitung' : ''}">${hatRueckmeldung ? '✅ In Bearbeitung' : zustaendigLabel}</span>
                         </div>
-                        <div class="meldung-titel">${m.erledigt ? '✓ ' : ''}${m.titel}</div>
+                        <div class="meldung-titel">${m.titel}</div>
                         ${m.beschreibung ? `<div class="meldung-beschreibung">${m.beschreibung}</div>` : ''}
+                        ${hatRueckmeldung ? `
+                            <div class="meldung-rueckmeldung">
+                                <strong>📝 Rückmeldung von ${m.rueckmeldungVon}:</strong><br>
+                                ${m.rueckmeldung}
+                                <div class="rueckmeldung-zeit">${new Date(m.rueckmeldungAm).toLocaleString('de-DE')}</div>
+                            </div>
+                        ` : ''}
                         <div class="meldung-meta">
                             <span>👤 ${m.ersteller} • ${dateStr} ${timeStr}</span>
                             <div class="meldung-actions">
-                                ${(!m.erledigt && istZustaendig) ? `<button class="meldung-action-btn" onclick="toggleMeldungErledigt('${m.id}')" title="Als erledigt markieren"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></button>` : ''}
+                                ${(!hatRueckmeldung && istZustaendig) ? `<button class="meldung-action-btn rueckmeldung" onclick="openRueckmeldungModal('${m.id}')" title="Rückmeldung geben"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg></button>` : ''}
+                                ${(hatRueckmeldung && istZustaendig) ? `<button class="meldung-action-btn erledigt" onclick="meldungErledigen('${m.id}')" title="Als erledigt markieren & löschen"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></button>` : ''}
                                 ${isAdmin ? `<button class="meldung-action-btn delete" onclick="deleteMeldung('${m.id}')" title="Löschen"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>` : ''}
                             </div>
                         </div>
@@ -1613,17 +1658,76 @@
             loadMeldungen();
         }
         
-        function toggleMeldungErledigt(id) {
+        // Rückmeldung Modal
+        var currentRueckmeldungId = null;
+        
+        function openRueckmeldungModal(id) {
             const meldungen = getMeldungen();
             const meldung = meldungen.find(m => m.id === id);
-            if (meldung) {
-                meldung.erledigt = !meldung.erledigt;
-                meldung.erledigtVon = currentUser ? currentUser.name : 'Unbekannt';
-                meldung.erledigtAm = new Date().toISOString();
-                saveMeldungen(meldungen);
-                addAuditEntry('MELDUNG_ERLEDIGT', `Meldung erledigt: ${meldung.titel}`);
-                loadMeldungen();
+            if (!meldung) return;
+            
+            currentRueckmeldungId = id;
+            document.getElementById('rueckmeldungTitel').textContent = meldung.titel;
+            document.getElementById('rueckmeldungText').value = '';
+            document.getElementById('rueckmeldungModal').classList.add('active');
+        }
+        
+        function closeRueckmeldungModal() {
+            document.getElementById('rueckmeldungModal').classList.remove('active');
+            currentRueckmeldungId = null;
+        }
+        
+        function saveRueckmeldung() {
+            if (!currentRueckmeldungId) return;
+            
+            const text = document.getElementById('rueckmeldungText').value.trim();
+            if (!text) {
+                alert('Bitte Rückmeldung eingeben.');
+                return;
             }
+            
+            const meldungen = getMeldungen();
+            const meldung = meldungen.find(m => m.id === currentRueckmeldungId);
+            if (meldung) {
+                meldung.rueckmeldung = text;
+                meldung.rueckmeldungVon = currentUser ? currentUser.name : 'Unbekannt';
+                meldung.rueckmeldungVonKuerzel = currentUser ? currentUser.kuerzel : 'UNKNOWN';
+                meldung.rueckmeldungAm = new Date().toISOString();
+                saveMeldungen(meldungen);
+                
+                addAuditEntry('MELDUNG_RUECKMELDUNG', `${currentUser ? currentUser.name : 'Unbekannt'} hat Rückmeldung zu "${meldung.titel}" gegeben: ${text}`);
+            }
+            
+            closeRueckmeldungModal();
+            loadMeldungen();
+            updateMeldungenBadge();
+        }
+        
+        function meldungErledigen(id) {
+            const meldungen = getMeldungen();
+            const meldung = meldungen.find(m => m.id === id);
+            
+            if (!meldung) return;
+            
+            if (!confirm(`Meldung "${meldung.titel}" als erledigt markieren und aus der Liste entfernen?`)) return;
+            
+            // Audit-Log Eintrag
+            addAuditEntry('MELDUNG_ERLEDIGT', `${currentUser ? currentUser.name : 'Unbekannt'} (${currentUser ? currentUser.kuerzel : 'UNKNOWN'}) hat "${meldung.titel}" als erledigt markiert. Rückmeldung war: ${meldung.rueckmeldung || 'Keine'}`);
+            
+            // Meldung als erledigt markieren (wird nicht mehr angezeigt)
+            meldung.erledigt = true;
+            meldung.erledigtVon = currentUser ? currentUser.name : 'Unbekannt';
+            meldung.erledigtVonKuerzel = currentUser ? currentUser.kuerzel : 'UNKNOWN';
+            meldung.erledigtAm = new Date().toISOString();
+            
+            saveMeldungen(meldungen);
+            loadMeldungen();
+            updateMeldungenBadge();
+        }
+        
+        function toggleMeldungErledigt(id) {
+            // Legacy-Funktion - leitet zu meldungErledigen weiter
+            meldungErledigen(id);
         }
         
         function deleteMeldung(id) {
@@ -3446,6 +3550,9 @@
             });
             document.getElementById('meldungModal').addEventListener('click', e => { 
                 if (e.target.id === 'meldungModal') closeMeldungModal(); 
+            });
+            document.getElementById('rueckmeldungModal').addEventListener('click', e => { 
+                if (e.target.id === 'rueckmeldungModal') closeRueckmeldungModal(); 
             });
             
             // Setup session timeout activity listeners
