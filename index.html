@@ -382,6 +382,10 @@
         .meldung-titel { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
         .meldung-beschreibung { font-size: 14px; color: var(--text-secondary); margin-bottom: 10px; line-height: 1.4; }
         .meldung-meta { font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
+        .meldung-zustaendig { font-size: 11px; padding: 3px 8px; border-radius: 4px; background: var(--bg-secondary); color: var(--text-muted); }
+        .meldung-zustaendig.fuer-mich { background: #f39c12; color: #000; font-weight: 600; }
+        .meldung-blink { animation: meldungBlink 1.5s ease-in-out infinite; }
+        @keyframes meldungBlink { 0%, 100% { box-shadow: 0 0 0 0 rgba(243, 156, 18, 0); } 50% { box-shadow: 0 0 20px 4px rgba(243, 156, 18, 0.6); } }
         .meldung-actions { display: flex; gap: 8px; }
         .meldung-action-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; }
         .meldung-action-btn:hover { color: var(--text-primary); }
@@ -421,6 +425,7 @@
         .benutzer-item-info { flex: 1; }
         .benutzer-item-kuerzel { font-size: 14px; font-weight: 700; color: var(--accent); font-family: 'JetBrains Mono', monospace; }
         .benutzer-item-name { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+        .benutzer-item-funktion { font-size: 11px; color: var(--text-muted); margin-top: 4px; padding: 2px 8px; background: var(--bg-secondary); border-radius: 4px; display: inline-block; }
         .benutzer-item-delete { width: 36px; height: 36px; background: rgba(231, 76, 60, 0.2); border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
         .benutzer-item-delete:hover { background: #e74c3c; }
         .benutzer-item-delete svg { width: 18px; height: 18px; fill: #e74c3c; }
@@ -549,6 +554,16 @@
             <div class="dashboard-date" id="dashboardDate"></div>
         </header>
         <div class="tiles-container">
+            <!-- Aktuelle Meldungen - ganz oben -->
+            <div class="tiles-grid" style="margin-bottom:24px;">
+                <div class="tile yellow" onclick="openApp('meldungen')" style="width:100%;max-width:none;">
+                    <span class="tile-badge meldungen" id="meldungenBadge" style="display:none;background:#f39c12;">0</span>
+                    <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></svg></div>
+                    <div class="tile-title">📢 Aktuelle Meldungen</div>
+                    <div class="tile-desc" id="meldungenPreview">Keine aktuellen Meldungen</div>
+                </div>
+            </div>
+            
             <div class="tiles-section-title">Tägliche Aufgaben</div>
             <div class="tiles-grid">
                 <div class="tile red" onclick="openApp('ambulanzcheck')">
@@ -573,12 +588,6 @@
                     <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M19.36 2.72L20.78 4.14l-1.08 1.08c.63.96.91 2.12.64 3.34-.38 1.72-1.8 3.04-3.55 3.31-1.13.18-2.18-.12-3.02-.72L8 16.91V19H6v-2.5l1.5-1.5 1.91-1.91-.85-.85L2 18.8V21h3v-1.69l1.42-1.42L12.5 13c-.6-.84-.9-1.89-.72-3.02.27-1.75 1.59-3.17 3.31-3.55 1.22-.27 2.38.01 3.34.64l1.08-1.08zM17.17 8.83l-2.34-2.34c-.39-.39-.39-1.02 0-1.41l1.41-1.41c.39-.39 1.02-.39 1.41 0l2.34 2.34c.39.39.39 1.02 0 1.41l-1.41 1.41c-.39.39-1.02.39-1.41 0z"/></svg></div>
                     <div class="tile-title">Reinigungsplan</div>
                     <div class="tile-desc">Woechentlicher Reinigungsplan GZ</div>
-                </div>
-                <div class="tile yellow" onclick="openApp('meldungen')">
-                    <span class="tile-badge meldungen" id="meldungenBadge" style="display:none;background:#f39c12;">0</span>
-                    <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></svg></div>
-                    <div class="tile-title">Meldungen</div>
-                    <div class="tile-desc">Aktuelle Meldungen & Hinweise</div>
                 </div>
             </div>
             <div class="tiles-section-title">Einsatzdokumentation</div>
@@ -779,6 +788,29 @@
 
     <!-- EINSATZPROTOKOLL -->
     <div class="screen app-screen" id="einsatzprotokollScreen">
+        <header class="app-header" style="border-left: 4px solid #dc2626;">
+            <div class="header-top">
+                <button class="back-btn" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+                <h1 class="header-title">Einsatzprotokoll</h1>
+            </div>
+            <div class="header-meta">
+                <span style="color: var(--text-muted);">WD Rastatt - Sani-Reko</span>
+            </div>
+        </header>
+        <div class="einsatz-container">
+            <div class="einsatz-coming-soon">
+                <div class="einsatz-icon">
+                    <svg viewBox="0 0 24 24" width="80" height="80" fill="#dc2626"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm6 11h-3v3h-2v-3H8v-2h3v-3h2v3h3v2z"/></svg>
+                </div>
+                <h2>Einsatzprotokoll</h2>
+                <p>In Entwicklung</p>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 16px;">
+                    Digitale Einsatzdokumentation nach<br>
+                    docyou & SAA-NFS 2026 Standard
+                </p>
+            </div>
+        </div>
+    </div>
 
     <!-- MELDUNGEN -->
     <div class="screen app-screen" id="meldungenScreen">
@@ -809,6 +841,18 @@
                         <option value="ablauf">⏰ Ablaufdatum</option>
                         <option value="info">ℹ️ Information</option>
                         <option value="wichtig">⚠️ Wichtig</option>
+                    </select>
+                </div>
+                <div class="meldung-field">
+                    <label class="meldung-label">Zuständig</label>
+                    <select class="meldung-select" id="meldungZustaendig">
+                        <option value="alle">👥 Alle</option>
+                        <option value="schichtleiter">📋 Schichtleiter</option>
+                        <option value="mpg">🔧 MPG-Beauftragter</option>
+                        <option value="fahrzeug">🚑 Fahrzeug-Beauftragter</option>
+                        <option value="medikamente">💊 Medikamenten-Beauftragter</option>
+                        <option value="hygiene">🧴 Hygiene-Beauftragter</option>
+                        <option value="geraete">📟 Geräte-Beauftragter</option>
                     </select>
                 </div>
                 <div class="meldung-field">
@@ -906,6 +950,18 @@
                     <div class="benutzer-field">
                         <label class="benutzer-label">PIN (4-stellig)</label>
                         <input type="password" class="benutzer-input" id="newUserPin" placeholder="****" maxlength="4" pattern="[0-9]*" inputmode="numeric">
+                    </div>
+                    <div class="benutzer-field">
+                        <label class="benutzer-label">Funktion / Zuständigkeit</label>
+                        <select class="benutzer-input" id="newUserFunktion">
+                            <option value="sanitaeter">👨‍⚕️ Sanitäter</option>
+                            <option value="schichtleiter">📋 Schichtleiter</option>
+                            <option value="mpg">🔧 MPG-Beauftragter</option>
+                            <option value="fahrzeug">🚑 Fahrzeug-Beauftragter</option>
+                            <option value="medikamente">💊 Medikamenten-Beauftragter</option>
+                            <option value="hygiene">🧴 Hygiene-Beauftragter</option>
+                            <option value="geraete">📟 Geräte-Beauftragter</option>
+                        </select>
                     </div>
                     <button class="btn btn-primary" onclick="addUser()">
                         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
@@ -1244,7 +1300,7 @@
             // User Login
             const users = getUsers();
             if (users[kuerzel] && users[kuerzel].pin === currentPin) {
-                currentUser = { role: 'user', name: users[kuerzel].name, kuerzel: kuerzel };
+                currentUser = { role: 'user', name: users[kuerzel].name, kuerzel: kuerzel, funktion: users[kuerzel].funktion || 'sanitaeter' };
                 loginSuccess();
                 return;
             }
@@ -1293,6 +1349,17 @@
         }
 
         // BENUTZERVERWALTUNG
+        // Funktionen-Labels
+        const FUNKTIONEN = {
+            'sanitaeter': '👨‍⚕️ Sanitäter',
+            'schichtleiter': '📋 Schichtleiter',
+            'mpg': '🔧 MPG-Beauftragter',
+            'fahrzeug': '🚑 Fahrzeug-Beauftragter',
+            'medikamente': '💊 Medikamenten-Beauftragter',
+            'hygiene': '🧴 Hygiene-Beauftragter',
+            'geraete': '📟 Geräte-Beauftragter'
+        };
+        
         function loadBenutzerList() {
             const users = getUsers();
             const list = document.getElementById('benutzerList');
@@ -1303,23 +1370,28 @@
                 return;
             }
             
-            list.innerHTML = userKeys.map(kuerzel => `
+            list.innerHTML = userKeys.map(kuerzel => {
+                const user = users[kuerzel];
+                const funktionLabel = FUNKTIONEN[user.funktion] || '👨‍⚕️ Sanitäter';
+                return `
                 <div class="benutzer-item">
                     <div class="benutzer-item-info">
                         <div class="benutzer-item-kuerzel">${kuerzel}</div>
-                        <div class="benutzer-item-name">${users[kuerzel].name}</div>
+                        <div class="benutzer-item-name">${user.name}</div>
+                        <div class="benutzer-item-funktion">${funktionLabel}</div>
                     </div>
                     <button class="benutzer-item-delete" onclick="deleteUser('${kuerzel}')" title="Löschen">
                         <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                     </button>
                 </div>
-            `).join('');
+            `}).join('');
         }
         
         function addUser() {
             const kuerzel = document.getElementById('newUserKuerzel').value.trim().toUpperCase();
             const name = document.getElementById('newUserName').value.trim();
             const pin = document.getElementById('newUserPin').value.trim();
+            const funktion = document.getElementById('newUserFunktion').value;
             
             if (!kuerzel) { alert('Bitte Kürzel eingeben'); return; }
             if (!name) { alert('Bitte Namen eingeben'); return; }
@@ -1331,13 +1403,14 @@
                 if (!confirm(`Benutzer "${kuerzel}" existiert bereits. Überschreiben?`)) return;
             }
             
-            users[kuerzel] = { name: name, pin: pin };
+            users[kuerzel] = { name: name, pin: pin, funktion: funktion };
             saveUsers(users);
             
             // Felder leeren
             document.getElementById('newUserKuerzel').value = '';
             document.getElementById('newUserName').value = '';
             document.getElementById('newUserPin').value = '';
+            document.getElementById('newUserFunktion').value = 'sanitaeter';
             
             loadBenutzerList();
             alert(`Benutzer "${kuerzel}" wurde angelegt.`);
@@ -1382,17 +1455,54 @@
         
         function updateMeldungenBadge() {
             const meldungen = getMeldungen();
-            const aktiveMeldungen = meldungen.filter(m => !m.erledigt).length;
+            const userFunktion = currentUser ? (currentUser.funktion || 'sanitaeter') : 'sanitaeter';
+            
+            // Alle aktiven Meldungen die für diesen User relevant sind
+            const aktiveMeldungen = meldungen.filter(m => {
+                if (m.erledigt) return false;
+                // Alle sehen "alle" Meldungen oder die für ihre Funktion
+                return !m.zustaendig || m.zustaendig === 'alle' || m.zustaendig === userFunktion;
+            });
+            
+            // Meldungen speziell für mich (blinkend)
+            const fuerMich = meldungen.filter(m => !m.erledigt && m.zustaendig && m.zustaendig !== 'alle' && m.zustaendig === userFunktion);
+            
             const badge = document.getElementById('meldungenBadge');
+            const preview = document.getElementById('meldungenPreview');
+            
             if (badge) {
-                badge.textContent = aktiveMeldungen;
-                badge.style.display = aktiveMeldungen > 0 ? 'flex' : 'none';
+                badge.textContent = aktiveMeldungen.length;
+                badge.style.display = aktiveMeldungen.length > 0 ? 'flex' : 'none';
+                // Badge blinkt wenn Meldungen für mich da sind
+                if (fuerMich.length > 0) {
+                    badge.style.animation = 'meldungBlink 1.5s ease-in-out infinite';
+                } else {
+                    badge.style.animation = 'none';
+                }
+            }
+            
+            // Vorschau-Text aktualisieren
+            if (preview) {
+                if (fuerMich.length > 0) {
+                    // Zuerst Meldungen für mich anzeigen
+                    const neueste = fuerMich[0];
+                    preview.innerHTML = `<strong style="color:#f39c12;">⚠️ Für dich:</strong> ${neueste.titel}`;
+                } else if (aktiveMeldungen.length === 0) {
+                    preview.textContent = 'Keine aktuellen Meldungen';
+                } else if (aktiveMeldungen.length === 1) {
+                    preview.textContent = aktiveMeldungen[0].titel;
+                } else {
+                    const neueste = aktiveMeldungen.sort((a, b) => new Date(b.datum) - new Date(a.datum))[0];
+                    preview.textContent = `${neueste.titel} (+${aktiveMeldungen.length - 1} weitere)`;
+                }
             }
         }
         
         function loadMeldungen() {
             const meldungen = getMeldungen();
             const container = document.getElementById('meldungenContainer');
+            const userFunktion = currentUser ? (currentUser.funktion || 'sanitaeter') : 'sanitaeter';
+            const isAdmin = currentUser && currentUser.role === 'admin';
             
             if (meldungen.length === 0) {
                 container.innerHTML = `
@@ -1427,19 +1537,28 @@
                 const dateStr = date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' });
                 const timeStr = date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
                 
+                // Prüfen ob User zuständig ist
+                const zustaendigLabel = FUNKTIONEN[m.zustaendig] || '👥 Alle';
+                const istZustaendig = !m.zustaendig || m.zustaendig === 'alle' || m.zustaendig === userFunktion || isAdmin;
+                const istFuerMich = m.zustaendig && m.zustaendig !== 'alle' && m.zustaendig === userFunktion;
+                
+                // Blinkend wenn für mich und nicht erledigt
+                const blinkClass = (istFuerMich && !m.erledigt) ? 'meldung-blink' : '';
+                
                 return `
-                    <div class="meldung-card priority-${m.prioritaet} ${m.erledigt ? 'erledigt' : ''}" style="${m.erledigt ? 'opacity:0.6;' : ''}">
+                    <div class="meldung-card priority-${m.prioritaet} ${m.erledigt ? 'erledigt' : ''} ${blinkClass}" style="${m.erledigt ? 'opacity:0.6;' : ''}">
                         <div class="meldung-header">
                             <span class="meldung-kategorie">${kategorieEmoji[m.kategorie] || '📋'} ${m.kategorie}</span>
-                            <div class="meldung-actions">
-                                ${!m.erledigt ? `<button class="meldung-action-btn" onclick="toggleMeldungErledigt('${m.id}')" title="Als erledigt markieren"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></button>` : ''}
-                                ${currentUser && currentUser.role === 'admin' ? `<button class="meldung-action-btn delete" onclick="deleteMeldung('${m.id}')" title="Löschen"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>` : ''}
-                            </div>
+                            <span class="meldung-zustaendig ${istFuerMich ? 'fuer-mich' : ''}">${zustaendigLabel}</span>
                         </div>
                         <div class="meldung-titel">${m.erledigt ? '✓ ' : ''}${m.titel}</div>
                         ${m.beschreibung ? `<div class="meldung-beschreibung">${m.beschreibung}</div>` : ''}
                         <div class="meldung-meta">
                             <span>👤 ${m.ersteller} • ${dateStr} ${timeStr}</span>
+                            <div class="meldung-actions">
+                                ${(!m.erledigt && istZustaendig) ? `<button class="meldung-action-btn" onclick="toggleMeldungErledigt('${m.id}')" title="Als erledigt markieren"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></button>` : ''}
+                                ${isAdmin ? `<button class="meldung-action-btn delete" onclick="deleteMeldung('${m.id}')" title="Löschen"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>` : ''}
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1450,6 +1569,7 @@
             document.getElementById('meldungTitel').value = '';
             document.getElementById('meldungBeschreibung').value = '';
             document.getElementById('meldungKategorie').value = 'defekt';
+            document.getElementById('meldungZustaendig').value = 'alle';
             document.querySelector('input[name="priority"][value="mittel"]').checked = true;
             document.getElementById('meldungModal').classList.add('active');
         }
@@ -1463,6 +1583,7 @@
             const beschreibung = document.getElementById('meldungBeschreibung').value.trim();
             const kategorie = document.getElementById('meldungKategorie').value;
             const prioritaet = document.querySelector('input[name="priority"]:checked').value;
+            const zustaendig = document.getElementById('meldungZustaendig').value;
             
             if (!titel) {
                 alert('Bitte Titel eingeben.');
@@ -1476,6 +1597,7 @@
                 beschreibung: beschreibung,
                 kategorie: kategorie,
                 prioritaet: prioritaet,
+                zustaendig: zustaendig,
                 ersteller: currentUser ? currentUser.name : 'Unbekannt',
                 erstellerKuerzel: currentUser ? currentUser.kuerzel : 'UNKNOWN',
                 datum: new Date().toISOString(),
@@ -1485,7 +1607,7 @@
             meldungen.unshift(neueMeldung);
             saveMeldungen(meldungen);
             
-            addAuditEntry('MELDUNG_ERSTELLT', `Neue Meldung: ${titel}`);
+            addAuditEntry('MELDUNG_ERSTELLT', `Neue Meldung: ${titel} (Zuständig: ${FUNKTIONEN[zustaendig] || 'Alle'})`);
             
             closeMeldungModal();
             loadMeldungen();
