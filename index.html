@@ -448,19 +448,6 @@
         .massnahme-check svg { width: 12px; height: 12px; fill: white; opacity: 0; }
         .massnahme-item.checked .massnahme-check svg { opacity: 1; }
         .massnahme-label { font-size: 13px; line-height: 1.3; }
-        .massnahme-list { display: flex; flex-direction: column; gap: 8px; }
-        .massnahme-item-ext { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: var(--transition); }
-        .massnahme-item-ext.checked { background: rgba(34, 197, 94, 0.1); border-color: #22c55e; }
-        .massnahme-header { display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; }
-        .massnahme-item-ext .massnahme-check { width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: var(--transition); }
-        .massnahme-item-ext.checked .massnahme-check { background: #22c55e; border-color: #22c55e; }
-        .massnahme-item-ext .massnahme-check svg { width: 14px; height: 14px; fill: white; opacity: 0; }
-        .massnahme-item-ext.checked .massnahme-check svg { opacity: 1; }
-        .massnahme-detail { display: none; padding: 0 14px 12px 14px; }
-        .massnahme-item-ext.checked .massnahme-detail { display: block; }
-        .massnahme-comment { width: 100%; padding: 10px 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); font-family: inherit; font-size: 13px; }
-        .massnahme-comment:focus { outline: none; border-color: #22c55e; }
-        .massnahme-comment::placeholder { color: var(--text-muted); }
         .einsatz-signature-section { margin-top: 20px; }
         .einsatz-signature-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
         .einsatz-signature-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
@@ -511,28 +498,6 @@
         .einsatz-icon { margin-bottom: 10px; }
         .einsatz-features { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 24px; }
         .einsatz-feature { background: var(--bg-card); border: 1px solid var(--border); padding: 10px 16px; border-radius: var(--radius); font-size: 14px; }
-
-        /* TEAMS SHARE MODAL */
-        .teams-share-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .teams-share-content { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 420px; width: 100%; padding: 32px 24px; text-align: center; }
-        .teams-share-icon { font-size: 64px; margin-bottom: 16px; }
-        .teams-share-content h2 { font-size: 22px; margin: 0 0 8px 0; color: #22c55e; }
-        .teams-share-id { font-size: 18px; font-weight: 700; color: var(--accent); margin: 0 0 20px 0; }
-        .teams-share-stats { display: flex; justify-content: center; gap: 24px; margin-bottom: 20px; }
-        .stat-item { font-size: 15px; display: flex; align-items: center; gap: 6px; }
-        .stat-icon { font-size: 18px; }
-        .teams-share-warning { background: rgba(249, 115, 22, 0.15); border: 1px solid rgba(249, 115, 22, 0.4); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; text-align: left; }
-        .teams-share-warning svg { width: 24px; height: 24px; fill: #f97316; flex-shrink: 0; }
-        .teams-share-warning span { font-size: 13px; color: #f97316; }
-        .teams-share-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #5865F2 0%, #4752C4 100%); border: none; border-radius: var(--radius); color: white; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px; transition: transform 0.2s; }
-        .teams-share-btn:hover { transform: translateY(-2px); }
-        .teams-share-btn svg { width: 22px; height: 22px; fill: white; }
-        .teams-share-download { width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-secondary); font-family: inherit; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; }
-        .teams-share-download:hover { background: var(--border); }
-        .teams-share-download svg { width: 18px; height: 18px; fill: currentColor; }
-        .teams-share-hint { font-size: 13px; color: var(--text-muted); margin: 0 0 16px 0; }
-        .teams-share-close { width: 100%; padding: 14px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-muted); font-family: inherit; font-size: 15px; font-weight: 600; cursor: not-allowed; transition: all 0.3s; }
-        .teams-share-close:not(:disabled) { cursor: pointer; color: white; }
 
         /* MELDUNGEN */
         .meldungen-container { padding: 20px; max-width: 600px; margin: 0 auto; }
@@ -676,7 +641,6 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         .spinner { animation: spin 1s linear infinite; }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
     <!-- LOGIN -->
@@ -975,7 +939,7 @@
                 <button class="back-btn" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
                 <h1 class="header-title">Einsatzprotokoll</h1>
                 <div class="header-actions">
-                    <a class="header-btn" href="https://github.com/Bas1cally/MBWD/blob/main/docs/SAA-BPR-2025.pdf" target="_blank" title="SAA-BPR 2025 öffnen" style="background: var(--blue); text-decoration: none;"><svg viewBox="0 0 24 24" fill="white"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg></a>
+                    <a class="header-btn" href="https://raw.githubusercontent.com/PatricNeuorth53662/MBWD/main/docs/SAA-BPR-2025.pdf" target="_blank" title="SAA-BPR 2025 öffnen" style="background: var(--blue); text-decoration: none;"><svg viewBox="0 0 24 24" fill="white"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg></a>
                     <button class="header-btn" onclick="clearEinsatzprotokoll()" title="Neu / Leeren"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></button>
                     <button class="header-btn" onclick="exportEinsatzPDF()" title="Als PDF exportieren"><svg viewBox="0 0 24 24"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg></button>
                 </div>
@@ -1001,7 +965,7 @@
                             <div class="einsatz-radio-group" id="einsatzTyp" style="gap: 12px;">
                                 <label class="einsatz-radio" onclick="selectEinsatzTyp(this, 'ambulanz')" style="flex: 1; justify-content: center; padding: 16px;">
                                     <input type="radio" name="einsatztyp" value="ambulanz">
-                                    <span style="font-size: 20px; margin-right: 8px;">🏥</span> Einsatz in der Ambulanz
+                                    <span style="font-size: 20px; margin-right: 8px;">ðŸ¥</span> Notfall in Ambulanz
                                 </label>
                                 <label class="einsatz-radio" onclick="selectEinsatzTyp(this, 'rtw')" style="flex: 1; justify-content: center; padding: 16px;">
                                     <input type="radio" name="einsatztyp" value="rtw">
@@ -1025,7 +989,7 @@
                     </div>
                     <div class="einsatz-row">
                         <div class="einsatz-field">
-                            <label>Einsatz Beginn</label>
+                            <label>Alarmierung</label>
                             <input type="time" id="einsatzAlarm">
                         </div>
                         <div class="einsatz-field">
@@ -1036,15 +1000,15 @@
                     <div class="einsatz-row single">
                         <div class="einsatz-field">
                             <label>Meldebild / Notfallbild (SAA)</label>
-                            <select id="einsatzMeldebild" onchange="applyMeldebildVorgaben()">
+                            <select id="einsatzMeldebild">
                                 <option value="">-- Meldebild auswählen --</option>
-                                <option value="kein_notfallbild">⚪ Kein Notfallbild</option>
-                                <optgroup label="── Kreislaufstillstand ──">
+                                <option value="kein_notfallbild">âšª Kein Notfallbild</option>
+                                <optgroup label="â”€â”€ Kreislaufstillstand â”€â”€">
                                     <option value="reanimation_erwachsene">🔴 Reanimation Erwachsene (ALS)</option>
                                     <option value="reanimation_kinder">🔴 Reanimation Kinder (PLS)</option>
                                     <option value="reanimation_neugeborene">🔴 Reanimation Neugeborene (NLS)</option>
                                 </optgroup>
-                                <optgroup label="── Leitsymptome ──">
+                                <optgroup label="â”€â”€ Leitsymptome â”€â”€">
                                     <option value="dyspnoe">Dyspnoe</option>
                                     <option value="kritische_blutung">Kritische Blutung</option>
                                     <option value="kurzzeitige_bewusstlosigkeit">Kurzzeitige Bewusstlosigkeit</option>
@@ -1053,13 +1017,13 @@
                                     <option value="schock">Schock</option>
                                     <option value="zns_defizit">Zentrales neurologisches Defizit</option>
                                 </optgroup>
-                                <optgroup label="── Atemweg (A-Problem) ──">
+                                <optgroup label="â”€â”€ Atemweg (A-Problem) â”€â”€">
                                     <option value="fremdkoerperaspiration">A-Problem bei Fremdkörperaspiration</option>
                                     <option value="a_problem_erwachsene">A-Problem beim Erwachsenen</option>
                                     <option value="tracheostoma">Atemnot durch verlegtes Tracheostoma</option>
                                     <option value="atemweg_kind">Obstruktion obere Atemwege Säugling/Kleinkind</option>
                                 </optgroup>
-                                <optgroup label="── Kardiovaskulär ──">
+                                <optgroup label="â”€â”€ Kardiovaskulär â”€â”€">
                                     <option value="acs">Akutes Koronarsyndrom (ACS)</option>
                                     <option value="aortensyndrom">Akutes Aortensyndrom</option>
                                     <option value="arterieller_verschluss">Arterieller Verschluss</option>
@@ -1069,26 +1033,26 @@
                                     <option value="lungenoedem">Kardiales Lungenödem</option>
                                     <option value="lungenembolie">Lungenarterienembolie</option>
                                 </optgroup>
-                                <optgroup label="── Respiratorisch ──">
+                                <optgroup label="â”€â”€ Respiratorisch â”€â”€">
                                     <option value="bronchialobstruktion">Bronchialobstruktion</option>
                                 </optgroup>
-                                <optgroup label="── Neurologisch ──">
+                                <optgroup label="â”€â”€ Neurologisch â”€â”€">
                                     <option value="krampfanfall_erwachsene">Krampfanfall Erwachsene</option>
                                     <option value="krampfanfall_kind">Krampfanfall Kind</option>
                                     <option value="schlaganfall">Schlaganfall</option>
                                 </optgroup>
-                                <optgroup label="── Stoffwechsel ──">
+                                <optgroup label="â”€â”€ Stoffwechsel â”€â”€">
                                     <option value="hyperglykämie">Hyperglykämie</option>
                                     <option value="hypoglykämie">Hypoglykämie</option>
                                     <option value="dehydratation">Dehydratation</option>
                                 </optgroup>
-                                <optgroup label="── Trauma / Verletzung ──">
+                                <optgroup label="â”€â”€ Trauma / Verletzung â”€â”€">
                                     <option value="polytrauma">Polytrauma</option>
                                     <option value="thermische_verletzung">Thermische Verletzung</option>
                                     <option value="stromunfall">Stromunfall</option>
                                     <option value="hypothermie">Hypothermie</option>
                                 </optgroup>
-                                <optgroup label="── Sonstige ──">
+                                <optgroup label="â”€â”€ Sonstige â”€â”€">
                                     <option value="anaphylaxie">Anaphylaxie</option>
                                     <option value="intoxikation">Intoxikation</option>
                                     <option value="sepsis">Sepsis</option>
@@ -1115,10 +1079,6 @@
                     <div class="einsatz-section-toggle"><svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg></div>
                 </div>
                 <div class="einsatz-section-content">
-                    <div class="einsatz-hint" style="background: rgba(220, 38, 38, 0.1); border-color: rgba(220, 38, 38, 0.3);">
-                        <svg viewBox="0 0 24 24" style="fill: #dc2626;"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg>
-                        <span><strong>Datenschutz:</strong> Patientendaten unterliegen der Schweigepflicht. Im PDF-Export wird der Name automatisch anonymisiert (nur Initialen).</span>
-                    </div>
                     <div class="einsatz-row">
                         <div class="einsatz-field">
                             <label>Nachname</label>
@@ -1138,30 +1098,30 @@
                             <label>Geschlecht</label>
                             <div class="einsatz-radio-group" id="patGeschlecht">
                                 <label class="einsatz-radio" onclick="selectRadio(this, 'patGeschlecht')">
-                                    <input type="radio" name="geschlecht" value="m">♂ Männlich
+                                    <input type="radio" name="geschlecht" value="m">â™‚ Männlich
                                 </label>
                                 <label class="einsatz-radio" onclick="selectRadio(this, 'patGeschlecht')">
-                                    <input type="radio" name="geschlecht" value="w">♀ Weiblich
+                                    <input type="radio" name="geschlecht" value="w">â™€ Weiblich
                                 </label>
                                 <label class="einsatz-radio" onclick="selectRadio(this, 'patGeschlecht')">
-                                    <input type="radio" name="geschlecht" value="d">⚧ Divers
+                                    <input type="radio" name="geschlecht" value="d">âš§ Divers
                                 </label>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="einsatz-divider"></div>
-                    <div class="einsatz-subtitle" style="color: var(--text-muted); font-size: 12px;">
-                        <svg viewBox="0 0 24 24" style="width: 16px; height: 16px;"><path d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zM19.5 9.5L21 12h-3.5v3h-1v-3H10V9.5h9.5zM6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zM20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4h3zM3 6v9h.76c.55-.61 1.35-1 2.24-1s1.69.39 2.24 1H10V6H3z"/></svg>
-                        Nur bei Transport ausfüllen (optional)
+                    <div class="einsatz-row single">
+                        <div class="einsatz-field">
+                            <label>Adresse</label>
+                            <input type="text" id="patAdresse" placeholder="Straße, PLZ Ort">
+                        </div>
                     </div>
                     <div class="einsatz-row">
                         <div class="einsatz-field">
-                            <label>Krankenkasse (optional)</label>
+                            <label>Krankenkasse</label>
                             <input type="text" id="patKasse" placeholder="z.B. AOK, TK, Barmer">
                         </div>
                         <div class="einsatz-field">
-                            <label>Versicherten-Nr. (optional)</label>
+                            <label>Versicherten-Nr.</label>
                             <input type="text" id="patVersNr" placeholder="Versicherungsnummer">
                         </div>
                     </div>
@@ -1178,7 +1138,7 @@
                 <div class="einsatz-section-content">
                     <div class="einsatz-hint">
                         <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                        <span><strong>SAMPLE:</strong> Symptome · Allergien · Medikamente · Patientengeschichte · Letzte Mahlzeit · Ereignis</span>
+                        <span><strong>SAMPLE:</strong> Symptome Â· Allergien Â· Medikamente Â· Patientengeschichte Â· Letzte Mahlzeit Â· Ereignis</span>
                     </div>
                     <div class="einsatz-row single">
                         <div class="einsatz-field">
@@ -1276,6 +1236,20 @@
                         <span class="gcs-total" id="gcsTotal">--</span>
                         <span class="gcs-breakdown" id="gcsBreakdown">Augen + Verbal + Motorik</span>
                     </div>
+                    
+                    <div class="einsatz-divider"></div>
+                    
+                    <div class="einsatz-subtitle"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>NACA-Score</div>
+                    <div class="einsatz-naca-scale" id="nacaScale">
+                        <button class="naca-btn naca-0" onclick="selectNACA(0)">0</button>
+                        <button class="naca-btn naca-1" onclick="selectNACA(1)">I</button>
+                        <button class="naca-btn naca-2" onclick="selectNACA(2)">II</button>
+                        <button class="naca-btn naca-3" onclick="selectNACA(3)">III</button>
+                        <button class="naca-btn naca-4" onclick="selectNACA(4)">IV</button>
+                        <button class="naca-btn naca-5" onclick="selectNACA(5)">V</button>
+                        <button class="naca-btn naca-6" onclick="selectNACA(6)">VI</button>
+                        <button class="naca-btn naca-7" onclick="selectNACA(7)">VII</button>
+                    </div>
                 </div>
             </div>
 
@@ -1288,179 +1262,47 @@
                 </div>
                 <div class="einsatz-section-content">
                     <div class="einsatz-subtitle"><svg viewBox="0 0 24 24"><path d="M17.66 8L12 2.35 6.34 8C4.78 9.56 4 11.64 4 13.64s.78 4.11 2.34 5.67 3.61 2.35 5.66 2.35 4.1-.79 5.66-2.35S20 15.64 20 13.64 19.22 9.56 17.66 8zM6 14c.01-2 .62-3.27 1.76-4.4L12 5.27l4.24 4.38C17.38 10.77 17.99 12 18 14H6z"/></svg>Atemweg & Beatmung</div>
-                    <div class="massnahme-list">
-                        <div class="massnahme-item-ext" data-id="o2_gabe">
-                            <div class="massnahme-header" onclick="toggleMassnahmeExt(this)">
-                                <div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
-                                <span class="massnahme-label">O₂-Gabe</span>
-                            </div>
-                            <div class="massnahme-detail"><input type="text" placeholder="L/min, Applikation (Maske, Brille)..." class="massnahme-comment"></div>
-                        </div>
-                        <div class="massnahme-item-ext" data-id="absaugen">
-                            <div class="massnahme-header" onclick="toggleMassnahmeExt(this)">
-                                <div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
-                                <span class="massnahme-label">Absaugen</span>
-                            </div>
-                            <div class="massnahme-detail"><input type="text" placeholder="Oral/nasal, Kathetergröße..." class="massnahme-comment"></div>
-                        </div>
-                        <div class="massnahme-item-ext" data-id="guedel">
-                            <div class="massnahme-header" onclick="toggleMassnahmeExt(this)">
-                                <div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
-                                <span class="massnahme-label">Guedel-Tubus</span>
-                            </div>
-                            <div class="massnahme-detail"><input type="text" placeholder="Größe..." class="massnahme-comment"></div>
-                        </div>
-                        <div class="massnahme-item-ext" data-id="wendl">
-                            <div class="massnahme-header" onclick="toggleMassnahmeExt(this)">
-                                <div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
-                                <span class="massnahme-label">Wendl-Tubus</span>
-                            </div>
-                            <div class="massnahme-detail"><input type="text" placeholder="Größe..." class="massnahme-comment"></div>
-                        </div>
-                        <div class="massnahme-item-ext" data-id="beutel_maske">
-                            <div class="massnahme-header" onclick="toggleMassnahmeExt(this)">
-                                <div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
-                                <span class="massnahme-label">Beutel-Maske</span>
-                            </div>
-                            <div class="massnahme-detail"><input type="text" placeholder="Mit O₂-Reservoir, Maskengröße..." class="massnahme-comment"></div>
-                        </div>
-                        <div class="massnahme-item-ext" data-id="larynxtubus">
-                            <div class="massnahme-header" onclick="toggleMassnahmeExt(this)">
-                                <div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
-                                <span class="massnahme-label">Larynxtubus</span>
-                            </div>
-                            <div class="massnahme-detail"><input type="text" placeholder="Größe, Cuffdruck..." class="massnahme-comment"></div>
-                        </div>
+                    <div class="massnahme-grid" id="massnahmenAtemweg">
+                        <div class="massnahme-item" onclick="toggleMassnahme(this)"><div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><span class="massnahme-label">Oâ‚‚-Gabe</span></div>
+                        <div class="massnahme-item" onclick="toggleMassnahme(this)"><div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><span class="massnahme-label">Absaugen</span></div>
+                        <div class="massnahme-item" onclick="toggleMassnahme(this)"><div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><span class="massnahme-label">Guedel-Tubus</span></div>
+                        <div class="massnahme-item" onclick="toggleMassnahme(this)"><div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><span class="massnahme-label">Wendl-Tubus</span></div>
+                        <div class="massnahme-item" onclick="toggleMassnahme(this)"><div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><span class="massnahme-label">Beutel-Maske</span></div>
+                        <div class="massnahme-item" onclick="toggleMassnahme(this)"><div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><span class="massnahme-label">Larynxtubus</span></div>
                     </div>
                     
                     <div class="einsatz-divider"></div>
                     
                     <div class="einsatz-subtitle"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>Kreislauf</div>
-                    <div class="massnahme-list">
-                        <div class="massnahme-item-ext" data-id="iv_zugang">
-                            <div class="massnahme-header" onclick="toggleMassnahmeExt(this)">
-                                <div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
-                                <span class="massnahme-label">i.v.-Zugang</span>
-                            </div>
-                            <div class="massnahme-detail"><input type="text" placeholder="Größe (G), Lokalisation..." class="massnahme-comment"></div>
-                        </div>
-                        <div class="massnahme-item-ext" data-id="infusion">
-                            <div class="massnahme-header" onclick="toggleMassnahmeExt(this)">
-                                <div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
-                                <span class="massnahme-label">Infusion</span>
-                            </div>
-                            <div class="massnahme-detail"><input type="text" placeholder="Lösung, Menge (ml)..." class="massnahme-comment"></div>
-                        </div>
-                        <div class="massnahme-item-ext" data-id="druckverband">
-                            <div class="massnahme-header" onclick="toggleMassnahmeExt(this)">
-                                <div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
-                                <span class="massnahme-label">Druckverband</span>
-                            </div>
-                            <div class="massnahme-detail"><input type="text" placeholder="Lokalisation..." class="massnahme-comment"></div>
-                        </div>
-                        <div class="massnahme-item-ext" data-id="tourniquet">
-                            <div class="massnahme-header" onclick="toggleMassnahmeExt(this)">
-                                <div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
-                                <span class="massnahme-label">Tourniquet</span>
-                            </div>
-                            <div class="massnahme-detail"><input type="text" placeholder="Lokalisation, Uhrzeit Anlage..." class="massnahme-comment"></div>
-                        </div>
-                        <div class="massnahme-item-ext" data-id="ekg">
-                            <div class="massnahme-header" onclick="toggleMassnahmeExt(this)">
-                                <div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
-                                <span class="massnahme-label">12-Kanal-EKG</span>
-                            </div>
-                            <div class="massnahme-detail"><input type="text" placeholder="Befund, Auffälligkeiten..." class="massnahme-comment"></div>
-                        </div>
-                        <div class="massnahme-item-ext" data-id="defi">
-                            <div class="massnahme-header" onclick="toggleMassnahmeExt(this)">
-                                <div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
-                                <span class="massnahme-label">Defibrillation</span>
-                            </div>
-                            <div class="massnahme-detail"><input type="text" placeholder="Anzahl Schocks, Joule..." class="massnahme-comment"></div>
-                        </div>
+                    <div class="massnahme-grid" id="massnahmenKreislauf">
+                        <div class="massnahme-item" onclick="toggleMassnahme(this)"><div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><span class="massnahme-label">i.v.-Zugang</span></div>
+                        <div class="massnahme-item" onclick="toggleMassnahme(this)"><div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><span class="massnahme-label">Infusion</span></div>
+                        <div class="massnahme-item" onclick="toggleMassnahme(this)"><div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><span class="massnahme-label">Druckverband</span></div>
+                        <div class="massnahme-item" onclick="toggleMassnahme(this)"><div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><span class="massnahme-label">Tourniquet</span></div>
+                        <div class="massnahme-item" onclick="toggleMassnahme(this)"><div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><span class="massnahme-label">12-Kanal-EKG</span></div>
+                        <div class="massnahme-item" onclick="toggleMassnahme(this)"><div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><span class="massnahme-label">Defibrillation</span></div>
                     </div>
                     
                     <div class="einsatz-divider"></div>
                     
                     <div class="einsatz-subtitle"><svg viewBox="0 0 24 24"><path d="M18 4H6C3.79 4 2 5.79 2 8v8c0 2.21 1.79 4 4 4h12c2.21 0 4-1.79 4-4V8c0-2.21-1.79-4-4-4zm-6 12c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/></svg>Immobilisation & Lagerung</div>
-                    <div class="massnahme-list">
-                        <div class="massnahme-item-ext" data-id="vakuummatratze">
-                            <div class="massnahme-header" onclick="toggleMassnahmeExt(this)">
-                                <div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
-                                <span class="massnahme-label">Vakuummatratze</span>
-                            </div>
-                            <div class="massnahme-detail"><input type="text" placeholder="Bemerkung..." class="massnahme-comment"></div>
-                        </div>
-                        <div class="massnahme-item-ext" data-id="schaufeltrage">
-                            <div class="massnahme-header" onclick="toggleMassnahmeExt(this)">
-                                <div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
-                                <span class="massnahme-label">Schaufeltrage</span>
-                            </div>
-                            <div class="massnahme-detail"><input type="text" placeholder="Bemerkung..." class="massnahme-comment"></div>
-                        </div>
-                        <div class="massnahme-item-ext" data-id="spineboard">
-                            <div class="massnahme-header" onclick="toggleMassnahmeExt(this)">
-                                <div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
-                                <span class="massnahme-label">Spineboard</span>
-                            </div>
-                            <div class="massnahme-detail"><input type="text" placeholder="Bemerkung..." class="massnahme-comment"></div>
-                        </div>
-                        <div class="massnahme-item-ext" data-id="hws">
-                            <div class="massnahme-header" onclick="toggleMassnahmeExt(this)">
-                                <div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
-                                <span class="massnahme-label">HWS-Stütze</span>
-                            </div>
-                            <div class="massnahme-detail"><input type="text" placeholder="Größe..." class="massnahme-comment"></div>
-                        </div>
-                        <div class="massnahme-item-ext" data-id="schienung">
-                            <div class="massnahme-header" onclick="toggleMassnahmeExt(this)">
-                                <div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
-                                <span class="massnahme-label">Schienung</span>
-                            </div>
-                            <div class="massnahme-detail"><input type="text" placeholder="Extremität, Art..." class="massnahme-comment"></div>
-                        </div>
-                        <div class="massnahme-item-ext" data-id="waerme">
-                            <div class="massnahme-header" onclick="toggleMassnahmeExt(this)">
-                                <div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
-                                <span class="massnahme-label">Wärmeerhalt</span>
-                            </div>
-                            <div class="massnahme-detail"><input type="text" placeholder="Rettungsdecke, Wärmepackungen..." class="massnahme-comment"></div>
-                        </div>
+                    <div class="massnahme-grid" id="massnahmenImmo">
+                        <div class="massnahme-item" onclick="toggleMassnahme(this)"><div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><span class="massnahme-label">Vakuummatratze</span></div>
+                        <div class="massnahme-item" onclick="toggleMassnahme(this)"><div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><span class="massnahme-label">Schaufeltrage</span></div>
+                        <div class="massnahme-item" onclick="toggleMassnahme(this)"><div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><span class="massnahme-label">Spineboard</span></div>
+                        <div class="massnahme-item" onclick="toggleMassnahme(this)"><div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><span class="massnahme-label">HWS-Stütze</span></div>
+                        <div class="massnahme-item" onclick="toggleMassnahme(this)"><div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><span class="massnahme-label">Schienung</span></div>
+                        <div class="massnahme-item" onclick="toggleMassnahme(this)"><div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><span class="massnahme-label">Wärmeerhalt</span></div>
                     </div>
                     
                     <div class="einsatz-divider"></div>
                     
                     <div class="einsatz-subtitle"><svg viewBox="0 0 24 24"><path d="M6 3h12v2H6V3zm0 16h12v2H6v-2zm0-8h12v2H6v-2zm0 4h12v2H6v-2zm0-8h12v2H6V7z"/></svg>Sonstige Maßnahmen</div>
-                    <div class="massnahme-list">
-                        <div class="massnahme-item-ext" data-id="wundversorgung">
-                            <div class="massnahme-header" onclick="toggleMassnahmeExt(this)">
-                                <div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
-                                <span class="massnahme-label">Wundversorgung</span>
-                            </div>
-                            <div class="massnahme-detail"><input type="text" placeholder="Art, Lokalisation..." class="massnahme-comment"></div>
-                        </div>
-                        <div class="massnahme-item-ext" data-id="kuehlung">
-                            <div class="massnahme-header" onclick="toggleMassnahmeExt(this)">
-                                <div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
-                                <span class="massnahme-label">Kühlung</span>
-                            </div>
-                            <div class="massnahme-detail"><input type="text" placeholder="Lokalisation, Dauer..." class="massnahme-comment"></div>
-                        </div>
-                        <div class="massnahme-item-ext" data-id="bz_messung">
-                            <div class="massnahme-header" onclick="toggleMassnahmeExt(this)">
-                                <div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
-                                <span class="massnahme-label">BZ-Messung</span>
-                            </div>
-                            <div class="massnahme-detail"><input type="text" placeholder="Wert mg/dl..." class="massnahme-comment"></div>
-                        </div>
-                        <div class="massnahme-item-ext" data-id="psycho">
-                            <div class="massnahme-header" onclick="toggleMassnahmeExt(this)">
-                                <div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
-                                <span class="massnahme-label">Psycho. Betreuung</span>
-                            </div>
-                            <div class="massnahme-detail"><input type="text" placeholder="Bemerkung..." class="massnahme-comment"></div>
-                        </div>
+                    <div class="massnahme-grid" id="massnahmenSonstige">
+                        <div class="massnahme-item" onclick="toggleMassnahme(this)"><div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><span class="massnahme-label">Wundversorgung</span></div>
+                        <div class="massnahme-item" onclick="toggleMassnahme(this)"><div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><span class="massnahme-label">Kühlung</span></div>
+                        <div class="massnahme-item" onclick="toggleMassnahme(this)"><div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><span class="massnahme-label">BZ-Messung</span></div>
+                        <div class="massnahme-item" onclick="toggleMassnahme(this)"><div class="massnahme-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><span class="massnahme-label">Psycho. Betreuung</span></div>
                     </div>
                     
                     <div class="einsatz-divider"></div>
@@ -1477,12 +1319,6 @@
                             <textarea id="massnahmenBemerkung" placeholder="Zusätzliche Maßnahmen, Besonderheiten..."></textarea>
                         </div>
                     </div>
-                    
-                    <!-- NotSanG Hinweis - wird automatisch eingeblendet -->
-                    <div class="einsatz-hint notsang-hinweis" id="notsangHinweis" style="display: none; background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); margin-top: 16px;">
-                        <svg viewBox="0 0 24 24" style="fill: #3b82f6;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
-                        <span id="notsangText"></span>
-                    </div>
                 </div>
             </div>
 
@@ -1494,51 +1330,52 @@
                     <div class="einsatz-section-toggle"><svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg></div>
                 </div>
                 <div class="einsatz-section-content">
-                    <div class="einsatz-subtitle"><svg viewBox="0 0 24 24"><path d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zM19.5 9.5L21 12h-3.5v3h-1v-3H10V9.5h9.5z"/></svg>Transportentscheidung</div>
-                    <div class="einsatz-row single">
+                    <div class="einsatz-row">
                         <div class="einsatz-field">
-                            <div class="einsatz-radio-group" id="transportArt" style="flex-direction: column; gap: 8px;">
-                                <label class="einsatz-radio" onclick="selectRadio(this, 'transportArt')" style="justify-content: flex-start; padding: 14px;">
-                                    <input type="radio" name="transport" value="zeitkritisch">
-                                    <span style="font-size: 18px; margin-right: 8px;">🚨</span> Zeitkritisch / Sondersignal (eigener Transport)
+                            <label>Transport</label>
+                            <select id="transportArt">
+                                <option value="">-- Auswählen --</option>
+                                <option value="kh">Krankenhaus</option>
+                                <option value="arzt">Arztpraxis</option>
+                                <option value="zuhause">Verbleib vor Ort</option>
+                                <option value="abgelehnt">Transport abgelehnt</option>
+                                <option value="keiner">Kein Transport</option>
+                            </select>
+                        </div>
+                        <div class="einsatz-field">
+                            <label>Transportpriorität</label>
+                            <div class="einsatz-radio-group" id="transportPrio">
+                                <label class="einsatz-radio" onclick="selectRadio(this, 'transportPrio')">
+                                    <input type="radio" name="prio" value="normal">Normal
                                 </label>
-                                <label class="einsatz-radio" onclick="selectRadio(this, 'transportArt')" style="justify-content: flex-start; padding: 14px;">
-                                    <input type="radio" name="transport" value="extern_rtw">
-                                    <span style="font-size: 18px; margin-right: 8px;">🚑</span> Übergabe an externen RTW
+                                <label class="einsatz-radio" onclick="selectRadio(this, 'transportPrio')">
+                                    <input type="radio" name="prio" value="dringend">Dringend
                                 </label>
-                                <label class="einsatz-radio" onclick="selectRadio(this, 'transportArt')" style="justify-content: flex-start; padding: 14px;">
-                                    <input type="radio" name="transport" value="kein_transport">
-                                    <span style="font-size: 18px; margin-right: 8px;">🏥</span> Kein Transport / Verbleib in Ambulanz
+                                <label class="einsatz-radio" onclick="selectRadio(this, 'transportPrio')">
+                                    <input type="radio" name="prio" value="sondersignal">🚨 Sondersignal
                                 </label>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="einsatz-divider"></div>
-                    <div class="einsatz-subtitle" style="color: var(--text-muted); font-size: 12px;">
-                        <svg viewBox="0 0 24 24" style="width: 16px; height: 16px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                        Optional - nur bei Transport ausfüllen
-                    </div>
-                    
                     <div class="einsatz-row single">
                         <div class="einsatz-field">
-                            <label>Zielklinik / Zielort (optional)</label>
+                            <label>Zielklinik / Zielort</label>
                             <input type="text" id="transportZiel" placeholder="Name der Klinik, Station...">
                         </div>
                     </div>
                     <div class="einsatz-row">
                         <div class="einsatz-field">
-                            <label>Übergabe an (optional)</label>
+                            <label>Übergabe an</label>
                             <input type="text" id="uebergabeAn" placeholder="Name / Funktion">
                         </div>
                         <div class="einsatz-field">
-                            <label>Uhrzeit Übergabe (optional)</label>
+                            <label>Uhrzeit Übergabe</label>
                             <input type="time" id="uebergabeZeit">
                         </div>
                     </div>
                     <div class="einsatz-row single">
                         <div class="einsatz-field">
-                            <label>Übergabe-Bemerkungen (optional)</label>
+                            <label>Übergabe-Bemerkungen</label>
                             <textarea id="uebergabeBemerkung" placeholder="Besonderheiten bei der Übergabe, Empfehlungen..."></textarea>
                         </div>
                     </div>
@@ -1549,17 +1386,27 @@
             <div class="einsatz-section" id="sectionSignatures">
                 <div class="einsatz-section-header red" onclick="toggleEinsatzSection('sectionSignatures')">
                     <div class="einsatz-section-icon red"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></div>
-                    <span class="einsatz-section-title">Unterschrift</span>
+                    <span class="einsatz-section-title">Unterschriften</span>
                     <div class="einsatz-section-toggle"><svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg></div>
                 </div>
                 <div class="einsatz-section-content">
                     <div class="einsatz-signature-section">
                         <div class="einsatz-signature-card">
-                            <div class="einsatz-signature-title"><svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm6 11h-3v3h-2v-3H8v-2h3v-3h2v3h3v2z"/></svg>Notfallsanitäter / Arzt</div>
+                            <div class="einsatz-signature-title"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Patient / Angehöriger</div>
+                            <div class="einsatz-signature-canvas" id="einsatzSigPatientContainer">
+                                <canvas id="einsatzSigPatient"></canvas>
+                                <span class="einsatz-signature-placeholder">Hier unterschreiben</span>
+                            </div>
+                            <div class="einsatz-signature-actions">
+                                <button class="einsatz-signature-clear" onclick="clearEinsatzSignature('Patient')">Löschen</button>
+                            </div>
+                        </div>
+                        <div class="einsatz-signature-card">
+                            <div class="einsatz-signature-title"><svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm6 11h-3v3h-2v-3H8v-2h3v-3h2v3h3v2z"/></svg>Sanitäter / Rettungsdienst</div>
                             <div class="einsatz-row" style="margin-bottom: 12px;">
                                 <div class="einsatz-field">
-                                    <label>Name</label>
-                                    <input type="text" id="einsatzSaniName" placeholder="Name des Behandelnden">
+                                    <label>Name Sanitäter</label>
+                                    <input type="text" id="einsatzSaniName" placeholder="Name">
                                 </div>
                             </div>
                             <div class="einsatz-signature-canvas" id="einsatzSigSaniContainer">
@@ -1626,25 +1473,25 @@
                     <label class="meldung-label">Kategorie</label>
                     <select class="meldung-select" id="meldungKategorie">
                         <option value="defekt">🔧 Defekt / Reparatur</option>
-                        <option value="nachbestellen">💊 Nachbestellen</option>
-                        <option value="ablauf">⏰ Ablaufdatum</option>
-                        <option value="info">ℹ️ Information</option>
-                        <option value="wichtig">⚠️ Wichtig</option>
+                        <option value="nachbestellen">ðŸ’Š Nachbestellen</option>
+                        <option value="ablauf">â° Ablaufdatum</option>
+                        <option value="info">â„¹ï¸ Information</option>
+                        <option value="wichtig">âš ï¸ Wichtig</option>
                     </select>
                 </div>
                 <div class="meldung-field">
                     <label class="meldung-label">Zuständig</label>
                     <select class="meldung-select" id="meldungZustaendig">
                         <option value="alle">👥 Alle</option>
-                        <option value="arzt">👨‍⚕️ Arzt</option>
+                        <option value="arzt">👨â€âš•ï¸ Arzt</option>
                         <option value="koordinator">📋 Koordinator / Dienstplaner</option>
                         <option value="mpg">🔧 MPG-Beauftragter</option>
                         <option value="fahrzeug">🚑 Fahrzeug-Beauftragter</option>
-                        <option value="medikamente">💊 Medikamenten-Beauftragter</option>
+                        <option value="medikamente">ðŸ’Š Medikamenten-Beauftragter</option>
                         <option value="hygiene">🧴 Hygiene-Beauftragter</option>
                         <option value="lager">📦 Lager / Verbandsmaterial</option>
-                        <option value="it">💻 IT Admin</option>
-                        <option value="banf">📝 BANF-Ersteller</option>
+                        <option value="it">ðŸ’» IT Admin</option>
+                        <option value="banf">ðŸ“ BANF-Ersteller</option>
                     </select>
                 </div>
                 <div class="meldung-field">
@@ -1674,7 +1521,7 @@
     <!-- RÜCKMELDUNG MODAL -->
     <div class="modal-overlay" id="rueckmeldungModal">
         <div class="modal" style="max-width:450px;">
-            <h2 class="modal-title">📝 Rückmeldung geben</h2>
+            <h2 class="modal-title">ðŸ“ Rückmeldung geben</h2>
             <p class="modal-subtitle" id="rueckmeldungTitel" style="color:var(--text-secondary);margin-bottom:16px;"></p>
             <div class="meldung-form">
                 <div class="meldung-field">
@@ -1733,15 +1580,15 @@
                     <div class="benutzer-field">
                         <label class="benutzer-label">Funktionen / Zuständigkeiten (Mehrfachauswahl)</label>
                         <div class="funktionen-checkboxes" id="newUserFunktionen">
-                            <label class="funktion-checkbox"><input type="checkbox" value="arzt"> 👨‍⚕️ Arzt</label>
+                            <label class="funktion-checkbox"><input type="checkbox" value="arzt"> 👨â€âš•ï¸ Arzt</label>
                             <label class="funktion-checkbox"><input type="checkbox" value="koordinator"> 📋 Koordinator / Dienstplaner</label>
                             <label class="funktion-checkbox"><input type="checkbox" value="mpg"> 🔧 MPG-Beauftragter</label>
                             <label class="funktion-checkbox"><input type="checkbox" value="fahrzeug"> 🚑 Fahrzeug-Beauftragter</label>
-                            <label class="funktion-checkbox"><input type="checkbox" value="medikamente"> 💊 Medikamenten-Beauftragter</label>
+                            <label class="funktion-checkbox"><input type="checkbox" value="medikamente"> ðŸ’Š Medikamenten-Beauftragter</label>
                             <label class="funktion-checkbox"><input type="checkbox" value="hygiene"> 🧴 Hygiene-Beauftragter</label>
                             <label class="funktion-checkbox"><input type="checkbox" value="lager"> 📦 Lager / Verbandsmaterial</label>
-                            <label class="funktion-checkbox"><input type="checkbox" value="it"> 💻 IT Admin</label>
-                            <label class="funktion-checkbox"><input type="checkbox" value="banf"> 📝 BANF-Ersteller</label>
+                            <label class="funktion-checkbox"><input type="checkbox" value="it"> ðŸ’» IT Admin</label>
+                            <label class="funktion-checkbox"><input type="checkbox" value="banf"> ðŸ“ BANF-Ersteller</label>
                         </div>
                     </div>
                     <button class="btn btn-primary" onclick="addUser()">
@@ -1795,7 +1642,7 @@
             <button class="btn btn-primary" onclick="openProtocolPDF()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg>PDF öffnen</button>
         </div>
         <div class="success-hint">
-            <p>📤 Auf <strong>⬆️ Teilen</strong> drücken → <strong>Teams</strong> wählen → An <strong>Archiv</strong> senden!</p>
+            <p>ðŸ“¤ Auf <strong>⬆️ Teilen</strong> drücken → <strong>Teams</strong> wählen → An <strong>Archiv</strong> senden!</p>
         </div>
         <div class="success-actions" style="margin-top:16px;">
             <button class="btn btn-secondary" onclick="openApp('archiv')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27z"/></svg>Archiv</button>
@@ -1982,13 +1829,13 @@
 
         // MPG-CHECK RTW CHECKLIST DATA
         const mpgChecklistData=[
-            {id:'mpg-corpuls',title:'Corpuls³',icon:`<svg viewBox="0 0 24 24"><path d="M19.5 6c-1.31 0-2.37 1.01-2.48 2.3-1.88-.5-2.84-.52-4.52.02C12.4 7.01 11.34 6 10.03 6 8.69 6 7.58 7.11 7.58 8.45c0 .65.26 1.24.68 1.68-2.21 1.87-2.62 4.29-2.62 6.37 0 1.1.9 2 2 2h8.72c1.1 0 2-.9 2-2 0-2.08-.41-4.5-2.62-6.37.42-.44.68-1.03.68-1.68C16.42 7.11 15.31 6 13.97 6z"/></svg>`,items:['EKG-Kabel (6- und 12-Kanal) + 3 Rasierer','EKG-Elektroden > 12 Stück','corPatch-Elektroden Erwachsener + Kinder','CPR-Feedback-Sensor','CO2-Sensor und 1 Küvette','NIBP-Manschette und Schlauch','SpO2-Sensor und Zwischenkabel','Druckerpapier im Druckerfach vorhanden','Testschock 200J + Kontrolle Stromabgabe (via Taste Einsatz)','Ladekonsole (Laden aktiv)','Kommunikation zwischen den Modulen','Batteriestatus der Module','Gerät einschalten (Selbsttest)']},
+            {id:'mpg-corpuls',title:'CorpulsÂ³',icon:`<svg viewBox="0 0 24 24"><path d="M19.5 6c-1.31 0-2.37 1.01-2.48 2.3-1.88-.5-2.84-.52-4.52.02C12.4 7.01 11.34 6 10.03 6 8.69 6 7.58 7.11 7.58 8.45c0 .65.26 1.24.68 1.68-2.21 1.87-2.62 4.29-2.62 6.37 0 1.1.9 2 2 2h8.72c1.1 0 2-.9 2-2 0-2.08-.41-4.5-2.62-6.37.42-.44.68-1.03.68-1.68C16.42 7.11 15.31 6 13.97 6z"/></svg>`,items:['EKG-Kabel (6- und 12-Kanal) + 3 Rasierer','EKG-Elektroden > 12 Stück','corPatch-Elektroden Erwachsener + Kinder','CPR-Feedback-Sensor','CO2-Sensor und 1 Küvette','NIBP-Manschette und Schlauch','SpO2-Sensor und Zwischenkabel','Druckerpapier im Druckerfach vorhanden','Testschock 200J + Kontrolle Stromabgabe (via Taste Einsatz)','Ladekonsole (Laden aktiv)','Kommunikation zwischen den Modulen','Batteriestatus der Module','Gerät einschalten (Selbsttest)']},
             {id:'mpg-absaug',title:'Elektrische Absaugpumpe',icon:`<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>`,items:['Funktion','Pumpe hält Sog bei erreichtem Vakuum','Absaugkatheter (je 2x) + Schlauch + Fingertip','Pumpe lädt in Halterung']},
             {id:'mpg-oxybag',title:'Oxybag',icon:`<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>`,items:['Flaschendruck > 80bar','2x Sauerstoffmasken','Funktion und Dichtigkeit','1x Gänsegurgel','Beatmungsbeutel mit Versorgungsleitung','1x Hyperventilationsmaske','Funktion und Sauberkeit in Ordnung?','1x Verneblermaske']},
-            {id:'mpg-medumat',title:'Medumat Standard',icon:`<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/></svg>`,items:['Flaschendruck > 100bar','Außentasche: Prüfbeutel, O²-Maske, Filter','Funktion Inhalation','Sichtprüfung: Patientenventil, Schlauch']},
+            {id:'mpg-medumat',title:'Medumat Standard',icon:`<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/></svg>`,items:['Flaschendruck > 100bar','Außentasche: Prüfbeutel, OÂ²-Maske, Filter','Funktion Inhalation','Sichtprüfung: Patientenventil, Schlauch']},
             {id:'mpg-beatmung',title:'Medumat - Beatmungsfunktionen',icon:`<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`,items:['Einstellung Frequenz 8/min. (+/-1)','Einstellung Druck 20mbar (+/-5)','Einstellung Frequenz 40/min. (+/-2)','Einstellung Druck 60mbar (+/-5)','Vollständiges Aufblähen des Prüfbeutels bei: 8/min. + 8L/min']},
             {id:'mpg-alarme',title:'Medumat - Alarme prüfen',icon:`<svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></svg>`,items:['Atemsystemunterbrechung (Diskonnektion)','Stenosis','Kein Abfall des Sauerstoff-Versorgungsdruck']},
-            {id:'mpg-rtw',title:'Außenschrank / RTW',icon:`<svg viewBox="0 0 24 24"><path d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zM19.5 9.5L21 12h-3.5v3h-1v-3H10V9.5h9.5zM6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zM20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4h3zM3 6v9h.76c.55-.61 1.35-1 2.24-1s1.69.39 2.24 1H10V6H3z"/></svg>`,items:['Flaschendruck li. Flasche > 50bar','Flaschendruck re. Flasche > 50bar','Funktion und Dichtigkeit','2L O²-Flasche vorhanden? (Reserveflasche)','Morphin 1ml/mg (Soll 4 Ampullen)','Prüfung Funktion Laryngoskop Fach 7','Fentanyl 0,5mg/10ml (Soll 4 Ampullen)','Desinfektion der Griffe & Arbeitsflächen']}
+            {id:'mpg-rtw',title:'Außenschrank / RTW',icon:`<svg viewBox="0 0 24 24"><path d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zM19.5 9.5L21 12h-3.5v3h-1v-3H10V9.5h9.5zM6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zM20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4h3zM3 6v9h.76c.55-.61 1.35-1 2.24-1s1.69.39 2.24 1H10V6H3z"/></svg>`,items:['Flaschendruck li. Flasche > 50bar','Flaschendruck re. Flasche > 50bar','Funktion und Dichtigkeit','2L OÂ²-Flasche vorhanden? (Reserveflasche)','Morphin 1ml/mg (Soll 4 Ampullen)','Prüfung Funktion Laryngoskop Fach 7','Fentanyl 0,5mg/10ml (Soll 4 Ampullen)','Desinfektion der Griffe & Arbeitsflächen']}
         ];
 
         // WÖCHENTLICHER RTW CHECK DATA
@@ -2000,12 +1847,12 @@
                 {text:'Innenbeleuchtung, alle Lichter Funktion?'}
             ]},
             {id:'wochen-checklisten',title:'Checklisten prüfen',icon:`<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`,items:[
-                {text:'Nach Checkliste „Corpuls3_EKG_Defibrillator"', doc:'054_CL_Corpuls3_EKG_Defibrillator.pdf'},
-                {text:'Nach Checkliste „AccuvacRescue_Absaugpumpe"', doc:'054_CL_AccuvacRescue_Absaugpumpe.pdf'},
-                {text:'Nach Checkliste „Medumat_Standard_Beatmungsgeraet"', doc:'054_CL_Medumat_Standard_Beatmungsgeraet.pdf'},
-                {text:'Nach Checkliste „MANV_Tasche_RTW"', doc:'054_CL_MANV_Tasche_RTW.pdf'},
-                {text:'Nach Checkliste „Notfallrucksaecke_Rot&Gelb"', doc:'054_CL_Notfallrucksaecke_Rot_Gelb.pdf'},
-                {text:'Nach Checkliste „Notfallrucksack_Kinder"', doc:'054_CL_Notfallrucksack_Kinder.pdf'}
+                {text:'Nach Checkliste â€žCorpuls3_EKG_Defibrillator"', doc:'054_CL_Corpuls3_EKG_Defibrillator.pdf'},
+                {text:'Nach Checkliste â€žAccuvacRescue_Absaugpumpe"', doc:'054_CL_AccuvacRescue_Absaugpumpe.pdf'},
+                {text:'Nach Checkliste â€žMedumat_Standard_Beatmungsgeraet"', doc:'054_CL_Medumat_Standard_Beatmungsgeraet.pdf'},
+                {text:'Nach Checkliste â€žMANV_Tasche_RTW"', doc:'054_CL_MANV_Tasche_RTW.pdf'},
+                {text:'Nach Checkliste â€žNotfallrucksaecke_Rot&Gelb"', doc:'054_CL_Notfallrucksaecke_Rot_Gelb.pdf'},
+                {text:'Nach Checkliste â€žNotfallrucksack_Kinder"', doc:'054_CL_Notfallrucksack_Kinder.pdf'}
             ]},
             {id:'wochen-verfall',title:'Verfall prüfen (letzte KW des Monats)',icon:`<svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>`,items:[
                 {text:'Check mit Verfall durchgeführt?'}
@@ -2030,7 +1877,7 @@
                 { schicht: 'SI', bereich: 'Ambulanz 1 + Toilette Diagnostik', umfang: 'Schreibtisch, Stühle, alle Oberflächen, Behandlungsplatz mit allen Tabletts, Ablageschale, Ablage vom Tisch, Schlitten Urisys', womit: 'Mikrobac Tissues\nEinwirkzeit 1-5 Minuten' },
                 { schicht: 'Sek.', bereich: 'Wartezone', umfang: 'Auf Sauberkeit und Ordnung achten.\nBlumen gießen.\nGläser Ablage reinigen und Gläser wechseln', womit: 'Mikrobac Tissues\nEinwirkzeit 1-5 Minuten\nOder Schonreiniger', noSign: true },
                 { schicht: 'BGF', bereich: 'Besprechungszimmer', umfang: 'Auf Sauberkeit und Ordnung achten.', womit: '', noSign: true },
-                { schicht: 'SI', bereich: 'Ambulanz 2 - Desinfektion', umfang: 'Desinfektionslösung Ansetzen und Gegenstände einlegen.\nNach 60 Min. Einwirkzeit gründlich mit kaltem Wasser abspülen.', womit: '0,5% Lösung lt. Plan\nEinwirkzeit 60 Min.\ngigasept® Instru AF' }
+                { schicht: 'SI', bereich: 'Ambulanz 2 - Desinfektion', umfang: 'Desinfektionslösung Ansetzen und Gegenstände einlegen.\nNach 60 Min. Einwirkzeit gründlich mit kaltem Wasser abspülen.', womit: '0,5% Lösung lt. Plan\nEinwirkzeit 60 Min.\ngigaseptÂ® Instru AF' }
             ]
         };
 
@@ -2137,15 +1984,15 @@
         // BENUTZERVERWALTUNG
         // Funktionen-Labels
         const FUNKTIONEN = {
-            'arzt': '👨‍⚕️ Arzt',
+            'arzt': '👨â€âš•ï¸ Arzt',
             'koordinator': '📋 Koordinator / Dienstplaner',
             'mpg': '🔧 MPG-Beauftragter',
             'fahrzeug': '🚑 Fahrzeug-Beauftragter',
-            'medikamente': '💊 Medikamenten-Beauftragter',
+            'medikamente': 'ðŸ’Š Medikamenten-Beauftragter',
             'hygiene': '🧴 Hygiene-Beauftragter',
             'lager': '📦 Lager / Verbandsmaterial',
-            'it': '💻 IT Admin',
-            'banf': '📝 BANF-Ersteller'
+            'it': 'ðŸ’» IT Admin',
+            'banf': 'ðŸ“ BANF-Ersteller'
         };
         
         function loadBenutzerList() {
@@ -2239,7 +2086,7 @@
         // SCHICHT-TODO FUNKTIONEN
         const SCHICHT_TODOS = {
             'frueh': {
-                name: '☀️ Frühschicht',
+                name: 'â˜€ï¸ Frühschicht',
                 zeit: '06:00 - 14:00',
                 aufgaben: [
                     { text: 'Ambulanzcheck durchführen', hint: 'Tägliche Checkliste' },
@@ -2393,7 +2240,7 @@
                 if (fuerMich.length > 0) {
                     // Zuerst Meldungen für mich anzeigen
                     const neueste = fuerMich[0];
-                    preview.innerHTML = `<strong style="color:#f39c12;">⚠️ Für dich:</strong> ${neueste.titel}`;
+                    preview.innerHTML = `<strong style="color:#f39c12;">âš ï¸ Für dich:</strong> ${neueste.titel}`;
                 } else if (aktiveMeldungen.length === 0) {
                     preview.textContent = 'Keine aktuellen Meldungen';
                 } else if (aktiveMeldungen.length === 1) {
@@ -2430,10 +2277,10 @@
             
             const kategorieEmoji = {
                 'defekt': '🔧',
-                'nachbestellen': '💊',
-                'ablauf': '⏰',
-                'info': 'ℹ️',
-                'wichtig': '⚠️'
+                'nachbestellen': 'ðŸ’Š',
+                'ablauf': 'â°',
+                'info': 'â„¹ï¸',
+                'wichtig': 'âš ï¸'
             };
             
             // Sortieren: Hohe Priorität zuerst, dann nach Datum
@@ -2467,19 +2314,19 @@
                     <div class="meldung-card priority-${m.prioritaet} ${statusClass}" style="${statusBorder}">
                         <div class="meldung-header">
                             <span class="meldung-kategorie">${kategorieEmoji[m.kategorie] || '📋'} ${m.kategorie}</span>
-                            <span class="meldung-zustaendig ${istFuerMich ? 'fuer-mich' : ''} ${hatRueckmeldung ? 'in-bearbeitung' : ''}">${hatRueckmeldung ? '✅ In Bearbeitung' : zustaendigLabel}</span>
+                            <span class="meldung-zustaendig ${istFuerMich ? 'fuer-mich' : ''} ${hatRueckmeldung ? 'in-bearbeitung' : ''}">${hatRueckmeldung ? 'âœ… In Bearbeitung' : zustaendigLabel}</span>
                         </div>
                         <div class="meldung-titel">${m.titel}</div>
                         ${m.beschreibung ? `<div class="meldung-beschreibung">${m.beschreibung}</div>` : ''}
                         ${hatRueckmeldung ? `
                             <div class="meldung-rueckmeldung">
-                                <strong>📝 Rückmeldung von ${m.rueckmeldungVon}:</strong><br>
+                                <strong>ðŸ“ Rückmeldung von ${m.rueckmeldungVon}:</strong><br>
                                 ${m.rueckmeldung}
                                 <div class="rueckmeldung-zeit">${new Date(m.rueckmeldungAm).toLocaleString('de-DE')}</div>
                             </div>
                         ` : ''}
                         <div class="meldung-meta">
-                            <span>👤 ${m.ersteller} • ${dateStr} ${timeStr}</span>
+                            <span>👤 ${m.ersteller} â€¢ ${dateStr} ${timeStr}</span>
                             <div class="meldung-actions">
                                 ${(!hatRueckmeldung && istZustaendig) ? `<button class="meldung-action-btn rueckmeldung" onclick="openRueckmeldungModal('${m.id}')" title="Rückmeldung geben"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg></button>` : ''}
                                 ${(hatRueckmeldung && istZustaendig) ? `<button class="meldung-action-btn erledigt" onclick="meldungErledigen('${m.id}')" title="Als erledigt markieren & löschen"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></button>` : ''}
@@ -2678,7 +2525,7 @@
                 return `
                     <div class="audit-entry delete">
                         <div class="audit-entry-header">
-                            <span class="audit-entry-action">🗑️ ${entry.documentId}</span>
+                            <span class="audit-entry-action">ðŸ—‘ï¸ ${entry.documentId}</span>
                             <span class="audit-entry-time">${dateStr} ${timeStr}</span>
                         </div>
                         <div class="audit-entry-user">Gelöscht von: ${entry.deletedBy} (${entry.deletedByName})</div>
@@ -3067,7 +2914,7 @@
             badge.textContent = items.length;
             
             if (items.length === 0) {
-                container.innerHTML = '<div class="expiry-empty">Keine Verfallsdaten eingetragen – Artikel hinzufügen wenn etwas bald abläuft!</div>';
+                container.innerHTML = '<div class="expiry-empty">Keine Verfallsdaten eingetragen â€“ Artikel hinzufügen wenn etwas bald abläuft!</div>';
                 return;
             }
             
@@ -3139,7 +2986,7 @@
             let shiftName, shiftEmoji;
             if (hour >= 6 && hour < 14) {
                 shiftName = 'Frühschicht';
-                shiftEmoji = '☀️';
+                shiftEmoji = 'â˜€ï¸';
             } else if (hour >= 14 && hour < 22) {
                 shiftName = 'Spätschicht';
                 shiftEmoji = '🌤️';
@@ -3518,14 +3365,8 @@
                 }
                 var fileName = filePrefix + new Date().toISOString().split('T')[0] + '_' + employeeName.replace(/\s+/g, '_') + '.pdf';
                 
-                var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                if (isIOS) {
-                    var pdfBlob = doc.output('blob');
-                    var blobUrl = URL.createObjectURL(pdfBlob);
-                    window.open(blobUrl, '_blank');
-                } else {
-                    doc.save(fileName);
-                }
+                // Direkter Download - blob:URLs funktionieren nicht beim Teilen in Teams
+                doc.save(fileName);
                 
             } catch(err) {
                 alert('PDF Fehler: ' + err.message);
@@ -3692,7 +3533,7 @@
                     var key = s.id + '-' + i;
                     var itemText = typeof it === 'object' ? it.text : it;
                     var comment = theCommentsState[key] || ''; 
-                    res[s.title][itemText] = { checked: theChecklistState[key] ? '✓' : '✗', comment: comment }; 
+                    res[s.title][itemText] = { checked: theChecklistState[key] ? 'âœ“' : 'âœ—', comment: comment }; 
                 }); 
             });
             
@@ -3858,7 +3699,7 @@
             
             // Populate modal
             document.getElementById('signModalTitle').textContent = task.bereich;
-            document.getElementById('signModalSubtitle').textContent = dayNames[day] + ' • Schicht: ' + task.schicht;
+            document.getElementById('signModalSubtitle').textContent = dayNames[day] + ' â€¢ Schicht: ' + task.schicht;
             document.getElementById('signModalTask').innerHTML = task.umfang.replace(/\n/g, '<br>');
             // Auto-fill name with current user
             document.getElementById('signModalName').value = currentUser ? currentUser.name : '';
@@ -4338,7 +4179,7 @@
                 }
                 const dateDisplay = (currentArchiveType === 'wochen' || currentArchiveType === 'reinigung') && c.meta.kw ? `KW ${c.meta.kw} (${c.meta.datum})` : c.meta.datum;
                 document.getElementById('detailTitle').textContent = `${typeName} vom ${dateDisplay}`;
-                document.getElementById('detailSubtitle').textContent = `${c.meta.mitarbeiter || 'Siehe Einträge'} • ${c.meta.uhrzeit}`;
+                document.getElementById('detailSubtitle').textContent = `${c.meta.mitarbeiter || 'Siehe Einträge'} â€¢ ${c.meta.uhrzeit}`;
                 
                 // Show delete button only for admin
                 document.getElementById('deleteCheckBtn').style.display = currentUser && currentUser.role === 'admin' ? 'flex' : 'none';
@@ -4354,13 +4195,13 @@
                             if (task.noSign) {
                                 h += `<div class="detail-item"><span class="detail-item-label">[${task.schicht}] ${task.bereich}<br><small style="color:var(--text-muted);">${task.umfang.substring(0, 50)}...</small></span><span class="detail-item-value" style="color:var(--text-muted);">-</span></div>`;
                             } else {
-                                const status = task.checked ? '✓' : '✗';
+                                const status = task.checked ? 'âœ“' : 'âœ—';
                                 h += `<div class="detail-item" style="flex-direction:column;align-items:stretch;">
                                     <div style="display:flex;justify-content:space-between;align-items:center;">
                                         <span class="detail-item-label">[${task.schicht}] ${task.bereich}</span>
                                         <span class="detail-item-value ${task.checked ? 'success' : ''}">${status}</span>
                                     </div>
-                                    <small style="color:var(--text-muted);margin-top:4px;">${task.name || 'Kein Name'} • ${task.timestamp || '--:--'}</small>
+                                    <small style="color:var(--text-muted);margin-top:4px;">${task.name || 'Kein Name'} â€¢ ${task.timestamp || '--:--'}</small>
                                     ${task.signature ? `<div style="margin-top:8px;background:var(--bg-input);border-radius:6px;padding:4px;"><img src="${task.signature}" style="width:100%;height:40px;object-fit:contain;" alt="Unterschrift"></div>` : ''}
                                 </div>`;
                             }
@@ -4374,7 +4215,7 @@
                             const isNewFormat = typeof val === 'object';
                             const status = isNewFormat ? val.checked : val;
                             const comment = isNewFormat ? val.comment : '';
-                            h += `<div class="detail-item"><span class="detail-item-label">${it}${comment ? `<br><small style="color:var(--text-muted);font-style:italic;">→ ${comment}</small>` : ''}</span><span class="detail-item-value ${status === '✓' ? 'success' : ''}">${status}</span></div>`; 
+                            h += `<div class="detail-item"><span class="detail-item-label">${it}${comment ? `<br><small style="color:var(--text-muted);font-style:italic;">→ ${comment}</small>` : ''}</span><span class="detail-item-value ${status === 'âœ“' ? 'success' : ''}">${status}</span></div>`; 
                         }); 
                         h += '</div>'; 
                     });
@@ -4511,247 +4352,6 @@
             }
         }
 
-        // SAA-Vorgaben für Meldebilder
-        const saaMeldebildVorgaben = {
-            // Kreislaufstillstand
-            'reanimation_erwachsene': {
-                massnahmen: ['O₂-Gabe', 'Beutel-Maske', 'i.v.-Zugang', 'Defibrillation', '12-Kanal-EKG'],
-                medikamente: 'Epinephrin 1mg i.v. alle 3-5 Min.\nAmiodaron 300mg i.v. (nach 3. Schock)\nggf. Amiodaron 150mg i.v. (nach 5. Schock)'
-            },
-            'reanimation_kinder': {
-                massnahmen: ['O₂-Gabe', 'Beutel-Maske', 'i.v.-Zugang'],
-                medikamente: 'Epinephrin 10µg/kg i.v./i.o. alle 3-5 Min.'
-            },
-            'reanimation_neugeborene': {
-                massnahmen: ['O₂-Gabe', 'Beutel-Maske'],
-                medikamente: 'Epinephrin 10-30µg/kg i.v. (Nabelvenenkatheter)'
-            },
-            
-            // Leitsymptome
-            'dyspnoe': {
-                massnahmen: ['O₂-Gabe'],
-                medikamente: ''
-            },
-            'kritische_blutung': {
-                massnahmen: ['Druckverband', 'i.v.-Zugang', 'Infusion', 'Wärmeerhalt'],
-                medikamente: 'Tranexamsäure 1g i.v.\nVollelektrolytlösung nach Bedarf'
-            },
-            'brustschmerz': {
-                massnahmen: ['O₂-Gabe', '12-Kanal-EKG', 'i.v.-Zugang'],
-                medikamente: ''
-            },
-            'schmerzen': {
-                massnahmen: [],
-                medikamente: 'Leicht: Ibuprofen 400-800mg p.o. oder Paracetamol 1g i.v.\nMittel-stark: Nalbuphin 10-20mg i.v.\nStark: Morphin 2-5mg i.v. titriert oder Fentanyl 0,05-0,1mg i.v.'
-            },
-            'schock': {
-                massnahmen: ['O₂-Gabe', 'i.v.-Zugang', 'Infusion', 'Wärmeerhalt'],
-                medikamente: 'Vollelektrolytlösung 500-1000ml i.v.'
-            },
-            'zns_defizit': {
-                massnahmen: ['O₂-Gabe', 'BZ-Messung', '12-Kanal-EKG'],
-                medikamente: ''
-            },
-            
-            // Atemweg
-            'fremdkoerperaspiration': {
-                massnahmen: ['O₂-Gabe', 'Absaugen'],
-                medikamente: ''
-            },
-            'a_problem_erwachsene': {
-                massnahmen: ['O₂-Gabe', 'Absaugen', 'Guedel-Tubus'],
-                medikamente: ''
-            },
-            'tracheostoma': {
-                massnahmen: ['O₂-Gabe', 'Absaugen'],
-                medikamente: ''
-            },
-            'atemweg_kind': {
-                massnahmen: ['O₂-Gabe'],
-                medikamente: 'Epinephrin 3-5mg vernebelt (bei Krupp)'
-            },
-            
-            // Kardiovaskulär
-            'acs': {
-                massnahmen: ['O₂-Gabe', '12-Kanal-EKG', 'i.v.-Zugang'],
-                medikamente: 'ASS 250mg i.v.\nHeparin 5000 I.E. i.v.\nGlyceroltrinitrat 0,4mg s.l. (RRsyst >100mmHg)\nMorphin 2-5mg i.v. bei Schmerzen'
-            },
-            'aortensyndrom': {
-                massnahmen: ['O₂-Gabe', '12-Kanal-EKG', 'i.v.-Zugang'],
-                medikamente: 'Urapidil 10-50mg i.v. (Ziel RR 100-120mmHg)\nMorphin 2-5mg i.v. bei Schmerzen'
-            },
-            'hypertensiver_notfall': {
-                massnahmen: ['O₂-Gabe', '12-Kanal-EKG', 'i.v.-Zugang'],
-                medikamente: 'Urapidil 10-50mg i.v. (Ziel: RR-Senkung 20-25%)\nbei Lungenödem: Glyceroltrinitrat 0,4-0,8mg s.l.'
-            },
-            'bradykardie': {
-                massnahmen: ['O₂-Gabe', '12-Kanal-EKG', 'i.v.-Zugang'],
-                medikamente: 'Atropin 0,5mg i.v. (max. 3mg)'
-            },
-            'tachykardie': {
-                massnahmen: ['O₂-Gabe', '12-Kanal-EKG', 'i.v.-Zugang'],
-                medikamente: 'Amiodaron 300mg i.v. über 20 Min.'
-            },
-            'lungenoedem': {
-                massnahmen: ['O₂-Gabe', 'i.v.-Zugang'],
-                medikamente: 'Furosemid 40mg i.v.\nGlyceroltrinitrat 0,4-0,8mg s.l. (RRsyst >100mmHg)\nMorphin 2-5mg i.v.'
-            },
-            'lungenembolie': {
-                massnahmen: ['O₂-Gabe', '12-Kanal-EKG', 'i.v.-Zugang'],
-                medikamente: 'Heparin 5000 I.E. i.v.\nMorphin 2-5mg i.v. bei Schmerzen'
-            },
-            
-            // Respiratorisch
-            'bronchialobstruktion': {
-                massnahmen: ['O₂-Gabe'],
-                medikamente: 'Salbutamol 2-4 Hübe oder 2,5mg vernebelt\nIpratropiumbromid 0,5mg vernebelt\nPrednisolon 100mg i.v.'
-            },
-            
-            // Neurologisch
-            'krampfanfall_erwachsene': {
-                massnahmen: ['O₂-Gabe', 'i.v.-Zugang', 'BZ-Messung'],
-                medikamente: 'Midazolam 10mg intranasal oder\nMidazolam 5mg i.v.'
-            },
-            'krampfanfall_kind': {
-                massnahmen: ['O₂-Gabe', 'BZ-Messung'],
-                medikamente: 'Midazolam 0,2mg/kg intranasal (max. 10mg)'
-            },
-            'schlaganfall': {
-                massnahmen: ['O₂-Gabe', 'BZ-Messung', '12-Kanal-EKG'],
-                medikamente: ''
-            },
-            
-            // Stoffwechsel
-            'hyperglykämie': {
-                massnahmen: ['i.v.-Zugang', 'Infusion', 'BZ-Messung'],
-                medikamente: 'Vollelektrolytlösung 500-1000ml i.v.'
-            },
-            'hypoglykämie': {
-                massnahmen: ['i.v.-Zugang', 'BZ-Messung'],
-                medikamente: 'Glucose 40% 10-20ml i.v. (= 4-8g Glucose)\noder Glucagon 1mg i.m. (wenn kein i.v.-Zugang)'
-            },
-            'dehydratation': {
-                massnahmen: ['i.v.-Zugang', 'Infusion'],
-                medikamente: 'Vollelektrolytlösung 500-1000ml i.v.'
-            },
-            
-            // Trauma
-            'polytrauma': {
-                massnahmen: ['O₂-Gabe', 'i.v.-Zugang', 'Infusion', 'Vakuummatratze', 'HWS-Stütze', 'Wärmeerhalt'],
-                medikamente: 'Tranexamsäure 1g i.v.\nVollelektrolytlösung nach Bedarf\nAnalgesie nach Bedarf'
-            },
-            'thermische_verletzung': {
-                massnahmen: ['O₂-Gabe', 'i.v.-Zugang', 'Infusion', 'Wundversorgung', 'Kühlung', 'Wärmeerhalt'],
-                medikamente: 'Vollelektrolytlösung nach Parkland-Formel\nAnalgesie nach Bedarf'
-            },
-            'stromunfall': {
-                massnahmen: ['O₂-Gabe', '12-Kanal-EKG', 'i.v.-Zugang'],
-                medikamente: ''
-            },
-            'hypothermie': {
-                massnahmen: ['O₂-Gabe', 'Wärmeerhalt'],
-                medikamente: ''
-            },
-            
-            // Sonstige
-            'anaphylaxie': {
-                massnahmen: ['O₂-Gabe', 'i.v.-Zugang', 'Infusion'],
-                medikamente: 'Epinephrin 0,3-0,5mg i.m. (Oberschenkel)\nDimetinden 4mg i.v.\nPrednisolon 250mg i.v.\nVollelektrolytlösung 500-1000ml i.v. bei Schock'
-            },
-            'intoxikation': {
-                massnahmen: ['O₂-Gabe', 'i.v.-Zugang', 'BZ-Messung'],
-                medikamente: 'Symptomatische Therapie\nbei Opioid-Intox: Naloxon 0,1-0,4mg i.v. titriert'
-            },
-            'sepsis': {
-                massnahmen: ['O₂-Gabe', 'i.v.-Zugang', 'Infusion', 'Wärmeerhalt', 'BZ-Messung'],
-                medikamente: 'Vollelektrolytlösung 500ml Bolus, dann nach Bedarf'
-            },
-            'geburt': {
-                massnahmen: ['O₂-Gabe', 'Wärmeerhalt'],
-                medikamente: ''
-            },
-            'neugeborenes': {
-                massnahmen: ['O₂-Gabe', 'Wärmeerhalt'],
-                medikamente: ''
-            }
-        };
-
-        function applyMeldebildVorgaben() {
-            const meldebild = document.getElementById('einsatzMeldebild').value;
-            const vorgaben = saaMeldebildVorgaben[meldebild];
-            
-            if (!vorgaben) {
-                return; // Keine Vorgaben für dieses Meldebild
-            }
-            
-            // Mapping von Label zu data-id
-            const labelToId = {
-                'O₂-Gabe': 'o2_gabe',
-                'Absaugen': 'absaugen',
-                'Guedel-Tubus': 'guedel',
-                'Wendl-Tubus': 'wendl',
-                'Beutel-Maske': 'beutel_maske',
-                'Larynxtubus': 'larynxtubus',
-                'i.v.-Zugang': 'iv_zugang',
-                'Infusion': 'infusion',
-                'Druckverband': 'druckverband',
-                'Tourniquet': 'tourniquet',
-                '12-Kanal-EKG': 'ekg',
-                'Defibrillation': 'defi',
-                'Vakuummatratze': 'vakuummatratze',
-                'Schaufeltrage': 'schaufeltrage',
-                'Spineboard': 'spineboard',
-                'HWS-Stütze': 'hws',
-                'Schienung': 'schienung',
-                'Wärmeerhalt': 'waerme',
-                'Wundversorgung': 'wundversorgung',
-                'Kühlung': 'kuehlung',
-                'BZ-Messung': 'bz_messung',
-                'Psycho. Betreuung': 'psycho'
-            };
-            
-            // Bestätigung vom Benutzer
-            if (vorgaben.massnahmen.length > 0 || vorgaben.medikamente) {
-                const confirm = window.confirm(`SAA-Vorgaben für "${document.getElementById('einsatzMeldebild').options[document.getElementById('einsatzMeldebild').selectedIndex].text}" anwenden?\n\nMaßnahmen: ${vorgaben.massnahmen.join(', ') || 'Keine'}\n\nMedikamente werden vorausgefüllt.\n\n(Nicht zutreffende können später entfernt werden)`);
-                
-                if (!confirm) return;
-            }
-            
-            // Maßnahmen setzen (neue Struktur mit massnahme-item-ext)
-            if (vorgaben.massnahmen && vorgaben.massnahmen.length > 0) {
-                vorgaben.massnahmen.forEach(massnahmeLabel => {
-                    const id = labelToId[massnahmeLabel];
-                    if (id) {
-                        const item = document.querySelector(`.massnahme-item-ext[data-id="${id}"]`);
-                        if (item && !item.classList.contains('checked')) {
-                            item.classList.add('checked');
-                            einsatzMassnahmen[id] = {
-                                checked: true,
-                                label: massnahmeLabel
-                            };
-                        }
-                    }
-                });
-            }
-            
-            // Medikamente vorausfüllen (nur wenn leer oder Bestätigung)
-            if (vorgaben.medikamente) {
-                const medField = document.getElementById('massnahmenMedikamente');
-                if (medField.value === '' || medField.value === vorgaben.medikamente) {
-                    medField.value = vorgaben.medikamente;
-                } else {
-                    // Anhängen wenn schon was drin steht
-                    medField.value = medField.value + '\n\n--- SAA-Vorgabe ---\n' + vorgaben.medikamente;
-                }
-            }
-            
-            // NotSanG Hinweis aktualisieren
-            updateNotsangHinweis();
-            
-            // Scroll zu Maßnahmen-Sektion
-            document.getElementById('sectionMassnahmen').classList.remove('collapsed');
-        }
-
         function initEinsatzprotokoll() {
             // Reset Einsatztyp
             currentEinsatzTyp = null;
@@ -4819,61 +4419,6 @@
             einsatzMassnahmen[label] = element.classList.contains('checked');
         }
 
-        function toggleMassnahmeExt(headerElement) {
-            const item = headerElement.closest('.massnahme-item-ext');
-            item.classList.toggle('checked');
-            const label = item.querySelector('.massnahme-label').textContent;
-            const id = item.dataset.id;
-            einsatzMassnahmen[id] = {
-                checked: item.classList.contains('checked'),
-                label: label
-            };
-            
-            // Focus auf Kommentarfeld wenn aktiviert
-            if (item.classList.contains('checked')) {
-                const comment = item.querySelector('.massnahme-comment');
-                if (comment) setTimeout(() => comment.focus(), 100);
-            }
-            
-            // NotSanG Hinweis aktualisieren
-            updateNotsangHinweis();
-        }
-
-        // NotSanG-relevante Maßnahmen
-        const notsangMassnahmen = ['iv_zugang', 'infusion', 'larynxtubus', 'defi', 'ekg'];
-        
-        function updateNotsangHinweis() {
-            const hinweisDiv = document.getElementById('notsangHinweis');
-            const hinweisText = document.getElementById('notsangText');
-            const medikamente = document.getElementById('massnahmenMedikamente')?.value || '';
-            
-            // Prüfe ob NotSanG-relevante Maßnahmen durchgeführt wurden
-            let hatNotsangMassnahmen = false;
-            let hatMedikamente = medikamente.trim().length > 0;
-            
-            for (const id of notsangMassnahmen) {
-                if (einsatzMassnahmen[id] && einsatzMassnahmen[id].checked) {
-                    hatNotsangMassnahmen = true;
-                    break;
-                }
-            }
-            
-            if (hatNotsangMassnahmen || hatMedikamente) {
-                hinweisDiv.style.display = 'flex';
-                hinweisText.innerHTML = `<strong>Hinweis gem. § 2a NotSanG:</strong> Die durchgeführten heilkundlichen Maßnahmen erfolgten gemäß den Standardarbeitsanweisungen (SAA-BPR 2025) der Ärztlichen Leitung Rettungsdienst. Die Maßnahmen wurden in der Ausbildung erlernt, werden beherrscht und waren zur Abwendung von Lebensgefahr oder wesentlichen Folgeschäden erforderlich.`;
-            } else {
-                hinweisDiv.style.display = 'none';
-            }
-        }
-
-        // Medikamenten-Feld überwachen für NotSanG-Hinweis
-        document.addEventListener('DOMContentLoaded', function() {
-            const medField = document.getElementById('massnahmenMedikamente');
-            if (medField) {
-                medField.addEventListener('input', updateNotsangHinweis);
-            }
-        });
-
         function selectNACA(score) {
             einsatzNacaScore = score;
             document.querySelectorAll('.naca-btn').forEach((btn, index) => {
@@ -4897,28 +4442,10 @@
         }
 
         function addVitalEntry() {
-            // Speichere aktuelle Werte bevor neu gerendert wird
-            saveCurrentVitalValues();
-            
             const id = Date.now();
             const now = new Date();
             einsatzVitalEntries.push({ id, time: now.toTimeString().slice(0,5) });
             renderVitalTimeline();
-        }
-        
-        function saveCurrentVitalValues() {
-            // Speichere die aktuellen Werte aller Vitaleinträge im Array
-            einsatzVitalEntries.forEach(entry => {
-                entry.time = document.getElementById(`vitalTime_${entry.id}`)?.value || entry.time || '';
-                entry.rr_sys = document.getElementById(`vitalRRsys_${entry.id}`)?.value || '';
-                entry.rr_dia = document.getElementById(`vitalRRdia_${entry.id}`)?.value || '';
-                entry.puls = document.getElementById(`vitalPuls_${entry.id}`)?.value || '';
-                entry.spo2 = document.getElementById(`vitalSpO2_${entry.id}`)?.value || '';
-                entry.af = document.getElementById(`vitalAF_${entry.id}`)?.value || '';
-                entry.bz = document.getElementById(`vitalBZ_${entry.id}`)?.value || '';
-                entry.temp = document.getElementById(`vitalTemp_${entry.id}`)?.value || '';
-                entry.schmerz = document.getElementById(`vitalSchmerz_${entry.id}`)?.value || '';
-            });
         }
 
         function removeVitalEntry(id) {
@@ -4926,8 +4453,6 @@
                 alert('Mindestens eine Messung erforderlich.');
                 return;
             }
-            // Speichere Werte bevor wir löschen
-            saveCurrentVitalValues();
             einsatzVitalEntries = einsatzVitalEntries.filter(e => e.id !== id);
             renderVitalTimeline();
         }
@@ -4948,39 +4473,43 @@
                     <div class="vital-grid">
                         <div class="vital-item">
                             <label>Uhrzeit</label>
-                            <input type="time" id="vitalTime_${entry.id}" value="${entry.time || ''}">
+                            <input type="time" id="vitalTime_${entry.id}" value="${entry.time}">
                         </div>
                         <div class="vital-item">
                             <label>RR sys</label>
-                            <input type="number" id="vitalRRsys_${entry.id}" placeholder="mmHg" value="${entry.rr_sys || ''}">
+                            <input type="number" id="vitalRRsys_${entry.id}" placeholder="mmHg">
                         </div>
                         <div class="vital-item">
                             <label>RR dia</label>
-                            <input type="number" id="vitalRRdia_${entry.id}" placeholder="mmHg" value="${entry.rr_dia || ''}">
+                            <input type="number" id="vitalRRdia_${entry.id}" placeholder="mmHg">
                         </div>
                         <div class="vital-item">
                             <label>Puls</label>
-                            <input type="number" id="vitalPuls_${entry.id}" placeholder="/min" value="${entry.puls || ''}">
+                            <input type="number" id="vitalPuls_${entry.id}" placeholder="/min">
                         </div>
                         <div class="vital-item">
-                            <label>SpO₂</label>
-                            <input type="number" id="vitalSpO2_${entry.id}" placeholder="%" value="${entry.spo2 || ''}">
+                            <label>SpOâ‚‚</label>
+                            <input type="number" id="vitalSpO2_${entry.id}" placeholder="%">
                         </div>
                         <div class="vital-item">
                             <label>AF</label>
-                            <input type="number" id="vitalAF_${entry.id}" placeholder="/min" value="${entry.af || ''}">
+                            <input type="number" id="vitalAF_${entry.id}" placeholder="/min">
                         </div>
                         <div class="vital-item">
                             <label>BZ</label>
-                            <input type="number" id="vitalBZ_${entry.id}" placeholder="mg/dl" value="${entry.bz || ''}">
+                            <input type="number" id="vitalBZ_${entry.id}" placeholder="mg/dl">
                         </div>
                         <div class="vital-item">
                             <label>Temp</label>
-                            <input type="number" step="0.1" id="vitalTemp_${entry.id}" placeholder="°C" value="${entry.temp || ''}">
+                            <input type="number" step="0.1" id="vitalTemp_${entry.id}" placeholder="Â°C">
                         </div>
                         <div class="vital-item">
                             <label>Schmerz</label>
-                            <input type="number" min="0" max="10" id="vitalSchmerz_${entry.id}" placeholder="0-10" value="${entry.schmerz || ''}">
+                            <input type="number" min="0" max="10" id="vitalSchmerz_${entry.id}" placeholder="0-10">
+                        </div>
+                        <div class="vital-item">
+                            <label>AVPU</label>
+                            <input type="text" id="vitalAVPU_${entry.id}" placeholder="A/V/P/U">
                         </div>
                     </div>
                 </div>
@@ -4988,7 +4517,27 @@
         }
 
         function initEinsatzSignatures() {
-            // Sani signature only (Patient signature removed)
+            // Patient signature
+            const patCanvas = document.getElementById('einsatzSigPatient');
+            const patContainer = document.getElementById('einsatzSigPatientContainer');
+            if (patCanvas) {
+                patCanvas.width = patContainer.offsetWidth;
+                patCanvas.height = 120;
+                einsatzSigPatientCtx = patCanvas.getContext('2d');
+                einsatzSigPatientCtx.strokeStyle = '#fff';
+                einsatzSigPatientCtx.lineWidth = 2;
+                einsatzSigPatientCtx.lineCap = 'round';
+                
+                patCanvas.addEventListener('mousedown', (e) => startEinsatzSignature(e, 'Patient'));
+                patCanvas.addEventListener('mousemove', (e) => drawEinsatzSignature(e, 'Patient'));
+                patCanvas.addEventListener('mouseup', () => stopEinsatzSignature('Patient'));
+                patCanvas.addEventListener('mouseleave', () => stopEinsatzSignature('Patient'));
+                patCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); startEinsatzSignature(e, 'Patient'); });
+                patCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); drawEinsatzSignature(e, 'Patient'); });
+                patCanvas.addEventListener('touchend', () => stopEinsatzSignature('Patient'));
+            }
+            
+            // Sani signature
             const saniCanvas = document.getElementById('einsatzSigSani');
             const saniContainer = document.getElementById('einsatzSigSaniContainer');
             if (saniCanvas) {
@@ -5083,19 +4632,14 @@
                 af: document.getElementById(`vitalAF_${entry.id}`)?.value || '',
                 bz: document.getElementById(`vitalBZ_${entry.id}`)?.value || '',
                 temp: document.getElementById(`vitalTemp_${entry.id}`)?.value || '',
-                schmerz: document.getElementById(`vitalSchmerz_${entry.id}`)?.value || ''
+                schmerz: document.getElementById(`vitalSchmerz_${entry.id}`)?.value || '',
+                avpu: document.getElementById(`vitalAVPU_${entry.id}`)?.value || ''
             }));
 
-            // Collect massnahmen mit Kommentaren (neue Struktur)
+            // Collect massnahmen
             const massnahmenList = [];
-            document.querySelectorAll('.massnahme-item-ext.checked').forEach(item => {
-                const label = item.querySelector('.massnahme-label').textContent;
-                const comment = item.querySelector('.massnahme-comment')?.value || '';
-                massnahmenList.push({
-                    label: label,
-                    comment: comment,
-                    id: item.dataset.id
-                });
+            document.querySelectorAll('.massnahme-item.checked .massnahme-label').forEach(el => {
+                massnahmenList.push(el.textContent);
             });
             
             // Get Jahr for statistics
@@ -5128,6 +4672,7 @@
                     vorname: document.getElementById('patVorname')?.value || '',
                     geburt: document.getElementById('patGeburt')?.value || '',
                     geschlecht: document.querySelector('input[name="geschlecht"]:checked')?.value || '',
+                    adresse: document.getElementById('patAdresse')?.value || '',
                     kasse: document.getElementById('patKasse')?.value || '',
                     versNr: document.getElementById('patVersNr')?.value || ''
                 },
@@ -5150,24 +4695,26 @@
                     motorik: document.getElementById('gcsMotorik')?.value || '',
                     total: document.getElementById('gcsTotal')?.textContent || '--'
                 },
+                naca: einsatzNacaScore,
                 
                 // Maßnahmen
                 massnahmen: massnahmenList,
                 medikamente: document.getElementById('massnahmenMedikamente')?.value || '',
                 massnahmenBemerkung: document.getElementById('massnahmenBemerkung')?.value || '',
-                notsangHinweis: document.getElementById('notsangHinweis')?.style.display !== 'none',
                 
                 // Transport
                 transport: {
-                    art: document.querySelector('input[name="transport"]:checked')?.value || '',
+                    art: document.getElementById('transportArt')?.value || '',
+                    prioritaet: document.querySelector('input[name="prio"]:checked')?.value || '',
                     ziel: document.getElementById('transportZiel')?.value || '',
                     uebergabeAn: document.getElementById('uebergabeAn')?.value || '',
                     uebergabeZeit: document.getElementById('uebergabeZeit')?.value || '',
                     bemerkung: document.getElementById('uebergabeBemerkung')?.value || ''
                 },
                 
-                // Unterschriften (nur Notfallsanitäter/Arzt)
+                // Unterschriften
                 signatures: {
+                    patient: einsatzSigPatientData,
                     sani: einsatzSigSaniData,
                     saniName: document.getElementById('einsatzSaniName')?.value || ''
                 }
@@ -5179,7 +4726,7 @@
             
             // Validate minimum data
             if (!data.einsatz.typ) {
-                alert('Bitte Einsatzart wählen (Einsatz in der Ambulanz oder RTW Einsatz).');
+                alert('Bitte Einsatzart wählen (Notfall in Ambulanz oder RTW Einsatz).');
                 return;
             }
             
@@ -5204,7 +4751,7 @@
             localStorage.setItem(storageKey, JSON.stringify(protokolle));
             
             // Audit log
-            const typText = data.einsatz.typ === 'rtw' ? 'RTW Einsatz' : 'Einsatz in der Ambulanz';
+            const typText = data.einsatz.typ === 'rtw' ? 'RTW Einsatz' : 'Ambulanz Notfall';
             addAuditEntry('EINSATZPROTOKOLL_ERSTELLT', `${typText} #${data.einsatz.nrFormatiert} erstellt für ${data.patient.nachname || 'Patient'} (${data.einsatz.meldebildText || 'Ohne Meldebild'})`);
             
             // Show success with statistics
@@ -5212,156 +4759,18 @@
             const rtwCount = stats[`rtw_${data.einsatz.jahr}`] || 0;
             const ambCount = stats[`ambulanz_${data.einsatz.jahr}`] || 0;
             
-            // Generiere PDF und zeige Teams-Share Dialog
-            generateAndSharePDF(data, rtwCount, ambCount);
-        }
-        
-        // Globale Variable für aktuelles Protokoll-PDF
-        let currentProtokollPdfBlob = null;
-        let currentProtokollData = null;
-        
-        async function generateAndSharePDF(data, rtwCount, ambCount) {
-            // Generiere PDF
-            const pdfBlob = await generateEinsatzPDF(data);
-            currentProtokollPdfBlob = pdfBlob;
-            currentProtokollData = data;
+            alert(`Einsatzprotokoll ${data.einsatz.nrFormatiert} wurde gespeichert!\n\n📊 Statistik ${data.einsatz.jahr}:\n🚑 RTW Einsätze: ${rtwCount}\nðŸ¥ Ambulanz Notfälle: ${ambCount}\nâ”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”\n📋 Gesamt: ${rtwCount + ambCount}`);
             
-            // Zeige Teams-Share Modal
-            showTeamsShareModal(data, rtwCount, ambCount);
-        }
-        
-        function showTeamsShareModal(data, rtwCount, ambCount) {
-            // Erstelle Modal HTML
-            const modalHtml = `
-                <div class="teams-share-modal" id="teamsShareModal">
-                    <div class="teams-share-content">
-                        <div class="teams-share-icon">✅</div>
-                        <h2>Protokoll gespeichert!</h2>
-                        <p class="teams-share-id">${data.einsatz.nrFormatiert}</p>
-                        
-                        <div class="teams-share-stats">
-                            <div class="stat-item"><span class="stat-icon">🚑</span> RTW: ${rtwCount}</div>
-                            <div class="stat-item"><span class="stat-icon">🏥</span> Ambulanz: ${ambCount}</div>
-                        </div>
-                        
-                        <div class="teams-share-warning">
-                            <svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
-                            <span>Bitte das Protokoll in Teams teilen, bevor Sie fortfahren!</span>
-                        </div>
-                        
-                        <button class="teams-share-btn" onclick="shareToTeams()">
-                            <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
-                            In Teams teilen
-                        </button>
-                        
-                        <button class="teams-share-download" onclick="downloadProtokollPDF()">
-                            <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                            PDF herunterladen
-                        </button>
-                        
-                        <p class="teams-share-hint" id="teamsShareHint">Nach dem Teilen können Sie fortfahren</p>
-                        
-                        <button class="teams-share-close" id="teamsShareCloseBtn" onclick="closeTeamsShareModal()" disabled>
-                            Fertig & Schließen
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            // Füge Modal zum DOM hinzu
-            const existingModal = document.getElementById('teamsShareModal');
-            if (existingModal) existingModal.remove();
-            
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-        }
-        
-        function shareToTeams() {
-            if (!currentProtokollData || !currentProtokollPdfBlob) return;
-            
-            const data = currentProtokollData;
-            const patientInitialen = (data.patient.vorname ? data.patient.vorname.charAt(0).toUpperCase() + '.' : '') + 
-                                     (data.patient.nachname ? data.patient.nachname.charAt(0).toUpperCase() + '.' : '');
-            
-            // Teams Deep Link erstellen
-            const message = `🚑 EINSATZPROTOKOLL ${data.einsatz.nrFormatiert}
-━━━━━━━━━━━━━━━━━━━━━━━━
-📅 ${data.einsatz.datum} | ⏰ ${data.einsatz.alarmzeit} - ${data.einsatz.ende || '?'}
-📍 ${data.einsatz.ort || 'k.A.'}
-🏥 ${data.einsatz.meldebildText || 'Ohne Meldebild'}
-👤 Patient: ${patientInitialen || 'Anonym'}
-━━━━━━━━━━━━━━━━━━━━━━━━
-✍️ ${data.signatures.saniName || data.userName}`;
-            
-            // Versuche Web Share API (funktioniert auf Mobile)
-            if (navigator.share && navigator.canShare) {
-                const file = new File([currentProtokollPdfBlob], `Einsatzprotokoll_${data.einsatz.nrFormatiert}.pdf`, { type: 'application/pdf' });
-                
-                if (navigator.canShare({ files: [file] })) {
-                    navigator.share({
-                        title: `Einsatzprotokoll ${data.einsatz.nrFormatiert}`,
-                        text: message,
-                        files: [file]
-                    }).then(() => {
-                        enableCloseButton();
-                    }).catch(err => {
-                        // Fallback zu Teams URL
-                        openTeamsUrl(message);
-                    });
-                    return;
+            // Formular automatisch leeren nach erfolgreichem Speichern
+            document.querySelectorAll('#einsatzContainer input, #einsatzContainer textarea, #einsatzContainer select').forEach(el => {
+                if (el.type === 'radio' || el.type === 'checkbox') {
+                    el.checked = false;
+                } else {
+                    el.value = '';
                 }
-            }
-            
-            // Fallback: Teams URL öffnen
-            openTeamsUrl(message);
-        }
-        
-        function openTeamsUrl(message) {
-            // Teams Deep Link
-            const encodedMessage = encodeURIComponent(message);
-            const teamsUrl = `https://teams.microsoft.com/l/chat/0/0?message=${encodedMessage}`;
-            
-            window.open(teamsUrl, '_blank');
-            
-            // Nach kurzer Zeit Button aktivieren
-            setTimeout(enableCloseButton, 2000);
-        }
-        
-        function enableCloseButton() {
-            const closeBtn = document.getElementById('teamsShareCloseBtn');
-            const hint = document.getElementById('teamsShareHint');
-            if (closeBtn) {
-                closeBtn.disabled = false;
-                closeBtn.style.background = 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)';
-            }
-            if (hint) {
-                hint.textContent = '✓ Sie können jetzt fortfahren';
-                hint.style.color = '#22c55e';
-            }
-        }
-        
-        function downloadProtokollPDF() {
-            if (!currentProtokollPdfBlob || !currentProtokollData) return;
-            
-            const url = URL.createObjectURL(currentProtokollPdfBlob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Einsatzprotokoll_${currentProtokollData.einsatz.nrFormatiert}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            // Auch Close-Button aktivieren wenn runtergeladen
-            enableCloseButton();
-        }
-        
-        function closeTeamsShareModal() {
-            const modal = document.getElementById('teamsShareModal');
-            if (modal) modal.remove();
-            
-            currentProtokollPdfBlob = null;
-            currentProtokollData = null;
-            
+            });
+            document.querySelectorAll('.einsatz-radio').forEach(r => r.classList.remove('selected'));
+            initEinsatzprotokoll();
             showScreen('dashboard');
         }
 
@@ -5380,231 +4789,278 @@
             // Reset radio groups
             document.querySelectorAll('.einsatz-radio').forEach(r => r.classList.remove('selected'));
             
-            // Reset Maßnahmen-Ext (neue Struktur mit Kommentarfeldern)
-            document.querySelectorAll('.massnahme-item-ext').forEach(item => {
-                item.classList.remove('checked');
-            });
-            einsatzMassnahmen = {};
-            
-            // Hide NotSanG Hinweis
-            const notsangHinweis = document.getElementById('notsangHinweis');
-            if (notsangHinweis) notsangHinweis.style.display = 'none';
-            
             // Re-initialize
             initEinsatzprotokoll();
         }
 
-        async function generateEinsatzPDF(data) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // Anonymisierung
-            const initialen = (data.patient.vorname ? data.patient.vorname.charAt(0).toUpperCase() + '.' : '') + 
-                              (data.patient.nachname ? data.patient.nachname.charAt(0).toUpperCase() + '.' : '');
-            const nameAnonym = initialen || 'Patient';
-            const geburtsjahrAnonym = data.patient.geburt ? 'Jg. ' + data.patient.geburt.split('-')[0] : '-';
-            const typText = data.einsatz.typ === 'rtw' ? 'RTW Einsatz' : 'Einsatz in der Ambulanz';
-            
-            let y = 15;
-            const leftMargin = 15;
-            const pageWidth = 195;
-            
-            // Header
-            doc.setFillColor(196, 30, 58);
-            doc.rect(0, 0, 210, 25, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(18);
-            doc.setFont('helvetica', 'bold');
-            doc.text('EINSATZPROTOKOLL', leftMargin, 12);
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'normal');
-            doc.text('Mercedes-Benz Werk Rastatt', leftMargin, 19);
-            doc.text(data.einsatz.nrFormatiert || data.id, 195, 12, { align: 'right' });
-            doc.text(data.einsatz.datum || '-', 195, 19, { align: 'right' });
-            
-            y = 35;
-            doc.setTextColor(0, 0, 0);
-            
-            // Vertraulich-Hinweis
-            doc.setFillColor(255, 243, 224);
-            doc.rect(leftMargin, y - 5, pageWidth - 15, 10, 'F');
-            doc.setFontSize(9);
-            doc.setTextColor(180, 83, 9);
-            doc.text('VERTRAULICH - Enthält anonymisierte Patientendaten gemäß Datenschutzrichtlinien', 105, y, { align: 'center' });
-            y += 12;
-            
-            doc.setTextColor(0, 0, 0);
-            
-            // Sektion: Einsatzdaten
-            y = addPdfSection(doc, 'EINSATZDATEN', y, leftMargin);
-            y = addPdfRow(doc, 'Einsatzart:', typText, y, leftMargin);
-            y = addPdfRow(doc, 'Datum:', data.einsatz.datum || '-', y, leftMargin);
-            y = addPdfRow(doc, 'Zeit:', `${data.einsatz.alarmzeit || '-'} - ${data.einsatz.ende || '-'}`, y, leftMargin);
-            y = addPdfRow(doc, 'Einsatzort:', data.einsatz.ort || '-', y, leftMargin);
-            y = addPdfRow(doc, 'Meldebild (SAA):', data.einsatz.meldebildText || '-', y, leftMargin);
-            if (data.einsatz.stichwort) y = addPdfRow(doc, 'Zusatzinfo:', data.einsatz.stichwort, y, leftMargin);
-            y += 5;
-            
-            // Sektion: Patient
-            y = addPdfSection(doc, 'PATIENTENDATEN (anonymisiert)', y, leftMargin);
-            y = addPdfRow(doc, 'Patient:', nameAnonym, y, leftMargin);
-            y = addPdfRow(doc, 'Geburtsjahr:', geburtsjahrAnonym, y, leftMargin);
-            const geschlechtText = data.patient.geschlecht === 'm' ? 'männlich' : data.patient.geschlecht === 'w' ? 'weiblich' : data.patient.geschlecht === 'd' ? 'divers' : '-';
-            y = addPdfRow(doc, 'Geschlecht:', geschlechtText, y, leftMargin);
-            if (data.patient.kasse) y = addPdfRow(doc, 'Krankenkasse:', data.patient.kasse, y, leftMargin);
-            y += 5;
-            
-            // Sektion: SAMPLE
-            y = addPdfSection(doc, 'ANAMNESE (SAMPLE)', y, leftMargin);
-            if (data.sample.symptome) y = addPdfRow(doc, 'Symptome:', data.sample.symptome, y, leftMargin, true);
-            if (data.sample.allergien) y = addPdfRow(doc, 'Allergien:', data.sample.allergien, y, leftMargin);
-            if (data.sample.medikamente) y = addPdfRow(doc, 'Medikamente:', data.sample.medikamente, y, leftMargin);
-            if (data.sample.vorerkrankungen) y = addPdfRow(doc, 'Vorerkr.:', data.sample.vorerkrankungen, y, leftMargin);
-            if (data.sample.ereignis) y = addPdfRow(doc, 'Ereignis:', data.sample.ereignis, y, leftMargin);
-            y += 5;
-            
-            // Sektion: Vitalwerte
-            if (data.vital && data.vital.length > 0) {
-                y = addPdfSection(doc, 'VITALWERTE', y, leftMargin);
-                data.vital.forEach((v, i) => {
-                    if (y > 260) { doc.addPage(); y = 20; }
-                    doc.setFontSize(9);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text(`Messung ${i+1} (${v.time || '-'}):`, leftMargin, y);
-                    doc.setFont('helvetica', 'normal');
-                    const vitalText = `RR ${v.rr_sys || '-'}/${v.rr_dia || '-'} | Puls ${v.puls || '-'} | SpO2 ${v.spo2 || '-'}% | AF ${v.af || '-'} | BZ ${v.bz || '-'} | Temp ${v.temp || '-'}°C | Schmerz ${v.schmerz || '-'}/10`;
-                    doc.text(vitalText, leftMargin + 35, y);
-                    y += 6;
-                });
-                if (data.gcs.total !== '--') {
-                    y = addPdfRow(doc, 'GCS:', `${data.gcs.total} (A${data.gcs.augen} V${data.gcs.verbal} M${data.gcs.motorik})`, y, leftMargin);
-                }
-                y += 5;
-            }
-            
-            // Neue Seite wenn nötig
-            if (y > 200) { doc.addPage(); y = 20; }
-            
-            // Sektion: Maßnahmen
-            y = addPdfSection(doc, 'MASSNAHMEN', y, leftMargin);
-            if (data.massnahmen && data.massnahmen.length > 0) {
-                data.massnahmen.forEach(m => {
-                    if (y > 270) { doc.addPage(); y = 20; }
-                    doc.setFontSize(9);
-                    const massnahmeText = m.comment ? `• ${m.label}: ${m.comment}` : `• ${m.label}`;
-                    const lines = doc.splitTextToSize(massnahmeText, pageWidth - 20);
-                    doc.text(lines, leftMargin, y);
-                    y += lines.length * 4 + 2;
-                });
-            } else {
-                doc.setFontSize(9);
-                doc.text('Keine Maßnahmen dokumentiert', leftMargin, y);
-                y += 5;
-            }
-            if (data.medikamente) {
-                y += 2;
-                y = addPdfRow(doc, 'Medikamente:', data.medikamente, y, leftMargin, true);
-            }
-            if (data.massnahmenBemerkung) {
-                y = addPdfRow(doc, 'Bemerkungen:', data.massnahmenBemerkung, y, leftMargin, true);
-            }
-            y += 5;
-            
-            // NotSanG Hinweis
-            if (data.notsangHinweis) {
-                if (y > 230) { doc.addPage(); y = 20; }
-                doc.setFillColor(239, 246, 255);
-                doc.rect(leftMargin, y - 3, pageWidth - 15, 25, 'F');
-                doc.setDrawColor(59, 130, 246);
-                doc.rect(leftMargin, y - 3, pageWidth - 15, 25, 'S');
-                doc.setFontSize(8);
-                doc.setFont('helvetica', 'bold');
-                doc.setTextColor(30, 64, 175);
-                doc.text('§ 2a NotSanG HINWEIS:', leftMargin + 3, y + 2);
-                doc.setFont('helvetica', 'normal');
-                const notsangText = 'Die durchgeführten heilkundlichen Maßnahmen erfolgten gemäß den Standardarbeitsanweisungen (SAA-BPR 2025) der Ärztlichen Leitung Rettungsdienst. Die Maßnahmen wurden in der Ausbildung erlernt, werden beherrscht und waren zur Abwendung von Lebensgefahr oder wesentlichen Folgeschäden erforderlich.';
-                const notsangLines = doc.splitTextToSize(notsangText, pageWidth - 25);
-                doc.text(notsangLines, leftMargin + 3, y + 7);
-                y += 30;
-                doc.setTextColor(0, 0, 0);
-            }
-            
-            // Sektion: Transport
-            if (y > 240) { doc.addPage(); y = 20; }
-            y = addPdfSection(doc, 'TRANSPORT & ÜBERGABE', y, leftMargin);
-            const transportText = data.transport.art === 'zeitkritisch' ? 'Zeitkritisch / Sondersignal' : 
-                                  data.transport.art === 'extern_rtw' ? 'Übergabe an externen RTW' : 
-                                  data.transport.art === 'kein_transport' ? 'Kein Transport' : '-';
-            y = addPdfRow(doc, 'Entscheidung:', transportText, y, leftMargin);
-            if (data.transport.ziel) y = addPdfRow(doc, 'Zielklinik:', data.transport.ziel, y, leftMargin);
-            if (data.transport.uebergabeAn) y = addPdfRow(doc, 'Übergabe an:', data.transport.uebergabeAn, y, leftMargin);
-            if (data.transport.uebergabeZeit) y = addPdfRow(doc, 'Uhrzeit:', data.transport.uebergabeZeit, y, leftMargin);
-            y += 10;
-            
-            // Unterschrift
-            if (y > 250) { doc.addPage(); y = 20; }
-            y = addPdfSection(doc, 'UNTERSCHRIFT', y, leftMargin);
-            doc.setFontSize(10);
-            doc.text('Notfallsanitäter / Arzt:', leftMargin, y);
-            doc.line(leftMargin + 40, y, leftMargin + 120, y);
-            doc.setFontSize(9);
-            doc.text(data.signatures.saniName || '-', leftMargin + 45, y - 2);
-            
-            // Footer
-            const pageCount = doc.internal.getNumberOfPages();
-            for (let i = 1; i <= pageCount; i++) {
-                doc.setPage(i);
-                doc.setFontSize(8);
-                doc.setTextColor(128, 128, 128);
-                doc.text(`Erstellt: ${new Date(data.timestamp).toLocaleString('de-DE')} | ${data.userName} | Seite ${i}/${pageCount}`, 105, 290, { align: 'center' });
-            }
-            
-            // Return as Blob
-            return doc.output('blob');
-        }
-        
-        function addPdfSection(doc, title, y, leftMargin) {
-            doc.setFillColor(240, 240, 240);
-            doc.rect(leftMargin, y - 4, 180, 7, 'F');
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'bold');
-            doc.setTextColor(50, 50, 50);
-            doc.text(title, leftMargin + 2, y);
-            doc.setTextColor(0, 0, 0);
-            return y + 8;
-        }
-        
-        function addPdfRow(doc, label, value, y, leftMargin, multiline = false) {
-            doc.setFontSize(9);
-            doc.setFont('helvetica', 'bold');
-            doc.text(label, leftMargin, y);
-            doc.setFont('helvetica', 'normal');
-            
-            if (multiline && value && value.length > 60) {
-                const lines = doc.splitTextToSize(value, 140);
-                doc.text(lines, leftMargin + 35, y);
-                return y + (lines.length * 4) + 2;
-            } else {
-                doc.text(value || '-', leftMargin + 35, y);
-                return y + 5;
-            }
-        }
-        
-        async function exportEinsatzPDF() {
+        function exportEinsatzPDF() {
             const data = collectEinsatzData();
-            const pdfBlob = await generateEinsatzPDF(data);
             
-            const url = URL.createObjectURL(pdfBlob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Einsatzprotokoll_${data.einsatz.datum || 'ohne-datum'}_${data.id}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            if (!data.einsatz.typ) {
+                alert('Bitte zuerst Einsatzart auswaehlen.');
+                return;
+            }
             
-            addAuditEntry('EINSATZPROTOKOLL_EXPORTIERT', `Einsatzprotokoll ${data.id} exportiert`);
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                const isRTW = data.einsatz.typ === 'rtw';
+                const headerColor = isRTW ? [220, 38, 38] : [37, 99, 235];
+                const typText = isRTW ? 'RTW Einsatz' : 'Einsatz in der Ambulanz';
+                const docId = '054_EP_Einsatzprotokoll_1-0-1';
+                const shortDate = data.einsatz.datum ? new Date(data.einsatz.datum).toLocaleDateString('de-DE') : new Date().toLocaleDateString('de-DE');
+                
+                let y = 20;
+                let pageNum = 1;
+                
+                function checkPage(needed) {
+                    if (y > 265 - needed) {
+                        addEinsatzFooter(doc, docId, shortDate, data.signatures.saniName, pageNum);
+                        doc.addPage();
+                        pageNum++;
+                        y = 25;
+                        doc.setFontSize(8);
+                        doc.setTextColor(120);
+                        doc.text(docId, 195, 10, { align: 'right' });
+                        doc.setFillColor(headerColor[0], headerColor[1], headerColor[2]);
+                        doc.rect(0, 12, 210, 8, 'F');
+                        doc.setTextColor(255);
+                        doc.setFontSize(9);
+                        doc.text(typText + ' - ' + (data.einsatz.nrFormatiert || data.id), 105, 17, { align: 'center' });
+                        y = 28;
+                    }
+                }
+                
+                function section(title) {
+                    checkPage(15);
+                    doc.setFillColor(50, 50, 50);
+                    doc.rect(15, y - 4, 180, 8, 'F');
+                    doc.setTextColor(255);
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(title, 20, y + 1);
+                    y += 10;
+                    doc.setTextColor(0);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(9);
+                }
+                
+                function field(label, value, x) {
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(label + ':', x || 20, y);
+                    doc.setFont('helvetica', 'normal');
+                    var w = doc.getTextWidth(label + ': ');
+                    doc.text(String(value || '-'), (x || 20) + w, y);
+                }
+                
+                // HEADER
+                doc.setFontSize(8);
+                doc.setTextColor(120);
+                doc.text(docId, 195, 10, { align: 'right' });
+                
+                doc.setFillColor(headerColor[0], headerColor[1], headerColor[2]);
+                doc.rect(0, 15, 210, 28, 'F');
+                doc.setTextColor(255);
+                doc.setFontSize(18);
+                doc.setFont('helvetica', 'bold');
+                doc.text('EINSATZPROTOKOLL', 105, 27, { align: 'center' });
+                doc.setFontSize(11);
+                doc.text(typText, 105, 35, { align: 'center' });
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'normal');
+                doc.text('Gesundheitszentrum Mercedes-Benz Rastatt', 105, 41, { align: 'center' });
+                
+                y = 52;
+                
+                // EINSATZDATEN
+                section('EINSATZDATEN');
+                field('Einsatz-Nr', data.einsatz.nrFormatiert || data.id, 20);
+                field('Datum', shortDate, 110);
+                y += 6;
+                field('Einsatz Beginn', data.einsatz.alarmzeit, 20);
+                field('Einsatzende', data.einsatz.ende, 110);
+                y += 6;
+                field('Einsatzort', data.einsatz.ort, 20);
+                y += 6;
+                field('Meldebild (SAA)', data.einsatz.meldebildText, 20);
+                y += 6;
+                if (data.einsatz.stichwort) {
+                    field('Zusatzinfo', data.einsatz.stichwort, 20);
+                    y += 6;
+                }
+                y += 4;
+                
+                // PATIENTENDATEN
+                section('PATIENTENDATEN');
+                var patName = [data.patient.nachname, data.patient.vorname].filter(Boolean).join(', ') || '-';
+                field('Name', patName, 20);
+                field('Geb.-Datum', data.patient.geburt, 110);
+                y += 6;
+                field('Geschlecht', data.patient.geschlecht, 20);
+                y += 6;
+                field('Adresse', data.patient.adresse, 20);
+                y += 6;
+                field('Krankenkasse', data.patient.kasse, 20);
+                field('Vers.-Nr.', data.patient.versNr, 110);
+                y += 8;
+                
+                // ANAMNESE (SAMPLE)
+                section('ANAMNESE (SAMPLE)');
+                var sampleFields = [
+                    ['S - Symptome', data.sample.symptome],
+                    ['A - Allergien', data.sample.allergien],
+                    ['M - Medikamente', data.sample.medikamente],
+                    ['P - Vorerkrankungen', data.sample.vorerkrankungen],
+                    ['L - Letzte Mahlzeit', data.sample.mahlzeit],
+                    ['E - Ereignis', data.sample.ereignis]
+                ];
+                sampleFields.forEach(function(f) {
+                    checkPage(8);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(f[0] + ':', 20, y);
+                    doc.setFont('helvetica', 'normal');
+                    var lines = doc.splitTextToSize(String(f[1] || '-'), 130);
+                    doc.text(lines, 65, y);
+                    y += Math.max(6, lines.length * 5);
+                });
+                y += 4;
+                
+                // VITALWERTE
+                checkPage(35);
+                section('VITALWERTE');
+                if (data.vital && data.vital.length > 0) {
+                    doc.setFillColor(240, 240, 240);
+                    doc.rect(15, y - 4, 180, 7, 'F');
+                    doc.setFontSize(7);
+                    doc.setFont('helvetica', 'bold');
+                    var headers = ['Zeit', 'RR', 'Puls', 'SpO2', 'AF', 'BZ', 'Temp', 'Schmerz', 'AVPU'];
+                    var colX = [20, 38, 58, 78, 96, 112, 128, 150, 172];
+                    headers.forEach(function(h, i) { doc.text(h, colX[i], y); });
+                    y += 6;
+                    doc.setFont('helvetica', 'normal');
+                    data.vital.forEach(function(v) {
+                        checkPage(6);
+                        doc.text(v.time || '-', colX[0], y);
+                        doc.text(v.rr_sys && v.rr_dia ? v.rr_sys + '/' + v.rr_dia : '-', colX[1], y);
+                        doc.text(v.puls || '-', colX[2], y);
+                        doc.text(v.spo2 ? v.spo2 + '%' : '-', colX[3], y);
+                        doc.text(v.af || '-', colX[4], y);
+                        doc.text(v.bz || '-', colX[5], y);
+                        doc.text(v.temp || '-', colX[6], y);
+                        doc.text(v.schmerz || '-', colX[7], y);
+                        doc.text(v.avpu || '-', colX[8], y);
+                        y += 5;
+                    });
+                }
+                y += 2;
+                doc.setFontSize(9);
+                field('GCS', data.gcs.total && data.gcs.total !== '--' ? data.gcs.total + ' (A' + data.gcs.augen + ' V' + data.gcs.verbal + ' M' + data.gcs.motorik + ')' : '-', 20);
+                y += 8;
+                
+                // MASSNAHMEN
+                checkPage(25);
+                section('MASSNAHMEN');
+                if (data.massnahmen && data.massnahmen.length > 0) {
+                    var massText = data.massnahmen.join(', ');
+                    var lines = doc.splitTextToSize(massText, 170);
+                    doc.text(lines, 20, y);
+                    y += lines.length * 5 + 2;
+                } else {
+                    doc.text('Keine Massnahmen dokumentiert', 20, y);
+                    y += 6;
+                }
+                if (data.medikamente) {
+                    checkPage(10);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('Medikamente:', 20, y);
+                    doc.setFont('helvetica', 'normal');
+                    var medLines = doc.splitTextToSize(data.medikamente, 145);
+                    doc.text(medLines, 55, y);
+                    y += medLines.length * 5 + 2;
+                }
+                if (data.massnahmenBemerkung) {
+                    checkPage(10);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('Bemerkungen:', 20, y);
+                    doc.setFont('helvetica', 'normal');
+                    var bemLines = doc.splitTextToSize(data.massnahmenBemerkung, 145);
+                    doc.text(bemLines, 55, y);
+                    y += bemLines.length * 5 + 2;
+                }
+                y += 4;
+                
+                // TRANSPORT
+                checkPage(25);
+                section('TRANSPORT & UEBERGABE');
+                field('Transportart', data.transport.art, 20);
+                field('Prioritaet', data.transport.prioritaet, 110);
+                y += 6;
+                field('Zielklinik', data.transport.ziel, 20);
+                y += 6;
+                field('Uebergabe an', data.transport.uebergabeAn, 20);
+                field('Uebergabe Zeit', data.transport.uebergabeZeit, 110);
+                y += 6;
+                if (data.transport.bemerkung) {
+                    field('Bemerkungen', data.transport.bemerkung, 20);
+                    y += 6;
+                }
+                y += 4;
+                
+                // UNTERSCHRIFT
+                checkPage(45);
+                section('UNTERSCHRIFT SANITAETER');
+                doc.setFont('helvetica', 'bold');
+                doc.text('Name: ' + (data.signatures.saniName || '-'), 20, y);
+                y += 4;
+                if (data.signatures.sani) {
+                    try {
+                        doc.addImage(data.signatures.sani, 'PNG', 20, y, 60, 25);
+                    } catch(e) {
+                        doc.setFont('helvetica', 'italic');
+                        doc.text('[Unterschrift nicht lesbar]', 20, y + 10);
+                    }
+                    y += 28;
+                } else {
+                    doc.setDrawColor(180);
+                    doc.rect(20, y, 60, 20);
+                    doc.setFont('helvetica', 'italic');
+                    doc.setTextColor(150);
+                    doc.text('Keine Unterschrift', 30, y + 12);
+                    doc.setTextColor(0);
+                    y += 25;
+                }
+                
+                // Footer
+                addEinsatzFooter(doc, docId, shortDate, data.signatures.saniName, pageNum);
+                
+                // Download - kein blob:URL
+                var fileName = 'Einsatzprotokoll_' + (data.einsatz.nrFormatiert || data.id) + '_' + (data.einsatz.datum || 'ohne-datum') + '.pdf';
+                doc.save(fileName);
+                
+                addAuditEntry('EINSATZPROTOKOLL_EXPORTIERT', 'Einsatzprotokoll ' + (data.einsatz.nrFormatiert || data.id) + ' als PDF exportiert');
+                
+            } catch(err) {
+                alert('PDF Fehler: ' + err.message);
+                console.error(err);
+            }
         }
+        
+        function addEinsatzFooter(doc, docId, date, employee, pageNum) {
+            var y = 282;
+            doc.setDrawColor(200);
+            doc.setLineWidth(0.3);
+            doc.line(15, y - 5, 195, y - 5);
+            doc.setFontSize(7);
+            doc.setTextColor(100);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Erstellt von: ' + (employee || '-'), 15, y);
+            doc.text('Datum: ' + date, 80, y);
+            doc.text(docId, 145, y);
+            doc.text('Mercedes-Benz Werk Rastatt - Gesundheitszentrum', 15, y + 4);
+            doc.text('Seite ' + pageNum, 175, y + 4);
+        }
+
 
         // INIT
         function initApp() {
