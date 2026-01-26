@@ -512,6 +512,28 @@
         .einsatz-features { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 24px; }
         .einsatz-feature { background: var(--bg-card); border: 1px solid var(--border); padding: 10px 16px; border-radius: var(--radius); font-size: 14px; }
 
+        /* TEAMS SHARE MODAL */
+        .teams-share-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .teams-share-content { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 420px; width: 100%; padding: 32px 24px; text-align: center; }
+        .teams-share-icon { font-size: 64px; margin-bottom: 16px; }
+        .teams-share-content h2 { font-size: 22px; margin: 0 0 8px 0; color: #22c55e; }
+        .teams-share-id { font-size: 18px; font-weight: 700; color: var(--accent); margin: 0 0 20px 0; }
+        .teams-share-stats { display: flex; justify-content: center; gap: 24px; margin-bottom: 20px; }
+        .stat-item { font-size: 15px; display: flex; align-items: center; gap: 6px; }
+        .stat-icon { font-size: 18px; }
+        .teams-share-warning { background: rgba(249, 115, 22, 0.15); border: 1px solid rgba(249, 115, 22, 0.4); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; text-align: left; }
+        .teams-share-warning svg { width: 24px; height: 24px; fill: #f97316; flex-shrink: 0; }
+        .teams-share-warning span { font-size: 13px; color: #f97316; }
+        .teams-share-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #5865F2 0%, #4752C4 100%); border: none; border-radius: var(--radius); color: white; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px; transition: transform 0.2s; }
+        .teams-share-btn:hover { transform: translateY(-2px); }
+        .teams-share-btn svg { width: 22px; height: 22px; fill: white; }
+        .teams-share-download { width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-secondary); font-family: inherit; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; }
+        .teams-share-download:hover { background: var(--border); }
+        .teams-share-download svg { width: 18px; height: 18px; fill: currentColor; }
+        .teams-share-hint { font-size: 13px; color: var(--text-muted); margin: 0 0 16px 0; }
+        .teams-share-close { width: 100%; padding: 14px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-muted); font-family: inherit; font-size: 15px; font-weight: 600; cursor: not-allowed; transition: all 0.3s; }
+        .teams-share-close:not(:disabled) { cursor: pointer; color: white; }
+
         /* MELDUNGEN */
         .meldungen-container { padding: 20px; max-width: 600px; margin: 0 auto; }
         .meldungen-loading { text-align: center; padding: 40px; color: var(--text-muted); }
@@ -654,6 +676,7 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         .spinner { animation: spin 1s linear infinite; }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
     <!-- LOGIN -->
@@ -4874,10 +4897,28 @@
         }
 
         function addVitalEntry() {
+            // Speichere aktuelle Werte bevor neu gerendert wird
+            saveCurrentVitalValues();
+            
             const id = Date.now();
             const now = new Date();
             einsatzVitalEntries.push({ id, time: now.toTimeString().slice(0,5) });
             renderVitalTimeline();
+        }
+        
+        function saveCurrentVitalValues() {
+            // Speichere die aktuellen Werte aller Vitaleinträge im Array
+            einsatzVitalEntries.forEach(entry => {
+                entry.time = document.getElementById(`vitalTime_${entry.id}`)?.value || entry.time || '';
+                entry.rr_sys = document.getElementById(`vitalRRsys_${entry.id}`)?.value || '';
+                entry.rr_dia = document.getElementById(`vitalRRdia_${entry.id}`)?.value || '';
+                entry.puls = document.getElementById(`vitalPuls_${entry.id}`)?.value || '';
+                entry.spo2 = document.getElementById(`vitalSpO2_${entry.id}`)?.value || '';
+                entry.af = document.getElementById(`vitalAF_${entry.id}`)?.value || '';
+                entry.bz = document.getElementById(`vitalBZ_${entry.id}`)?.value || '';
+                entry.temp = document.getElementById(`vitalTemp_${entry.id}`)?.value || '';
+                entry.schmerz = document.getElementById(`vitalSchmerz_${entry.id}`)?.value || '';
+            });
         }
 
         function removeVitalEntry(id) {
@@ -4885,6 +4926,8 @@
                 alert('Mindestens eine Messung erforderlich.');
                 return;
             }
+            // Speichere Werte bevor wir löschen
+            saveCurrentVitalValues();
             einsatzVitalEntries = einsatzVitalEntries.filter(e => e.id !== id);
             renderVitalTimeline();
         }
@@ -4905,39 +4948,39 @@
                     <div class="vital-grid">
                         <div class="vital-item">
                             <label>Uhrzeit</label>
-                            <input type="time" id="vitalTime_${entry.id}" value="${entry.time}">
+                            <input type="time" id="vitalTime_${entry.id}" value="${entry.time || ''}">
                         </div>
                         <div class="vital-item">
                             <label>RR sys</label>
-                            <input type="number" id="vitalRRsys_${entry.id}" placeholder="mmHg">
+                            <input type="number" id="vitalRRsys_${entry.id}" placeholder="mmHg" value="${entry.rr_sys || ''}">
                         </div>
                         <div class="vital-item">
                             <label>RR dia</label>
-                            <input type="number" id="vitalRRdia_${entry.id}" placeholder="mmHg">
+                            <input type="number" id="vitalRRdia_${entry.id}" placeholder="mmHg" value="${entry.rr_dia || ''}">
                         </div>
                         <div class="vital-item">
                             <label>Puls</label>
-                            <input type="number" id="vitalPuls_${entry.id}" placeholder="/min">
+                            <input type="number" id="vitalPuls_${entry.id}" placeholder="/min" value="${entry.puls || ''}">
                         </div>
                         <div class="vital-item">
                             <label>SpO₂</label>
-                            <input type="number" id="vitalSpO2_${entry.id}" placeholder="%">
+                            <input type="number" id="vitalSpO2_${entry.id}" placeholder="%" value="${entry.spo2 || ''}">
                         </div>
                         <div class="vital-item">
                             <label>AF</label>
-                            <input type="number" id="vitalAF_${entry.id}" placeholder="/min">
+                            <input type="number" id="vitalAF_${entry.id}" placeholder="/min" value="${entry.af || ''}">
                         </div>
                         <div class="vital-item">
                             <label>BZ</label>
-                            <input type="number" id="vitalBZ_${entry.id}" placeholder="mg/dl">
+                            <input type="number" id="vitalBZ_${entry.id}" placeholder="mg/dl" value="${entry.bz || ''}">
                         </div>
                         <div class="vital-item">
                             <label>Temp</label>
-                            <input type="number" step="0.1" id="vitalTemp_${entry.id}" placeholder="°C">
+                            <input type="number" step="0.1" id="vitalTemp_${entry.id}" placeholder="°C" value="${entry.temp || ''}">
                         </div>
                         <div class="vital-item">
                             <label>Schmerz</label>
-                            <input type="number" min="0" max="10" id="vitalSchmerz_${entry.id}" placeholder="0-10">
+                            <input type="number" min="0" max="10" id="vitalSchmerz_${entry.id}" placeholder="0-10" value="${entry.schmerz || ''}">
                         </div>
                     </div>
                 </div>
@@ -5169,7 +5212,156 @@
             const rtwCount = stats[`rtw_${data.einsatz.jahr}`] || 0;
             const ambCount = stats[`ambulanz_${data.einsatz.jahr}`] || 0;
             
-            alert(`Einsatzprotokoll ${data.einsatz.nrFormatiert} wurde gespeichert!\n\n📊 Statistik ${data.einsatz.jahr}:\n🚑 RTW Einsätze: ${rtwCount}\n🏥 Ambulanz Einsätze: ${ambCount}\n━━━━━━━━━━━━━━━━\n📋 Gesamt: ${rtwCount + ambCount}`);
+            // Generiere PDF und zeige Teams-Share Dialog
+            generateAndSharePDF(data, rtwCount, ambCount);
+        }
+        
+        // Globale Variable für aktuelles Protokoll-PDF
+        let currentProtokollPdfBlob = null;
+        let currentProtokollData = null;
+        
+        async function generateAndSharePDF(data, rtwCount, ambCount) {
+            // Generiere PDF
+            const pdfBlob = await generateEinsatzPDF(data);
+            currentProtokollPdfBlob = pdfBlob;
+            currentProtokollData = data;
+            
+            // Zeige Teams-Share Modal
+            showTeamsShareModal(data, rtwCount, ambCount);
+        }
+        
+        function showTeamsShareModal(data, rtwCount, ambCount) {
+            // Erstelle Modal HTML
+            const modalHtml = `
+                <div class="teams-share-modal" id="teamsShareModal">
+                    <div class="teams-share-content">
+                        <div class="teams-share-icon">✅</div>
+                        <h2>Protokoll gespeichert!</h2>
+                        <p class="teams-share-id">${data.einsatz.nrFormatiert}</p>
+                        
+                        <div class="teams-share-stats">
+                            <div class="stat-item"><span class="stat-icon">🚑</span> RTW: ${rtwCount}</div>
+                            <div class="stat-item"><span class="stat-icon">🏥</span> Ambulanz: ${ambCount}</div>
+                        </div>
+                        
+                        <div class="teams-share-warning">
+                            <svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+                            <span>Bitte das Protokoll in Teams teilen, bevor Sie fortfahren!</span>
+                        </div>
+                        
+                        <button class="teams-share-btn" onclick="shareToTeams()">
+                            <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+                            In Teams teilen
+                        </button>
+                        
+                        <button class="teams-share-download" onclick="downloadProtokollPDF()">
+                            <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                            PDF herunterladen
+                        </button>
+                        
+                        <p class="teams-share-hint" id="teamsShareHint">Nach dem Teilen können Sie fortfahren</p>
+                        
+                        <button class="teams-share-close" id="teamsShareCloseBtn" onclick="closeTeamsShareModal()" disabled>
+                            Fertig & Schließen
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Füge Modal zum DOM hinzu
+            const existingModal = document.getElementById('teamsShareModal');
+            if (existingModal) existingModal.remove();
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+        
+        function shareToTeams() {
+            if (!currentProtokollData || !currentProtokollPdfBlob) return;
+            
+            const data = currentProtokollData;
+            const patientInitialen = (data.patient.vorname ? data.patient.vorname.charAt(0).toUpperCase() + '.' : '') + 
+                                     (data.patient.nachname ? data.patient.nachname.charAt(0).toUpperCase() + '.' : '');
+            
+            // Teams Deep Link erstellen
+            const message = `🚑 EINSATZPROTOKOLL ${data.einsatz.nrFormatiert}
+━━━━━━━━━━━━━━━━━━━━━━━━
+📅 ${data.einsatz.datum} | ⏰ ${data.einsatz.alarmzeit} - ${data.einsatz.ende || '?'}
+📍 ${data.einsatz.ort || 'k.A.'}
+🏥 ${data.einsatz.meldebildText || 'Ohne Meldebild'}
+👤 Patient: ${patientInitialen || 'Anonym'}
+━━━━━━━━━━━━━━━━━━━━━━━━
+✍️ ${data.signatures.saniName || data.userName}`;
+            
+            // Versuche Web Share API (funktioniert auf Mobile)
+            if (navigator.share && navigator.canShare) {
+                const file = new File([currentProtokollPdfBlob], `Einsatzprotokoll_${data.einsatz.nrFormatiert}.pdf`, { type: 'application/pdf' });
+                
+                if (navigator.canShare({ files: [file] })) {
+                    navigator.share({
+                        title: `Einsatzprotokoll ${data.einsatz.nrFormatiert}`,
+                        text: message,
+                        files: [file]
+                    }).then(() => {
+                        enableCloseButton();
+                    }).catch(err => {
+                        // Fallback zu Teams URL
+                        openTeamsUrl(message);
+                    });
+                    return;
+                }
+            }
+            
+            // Fallback: Teams URL öffnen
+            openTeamsUrl(message);
+        }
+        
+        function openTeamsUrl(message) {
+            // Teams Deep Link
+            const encodedMessage = encodeURIComponent(message);
+            const teamsUrl = `https://teams.microsoft.com/l/chat/0/0?message=${encodedMessage}`;
+            
+            window.open(teamsUrl, '_blank');
+            
+            // Nach kurzer Zeit Button aktivieren
+            setTimeout(enableCloseButton, 2000);
+        }
+        
+        function enableCloseButton() {
+            const closeBtn = document.getElementById('teamsShareCloseBtn');
+            const hint = document.getElementById('teamsShareHint');
+            if (closeBtn) {
+                closeBtn.disabled = false;
+                closeBtn.style.background = 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)';
+            }
+            if (hint) {
+                hint.textContent = '✓ Sie können jetzt fortfahren';
+                hint.style.color = '#22c55e';
+            }
+        }
+        
+        function downloadProtokollPDF() {
+            if (!currentProtokollPdfBlob || !currentProtokollData) return;
+            
+            const url = URL.createObjectURL(currentProtokollPdfBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Einsatzprotokoll_${currentProtokollData.einsatz.nrFormatiert}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            // Auch Close-Button aktivieren wenn runtergeladen
+            enableCloseButton();
+        }
+        
+        function closeTeamsShareModal() {
+            const modal = document.getElementById('teamsShareModal');
+            if (modal) modal.remove();
+            
+            currentProtokollPdfBlob = null;
+            currentProtokollData = null;
+            
             showScreen('dashboard');
         }
 
@@ -5188,108 +5380,227 @@
             // Reset radio groups
             document.querySelectorAll('.einsatz-radio').forEach(r => r.classList.remove('selected'));
             
+            // Reset Maßnahmen-Ext (neue Struktur mit Kommentarfeldern)
+            document.querySelectorAll('.massnahme-item-ext').forEach(item => {
+                item.classList.remove('checked');
+            });
+            einsatzMassnahmen = {};
+            
+            // Hide NotSanG Hinweis
+            const notsangHinweis = document.getElementById('notsangHinweis');
+            if (notsangHinweis) notsangHinweis.style.display = 'none';
+            
             // Re-initialize
             initEinsatzprotokoll();
         }
 
-        function exportEinsatzPDF() {
-            const data = collectEinsatzData();
+        async function generateEinsatzPDF(data) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
             
-            const typText = data.einsatz.typ === 'rtw' ? '🚑 RTW Einsatz' : '🏥 Einsatz in der Ambulanz';
-            
-            // Anonymisierung: Nur Initialen für Name
+            // Anonymisierung
             const initialen = (data.patient.vorname ? data.patient.vorname.charAt(0).toUpperCase() + '.' : '') + 
                               (data.patient.nachname ? data.patient.nachname.charAt(0).toUpperCase() + '.' : '');
             const nameAnonym = initialen || 'Patient';
-            
-            // Geburtsjahr statt volles Datum für mehr Anonymität
             const geburtsjahrAnonym = data.patient.geburt ? 'Jg. ' + data.patient.geburt.split('-')[0] : '-';
+            const typText = data.einsatz.typ === 'rtw' ? 'RTW Einsatz' : 'Einsatz in der Ambulanz';
             
-            // Create a simple text representation for now
-            let content = `
-EINSATZPROTOKOLL - Mercedes-Benz Werk Rastatt
-=============================================
-⚠️ VERTRAULICH - Enthält anonymisierte Patientendaten
-ID: ${data.id}
-Erstellt: ${new Date(data.timestamp).toLocaleString('de-DE')}
-Erstellt von: ${data.userName} (${data.user})
-
-EINSATZDATEN
-------------
-Einsatzart: ${typText}
-Datum: ${data.einsatz.datum}
-Einsatz Beginn: ${data.einsatz.alarmzeit}
-Einsatzende: ${data.einsatz.ende}
-Einsatzort: ${data.einsatz.ort}
-Meldebild (SAA): ${data.einsatz.meldebildText || '-'}
-Zusatzinfo: ${data.einsatz.stichwort || '-'}
-
-PATIENTENDATEN (anonymisiert)
------------------------------
-Patient: ${nameAnonym}
-Geburtsjahr: ${geburtsjahrAnonym}
-Geschlecht: ${data.patient.geschlecht === 'm' ? 'männlich' : data.patient.geschlecht === 'w' ? 'weiblich' : data.patient.geschlecht === 'd' ? 'divers' : '-'}
-${data.patient.kasse ? 'Krankenkasse: ' + data.patient.kasse : ''}
-${data.patient.versNr ? 'Versicherten-Nr.: ' + data.patient.versNr : ''}
-
-ANAMNESE (SAMPLE)
------------------
-Symptome: ${data.sample.symptome}
-Allergien: ${data.sample.allergien}
-Medikamente: ${data.sample.medikamente}
-Vorerkrankungen: ${data.sample.vorerkrankungen}
-Letzte Mahlzeit: ${data.sample.mahlzeit}
-Ereignis: ${data.sample.ereignis}
-
-VITALWERTE
-----------
-${data.vital.map((v, i) => `
-Messung ${i+1} (${v.time}):
-  RR: ${v.rr_sys}/${v.rr_dia} mmHg
-  Puls: ${v.puls}/min
-  SpO2: ${v.spo2}%
-  AF: ${v.af}/min
-  BZ: ${v.bz} mg/dl
-  Temp: ${v.temp}°C
-  Schmerz: ${v.schmerz}/10
-`).join('')}
-GCS: ${data.gcs.total} (A${data.gcs.augen} V${data.gcs.verbal} M${data.gcs.motorik})
-
-MASSNAHMEN
-----------
-${data.massnahmen.map(m => m.comment ? `• ${m.label}: ${m.comment}` : `• ${m.label}`).join('\n') || 'Keine'}
-
-Medikamente: ${data.medikamente}
-Bemerkungen: ${data.massnahmenBemerkung}
-${data.notsangHinweis ? `
-§ 2a NotSanG HINWEIS
---------------------
-Die durchgeführten heilkundlichen Maßnahmen erfolgten gemäß den 
-Standardarbeitsanweisungen (SAA-BPR 2025) der Ärztlichen Leitung 
-Rettungsdienst. Die Maßnahmen wurden in der Ausbildung erlernt, 
-werden beherrscht und waren zur Abwendung von Lebensgefahr oder 
-wesentlichen Folgeschäden erforderlich.
-` : ''}
-TRANSPORT & ÜBERGABE
---------------------
-Transportentscheidung: ${data.transport.art === 'zeitkritisch' ? '🚨 Zeitkritisch / Sondersignal' : data.transport.art === 'extern_rtw' ? '🚑 Übergabe an externen RTW' : data.transport.art === 'kein_transport' ? '🏥 Kein Transport' : '-'}
-${data.transport.ziel ? 'Zielklinik: ' + data.transport.ziel : ''}
-${data.transport.uebergabeAn ? 'Übergabe an: ' + data.transport.uebergabeAn : ''}
-${data.transport.uebergabeZeit ? 'Übergabe Zeit: ' + data.transport.uebergabeZeit : ''}
-${data.transport.bemerkung ? 'Bemerkungen: ' + data.transport.bemerkung : ''}
-
-UNTERSCHRIFT
-------------
-Notfallsanitäter/Arzt: ${data.signatures.saniName}
-            `;
+            let y = 15;
+            const leftMargin = 15;
+            const pageWidth = 195;
             
-            // Open as text file for now
-            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
+            // Header
+            doc.setFillColor(196, 30, 58);
+            doc.rect(0, 0, 210, 25, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.text('EINSATZPROTOKOLL', leftMargin, 12);
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Mercedes-Benz Werk Rastatt', leftMargin, 19);
+            doc.text(data.einsatz.nrFormatiert || data.id, 195, 12, { align: 'right' });
+            doc.text(data.einsatz.datum || '-', 195, 19, { align: 'right' });
+            
+            y = 35;
+            doc.setTextColor(0, 0, 0);
+            
+            // Vertraulich-Hinweis
+            doc.setFillColor(255, 243, 224);
+            doc.rect(leftMargin, y - 5, pageWidth - 15, 10, 'F');
+            doc.setFontSize(9);
+            doc.setTextColor(180, 83, 9);
+            doc.text('VERTRAULICH - Enthält anonymisierte Patientendaten gemäß Datenschutzrichtlinien', 105, y, { align: 'center' });
+            y += 12;
+            
+            doc.setTextColor(0, 0, 0);
+            
+            // Sektion: Einsatzdaten
+            y = addPdfSection(doc, 'EINSATZDATEN', y, leftMargin);
+            y = addPdfRow(doc, 'Einsatzart:', typText, y, leftMargin);
+            y = addPdfRow(doc, 'Datum:', data.einsatz.datum || '-', y, leftMargin);
+            y = addPdfRow(doc, 'Zeit:', `${data.einsatz.alarmzeit || '-'} - ${data.einsatz.ende || '-'}`, y, leftMargin);
+            y = addPdfRow(doc, 'Einsatzort:', data.einsatz.ort || '-', y, leftMargin);
+            y = addPdfRow(doc, 'Meldebild (SAA):', data.einsatz.meldebildText || '-', y, leftMargin);
+            if (data.einsatz.stichwort) y = addPdfRow(doc, 'Zusatzinfo:', data.einsatz.stichwort, y, leftMargin);
+            y += 5;
+            
+            // Sektion: Patient
+            y = addPdfSection(doc, 'PATIENTENDATEN (anonymisiert)', y, leftMargin);
+            y = addPdfRow(doc, 'Patient:', nameAnonym, y, leftMargin);
+            y = addPdfRow(doc, 'Geburtsjahr:', geburtsjahrAnonym, y, leftMargin);
+            const geschlechtText = data.patient.geschlecht === 'm' ? 'männlich' : data.patient.geschlecht === 'w' ? 'weiblich' : data.patient.geschlecht === 'd' ? 'divers' : '-';
+            y = addPdfRow(doc, 'Geschlecht:', geschlechtText, y, leftMargin);
+            if (data.patient.kasse) y = addPdfRow(doc, 'Krankenkasse:', data.patient.kasse, y, leftMargin);
+            y += 5;
+            
+            // Sektion: SAMPLE
+            y = addPdfSection(doc, 'ANAMNESE (SAMPLE)', y, leftMargin);
+            if (data.sample.symptome) y = addPdfRow(doc, 'Symptome:', data.sample.symptome, y, leftMargin, true);
+            if (data.sample.allergien) y = addPdfRow(doc, 'Allergien:', data.sample.allergien, y, leftMargin);
+            if (data.sample.medikamente) y = addPdfRow(doc, 'Medikamente:', data.sample.medikamente, y, leftMargin);
+            if (data.sample.vorerkrankungen) y = addPdfRow(doc, 'Vorerkr.:', data.sample.vorerkrankungen, y, leftMargin);
+            if (data.sample.ereignis) y = addPdfRow(doc, 'Ereignis:', data.sample.ereignis, y, leftMargin);
+            y += 5;
+            
+            // Sektion: Vitalwerte
+            if (data.vital && data.vital.length > 0) {
+                y = addPdfSection(doc, 'VITALWERTE', y, leftMargin);
+                data.vital.forEach((v, i) => {
+                    if (y > 260) { doc.addPage(); y = 20; }
+                    doc.setFontSize(9);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(`Messung ${i+1} (${v.time || '-'}):`, leftMargin, y);
+                    doc.setFont('helvetica', 'normal');
+                    const vitalText = `RR ${v.rr_sys || '-'}/${v.rr_dia || '-'} | Puls ${v.puls || '-'} | SpO2 ${v.spo2 || '-'}% | AF ${v.af || '-'} | BZ ${v.bz || '-'} | Temp ${v.temp || '-'}°C | Schmerz ${v.schmerz || '-'}/10`;
+                    doc.text(vitalText, leftMargin + 35, y);
+                    y += 6;
+                });
+                if (data.gcs.total !== '--') {
+                    y = addPdfRow(doc, 'GCS:', `${data.gcs.total} (A${data.gcs.augen} V${data.gcs.verbal} M${data.gcs.motorik})`, y, leftMargin);
+                }
+                y += 5;
+            }
+            
+            // Neue Seite wenn nötig
+            if (y > 200) { doc.addPage(); y = 20; }
+            
+            // Sektion: Maßnahmen
+            y = addPdfSection(doc, 'MASSNAHMEN', y, leftMargin);
+            if (data.massnahmen && data.massnahmen.length > 0) {
+                data.massnahmen.forEach(m => {
+                    if (y > 270) { doc.addPage(); y = 20; }
+                    doc.setFontSize(9);
+                    const massnahmeText = m.comment ? `• ${m.label}: ${m.comment}` : `• ${m.label}`;
+                    const lines = doc.splitTextToSize(massnahmeText, pageWidth - 20);
+                    doc.text(lines, leftMargin, y);
+                    y += lines.length * 4 + 2;
+                });
+            } else {
+                doc.setFontSize(9);
+                doc.text('Keine Maßnahmen dokumentiert', leftMargin, y);
+                y += 5;
+            }
+            if (data.medikamente) {
+                y += 2;
+                y = addPdfRow(doc, 'Medikamente:', data.medikamente, y, leftMargin, true);
+            }
+            if (data.massnahmenBemerkung) {
+                y = addPdfRow(doc, 'Bemerkungen:', data.massnahmenBemerkung, y, leftMargin, true);
+            }
+            y += 5;
+            
+            // NotSanG Hinweis
+            if (data.notsangHinweis) {
+                if (y > 230) { doc.addPage(); y = 20; }
+                doc.setFillColor(239, 246, 255);
+                doc.rect(leftMargin, y - 3, pageWidth - 15, 25, 'F');
+                doc.setDrawColor(59, 130, 246);
+                doc.rect(leftMargin, y - 3, pageWidth - 15, 25, 'S');
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(30, 64, 175);
+                doc.text('§ 2a NotSanG HINWEIS:', leftMargin + 3, y + 2);
+                doc.setFont('helvetica', 'normal');
+                const notsangText = 'Die durchgeführten heilkundlichen Maßnahmen erfolgten gemäß den Standardarbeitsanweisungen (SAA-BPR 2025) der Ärztlichen Leitung Rettungsdienst. Die Maßnahmen wurden in der Ausbildung erlernt, werden beherrscht und waren zur Abwendung von Lebensgefahr oder wesentlichen Folgeschäden erforderlich.';
+                const notsangLines = doc.splitTextToSize(notsangText, pageWidth - 25);
+                doc.text(notsangLines, leftMargin + 3, y + 7);
+                y += 30;
+                doc.setTextColor(0, 0, 0);
+            }
+            
+            // Sektion: Transport
+            if (y > 240) { doc.addPage(); y = 20; }
+            y = addPdfSection(doc, 'TRANSPORT & ÜBERGABE', y, leftMargin);
+            const transportText = data.transport.art === 'zeitkritisch' ? 'Zeitkritisch / Sondersignal' : 
+                                  data.transport.art === 'extern_rtw' ? 'Übergabe an externen RTW' : 
+                                  data.transport.art === 'kein_transport' ? 'Kein Transport' : '-';
+            y = addPdfRow(doc, 'Entscheidung:', transportText, y, leftMargin);
+            if (data.transport.ziel) y = addPdfRow(doc, 'Zielklinik:', data.transport.ziel, y, leftMargin);
+            if (data.transport.uebergabeAn) y = addPdfRow(doc, 'Übergabe an:', data.transport.uebergabeAn, y, leftMargin);
+            if (data.transport.uebergabeZeit) y = addPdfRow(doc, 'Uhrzeit:', data.transport.uebergabeZeit, y, leftMargin);
+            y += 10;
+            
+            // Unterschrift
+            if (y > 250) { doc.addPage(); y = 20; }
+            y = addPdfSection(doc, 'UNTERSCHRIFT', y, leftMargin);
+            doc.setFontSize(10);
+            doc.text('Notfallsanitäter / Arzt:', leftMargin, y);
+            doc.line(leftMargin + 40, y, leftMargin + 120, y);
+            doc.setFontSize(9);
+            doc.text(data.signatures.saniName || '-', leftMargin + 45, y - 2);
+            
+            // Footer
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setTextColor(128, 128, 128);
+                doc.text(`Erstellt: ${new Date(data.timestamp).toLocaleString('de-DE')} | ${data.userName} | Seite ${i}/${pageCount}`, 105, 290, { align: 'center' });
+            }
+            
+            // Return as Blob
+            return doc.output('blob');
+        }
+        
+        function addPdfSection(doc, title, y, leftMargin) {
+            doc.setFillColor(240, 240, 240);
+            doc.rect(leftMargin, y - 4, 180, 7, 'F');
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(50, 50, 50);
+            doc.text(title, leftMargin + 2, y);
+            doc.setTextColor(0, 0, 0);
+            return y + 8;
+        }
+        
+        function addPdfRow(doc, label, value, y, leftMargin, multiline = false) {
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'bold');
+            doc.text(label, leftMargin, y);
+            doc.setFont('helvetica', 'normal');
+            
+            if (multiline && value && value.length > 60) {
+                const lines = doc.splitTextToSize(value, 140);
+                doc.text(lines, leftMargin + 35, y);
+                return y + (lines.length * 4) + 2;
+            } else {
+                doc.text(value || '-', leftMargin + 35, y);
+                return y + 5;
+            }
+        }
+        
+        async function exportEinsatzPDF() {
+            const data = collectEinsatzData();
+            const pdfBlob = await generateEinsatzPDF(data);
+            
+            const url = URL.createObjectURL(pdfBlob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `Einsatzprotokoll_${data.einsatz.datum || 'ohne-datum'}_${data.id}.txt`;
+            a.download = `Einsatzprotokoll_${data.einsatz.datum || 'ohne-datum'}_${data.id}.pdf`;
+            document.body.appendChild(a);
             a.click();
+            document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
             addAuditEntry('EINSATZPROTOKOLL_EXPORTIERT', `Einsatzprotokoll ${data.id} exportiert`);
