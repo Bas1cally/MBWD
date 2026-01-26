@@ -939,7 +939,7 @@
                 <button class="back-btn" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
                 <h1 class="header-title">Einsatzprotokoll</h1>
                 <div class="header-actions">
-                    <a class="header-btn" href="https://github.com/PatricNeuorth53662/MBWD/blob/main/docs/SAA-BPR-2025.pdf" target="_blank" title="SAA-BPR 2025 öffnen" style="background: var(--blue); text-decoration: none;"><svg viewBox="0 0 24 24" fill="white"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg></a>
+                    <a class="header-btn" href="https://github.com/Bas1cally/MBWD/blob/main/docs/SAA-BPR-2025.pdf" target="_blank" title="SAA-BPR 2025 öffnen" style="background: var(--blue); text-decoration: none;"><svg viewBox="0 0 24 24" fill="white"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg></a>
                     <button class="header-btn" onclick="clearEinsatzprotokoll()" title="Neu / Leeren"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></button>
                     <button class="header-btn" onclick="exportEinsatzPDF()" title="Als PDF exportieren"><svg viewBox="0 0 24 24"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg></button>
                 </div>
@@ -965,7 +965,7 @@
                             <div class="einsatz-radio-group" id="einsatzTyp" style="gap: 12px;">
                                 <label class="einsatz-radio" onclick="selectEinsatzTyp(this, 'ambulanz')" style="flex: 1; justify-content: center; padding: 16px;">
                                     <input type="radio" name="einsatztyp" value="ambulanz">
-                                    <span style="font-size: 20px; margin-right: 8px;">🏥</span> Notfall in Ambulanz
+                                    <span style="font-size: 20px; margin-right: 8px;">🏥</span> Einsatz in der Ambulanz
                                 </label>
                                 <label class="einsatz-radio" onclick="selectEinsatzTyp(this, 'rtw')" style="flex: 1; justify-content: center; padding: 16px;">
                                     <input type="radio" name="einsatztyp" value="rtw">
@@ -989,7 +989,7 @@
                     </div>
                     <div class="einsatz-row">
                         <div class="einsatz-field">
-                            <label>Alarmierung</label>
+                            <label>Einsatz Beginn</label>
                             <input type="time" id="einsatzAlarm">
                         </div>
                         <div class="einsatz-field">
@@ -1000,7 +1000,7 @@
                     <div class="einsatz-row single">
                         <div class="einsatz-field">
                             <label>Meldebild / Notfallbild (SAA)</label>
-                            <select id="einsatzMeldebild">
+                            <select id="einsatzMeldebild" onchange="applyMeldebildVorgaben()">
                                 <option value="">-- Meldebild auswählen --</option>
                                 <option value="kein_notfallbild">⚪ Kein Notfallbild</option>
                                 <optgroup label="── Kreislaufstillstand ──">
@@ -4358,6 +4358,211 @@
             }
         }
 
+        // SAA-Vorgaben für Meldebilder
+        const saaMeldebildVorgaben = {
+            // Kreislaufstillstand
+            'reanimation_erwachsene': {
+                massnahmen: ['O₂-Gabe', 'Beutel-Maske', 'i.v.-Zugang', 'Defibrillation', '12-Kanal-EKG'],
+                medikamente: 'Epinephrin 1mg i.v. alle 3-5 Min.\nAmiodaron 300mg i.v. (nach 3. Schock)\nggf. Amiodaron 150mg i.v. (nach 5. Schock)'
+            },
+            'reanimation_kinder': {
+                massnahmen: ['O₂-Gabe', 'Beutel-Maske', 'i.v.-Zugang'],
+                medikamente: 'Epinephrin 10µg/kg i.v./i.o. alle 3-5 Min.'
+            },
+            'reanimation_neugeborene': {
+                massnahmen: ['O₂-Gabe', 'Beutel-Maske'],
+                medikamente: 'Epinephrin 10-30µg/kg i.v. (Nabelvenenkatheter)'
+            },
+            
+            // Leitsymptome
+            'dyspnoe': {
+                massnahmen: ['O₂-Gabe'],
+                medikamente: ''
+            },
+            'kritische_blutung': {
+                massnahmen: ['Druckverband', 'i.v.-Zugang', 'Infusion', 'Wärmeerhalt'],
+                medikamente: 'Tranexamsäure 1g i.v.\nVollelektrolytlösung nach Bedarf'
+            },
+            'brustschmerz': {
+                massnahmen: ['O₂-Gabe', '12-Kanal-EKG', 'i.v.-Zugang'],
+                medikamente: ''
+            },
+            'schmerzen': {
+                massnahmen: [],
+                medikamente: 'Leicht: Ibuprofen 400-800mg p.o. oder Paracetamol 1g i.v.\nMittel-stark: Nalbuphin 10-20mg i.v.\nStark: Morphin 2-5mg i.v. titriert oder Fentanyl 0,05-0,1mg i.v.'
+            },
+            'schock': {
+                massnahmen: ['O₂-Gabe', 'i.v.-Zugang', 'Infusion', 'Wärmeerhalt'],
+                medikamente: 'Vollelektrolytlösung 500-1000ml i.v.'
+            },
+            'zns_defizit': {
+                massnahmen: ['O₂-Gabe', 'BZ-Messung', '12-Kanal-EKG'],
+                medikamente: ''
+            },
+            
+            // Atemweg
+            'fremdkoerperaspiration': {
+                massnahmen: ['O₂-Gabe', 'Absaugen'],
+                medikamente: ''
+            },
+            'a_problem_erwachsene': {
+                massnahmen: ['O₂-Gabe', 'Absaugen', 'Guedel-Tubus'],
+                medikamente: ''
+            },
+            'tracheostoma': {
+                massnahmen: ['O₂-Gabe', 'Absaugen'],
+                medikamente: ''
+            },
+            'atemweg_kind': {
+                massnahmen: ['O₂-Gabe'],
+                medikamente: 'Epinephrin 3-5mg vernebelt (bei Krupp)'
+            },
+            
+            // Kardiovaskulär
+            'acs': {
+                massnahmen: ['O₂-Gabe', '12-Kanal-EKG', 'i.v.-Zugang'],
+                medikamente: 'ASS 250mg i.v.\nHeparin 5000 I.E. i.v.\nGlyceroltrinitrat 0,4mg s.l. (RRsyst >100mmHg)\nMorphin 2-5mg i.v. bei Schmerzen'
+            },
+            'aortensyndrom': {
+                massnahmen: ['O₂-Gabe', '12-Kanal-EKG', 'i.v.-Zugang'],
+                medikamente: 'Urapidil 10-50mg i.v. (Ziel RR 100-120mmHg)\nMorphin 2-5mg i.v. bei Schmerzen'
+            },
+            'hypertensiver_notfall': {
+                massnahmen: ['O₂-Gabe', '12-Kanal-EKG', 'i.v.-Zugang'],
+                medikamente: 'Urapidil 10-50mg i.v. (Ziel: RR-Senkung 20-25%)\nbei Lungenödem: Glyceroltrinitrat 0,4-0,8mg s.l.'
+            },
+            'bradykardie': {
+                massnahmen: ['O₂-Gabe', '12-Kanal-EKG', 'i.v.-Zugang'],
+                medikamente: 'Atropin 0,5mg i.v. (max. 3mg)'
+            },
+            'tachykardie': {
+                massnahmen: ['O₂-Gabe', '12-Kanal-EKG', 'i.v.-Zugang'],
+                medikamente: 'Amiodaron 300mg i.v. über 20 Min.'
+            },
+            'lungenoedem': {
+                massnahmen: ['O₂-Gabe', 'i.v.-Zugang'],
+                medikamente: 'Furosemid 40mg i.v.\nGlyceroltrinitrat 0,4-0,8mg s.l. (RRsyst >100mmHg)\nMorphin 2-5mg i.v.'
+            },
+            'lungenembolie': {
+                massnahmen: ['O₂-Gabe', '12-Kanal-EKG', 'i.v.-Zugang'],
+                medikamente: 'Heparin 5000 I.E. i.v.\nMorphin 2-5mg i.v. bei Schmerzen'
+            },
+            
+            // Respiratorisch
+            'bronchialobstruktion': {
+                massnahmen: ['O₂-Gabe'],
+                medikamente: 'Salbutamol 2-4 Hübe oder 2,5mg vernebelt\nIpratropiumbromid 0,5mg vernebelt\nPrednisolon 100mg i.v.'
+            },
+            
+            // Neurologisch
+            'krampfanfall_erwachsene': {
+                massnahmen: ['O₂-Gabe', 'i.v.-Zugang', 'BZ-Messung'],
+                medikamente: 'Midazolam 10mg intranasal oder\nMidazolam 5mg i.v.'
+            },
+            'krampfanfall_kind': {
+                massnahmen: ['O₂-Gabe', 'BZ-Messung'],
+                medikamente: 'Midazolam 0,2mg/kg intranasal (max. 10mg)'
+            },
+            'schlaganfall': {
+                massnahmen: ['O₂-Gabe', 'BZ-Messung', '12-Kanal-EKG'],
+                medikamente: ''
+            },
+            
+            // Stoffwechsel
+            'hyperglykämie': {
+                massnahmen: ['i.v.-Zugang', 'Infusion', 'BZ-Messung'],
+                medikamente: 'Vollelektrolytlösung 500-1000ml i.v.'
+            },
+            'hypoglykämie': {
+                massnahmen: ['i.v.-Zugang', 'BZ-Messung'],
+                medikamente: 'Glucose 40% 10-20ml i.v. (= 4-8g Glucose)\noder Glucagon 1mg i.m. (wenn kein i.v.-Zugang)'
+            },
+            'dehydratation': {
+                massnahmen: ['i.v.-Zugang', 'Infusion'],
+                medikamente: 'Vollelektrolytlösung 500-1000ml i.v.'
+            },
+            
+            // Trauma
+            'polytrauma': {
+                massnahmen: ['O₂-Gabe', 'i.v.-Zugang', 'Infusion', 'Vakuummatratze', 'HWS-Stütze', 'Wärmeerhalt'],
+                medikamente: 'Tranexamsäure 1g i.v.\nVollelektrolytlösung nach Bedarf\nAnalgesie nach Bedarf'
+            },
+            'thermische_verletzung': {
+                massnahmen: ['O₂-Gabe', 'i.v.-Zugang', 'Infusion', 'Wundversorgung', 'Kühlung', 'Wärmeerhalt'],
+                medikamente: 'Vollelektrolytlösung nach Parkland-Formel\nAnalgesie nach Bedarf'
+            },
+            'stromunfall': {
+                massnahmen: ['O₂-Gabe', '12-Kanal-EKG', 'i.v.-Zugang'],
+                medikamente: ''
+            },
+            'hypothermie': {
+                massnahmen: ['O₂-Gabe', 'Wärmeerhalt'],
+                medikamente: ''
+            },
+            
+            // Sonstige
+            'anaphylaxie': {
+                massnahmen: ['O₂-Gabe', 'i.v.-Zugang', 'Infusion'],
+                medikamente: 'Epinephrin 0,3-0,5mg i.m. (Oberschenkel)\nDimetinden 4mg i.v.\nPrednisolon 250mg i.v.\nVollelektrolytlösung 500-1000ml i.v. bei Schock'
+            },
+            'intoxikation': {
+                massnahmen: ['O₂-Gabe', 'i.v.-Zugang', 'BZ-Messung'],
+                medikamente: 'Symptomatische Therapie\nbei Opioid-Intox: Naloxon 0,1-0,4mg i.v. titriert'
+            },
+            'sepsis': {
+                massnahmen: ['O₂-Gabe', 'i.v.-Zugang', 'Infusion', 'Wärmeerhalt', 'BZ-Messung'],
+                medikamente: 'Vollelektrolytlösung 500ml Bolus, dann nach Bedarf'
+            },
+            'geburt': {
+                massnahmen: ['O₂-Gabe', 'Wärmeerhalt'],
+                medikamente: ''
+            },
+            'neugeborenes': {
+                massnahmen: ['O₂-Gabe', 'Wärmeerhalt'],
+                medikamente: ''
+            }
+        };
+
+        function applyMeldebildVorgaben() {
+            const meldebild = document.getElementById('einsatzMeldebild').value;
+            const vorgaben = saaMeldebildVorgaben[meldebild];
+            
+            if (!vorgaben) {
+                return; // Keine Vorgaben für dieses Meldebild
+            }
+            
+            // Bestätigung vom Benutzer
+            if (vorgaben.massnahmen.length > 0 || vorgaben.medikamente) {
+                const confirm = window.confirm(`SAA-Vorgaben für "${document.getElementById('einsatzMeldebild').options[document.getElementById('einsatzMeldebild').selectedIndex].text}" anwenden?\n\nMaßnahmen: ${vorgaben.massnahmen.join(', ') || 'Keine'}\n\nMedikamente werden vorausgefüllt.\n\n(Nicht zutreffende können später entfernt werden)`);
+                
+                if (!confirm) return;
+            }
+            
+            // Maßnahmen setzen
+            if (vorgaben.massnahmen && vorgaben.massnahmen.length > 0) {
+                document.querySelectorAll('.massnahme-item').forEach(item => {
+                    const label = item.querySelector('.massnahme-label').textContent;
+                    if (vorgaben.massnahmen.includes(label)) {
+                        item.classList.add('checked');
+                    }
+                });
+            }
+            
+            // Medikamente vorausfüllen (nur wenn leer oder Bestätigung)
+            if (vorgaben.medikamente) {
+                const medField = document.getElementById('massnahmenMedikamente');
+                if (medField.value === '' || medField.value === vorgaben.medikamente) {
+                    medField.value = vorgaben.medikamente;
+                } else {
+                    // Anhängen wenn schon was drin steht
+                    medField.value = medField.value + '\n\n--- SAA-Vorgabe ---\n' + vorgaben.medikamente;
+                }
+            }
+            
+            // Scroll zu Maßnahmen-Sektion
+            document.getElementById('sectionMassnahmen').classList.remove('collapsed');
+        }
+
         function initEinsatzprotokoll() {
             // Reset Einsatztyp
             currentEinsatzTyp = null;
@@ -4732,7 +4937,7 @@
             
             // Validate minimum data
             if (!data.einsatz.typ) {
-                alert('Bitte Einsatzart wählen (Notfall in Ambulanz oder RTW Einsatz).');
+                alert('Bitte Einsatzart wählen (Einsatz in der Ambulanz oder RTW Einsatz).');
                 return;
             }
             
@@ -4757,7 +4962,7 @@
             localStorage.setItem(storageKey, JSON.stringify(protokolle));
             
             // Audit log
-            const typText = data.einsatz.typ === 'rtw' ? 'RTW Einsatz' : 'Ambulanz Notfall';
+            const typText = data.einsatz.typ === 'rtw' ? 'RTW Einsatz' : 'Einsatz in der Ambulanz';
             addAuditEntry('EINSATZPROTOKOLL_ERSTELLT', `${typText} #${data.einsatz.nrFormatiert} erstellt für ${data.patient.nachname || 'Patient'} (${data.einsatz.meldebildText || 'Ohne Meldebild'})`);
             
             // Show success with statistics
@@ -4765,7 +4970,7 @@
             const rtwCount = stats[`rtw_${data.einsatz.jahr}`] || 0;
             const ambCount = stats[`ambulanz_${data.einsatz.jahr}`] || 0;
             
-            alert(`Einsatzprotokoll ${data.einsatz.nrFormatiert} wurde gespeichert!\n\n📊 Statistik ${data.einsatz.jahr}:\n🚑 RTW Einsätze: ${rtwCount}\n🏥 Ambulanz Notfälle: ${ambCount}\n━━━━━━━━━━━━━━━━\n📋 Gesamt: ${rtwCount + ambCount}`);
+            alert(`Einsatzprotokoll ${data.einsatz.nrFormatiert} wurde gespeichert!\n\n📊 Statistik ${data.einsatz.jahr}:\n🚑 RTW Einsätze: ${rtwCount}\n🏥 Ambulanz Einsätze: ${ambCount}\n━━━━━━━━━━━━━━━━\n📋 Gesamt: ${rtwCount + ambCount}`);
             showScreen('dashboard');
         }
 
@@ -4791,7 +4996,7 @@
         function exportEinsatzPDF() {
             const data = collectEinsatzData();
             
-            const typText = data.einsatz.typ === 'rtw' ? '🚑 RTW Einsatz' : '🏥 Notfall in Ambulanz';
+            const typText = data.einsatz.typ === 'rtw' ? '🚑 RTW Einsatz' : '🏥 Einsatz in der Ambulanz';
             
             // Create a simple text representation for now
             let content = `
@@ -4805,7 +5010,7 @@ EINSATZDATEN
 ------------
 Einsatzart: ${typText}
 Datum: ${data.einsatz.datum}
-Alarmierung: ${data.einsatz.alarmzeit}
+Einsatz Beginn: ${data.einsatz.alarmzeit}
 Einsatzende: ${data.einsatz.ende}
 Einsatzort: ${data.einsatz.ort}
 Meldebild (SAA): ${data.einsatz.meldebildText || '-'}
