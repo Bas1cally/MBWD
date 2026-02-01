@@ -540,12 +540,24 @@
         .theme-toggle svg { width: 22px; height: 22px; fill: var(--text-secondary); }
         .tile-last { font-size: 11px; color: var(--success); margin-top: 6px; font-weight: 500; opacity: 0.8; }
         .tile-last.overdue { color: #e74c3c; }
+        /* DIENSTPLAN */
+        .dp-table { width: 100%; border-collapse: collapse; font-size: 13px; background: var(--bg-card); border-radius: var(--radius); overflow: hidden; }
+        .dp-table th { background: #3498db; color: white; padding: 10px 12px; text-align: left; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px; position: sticky; top: 0; z-index: 1; white-space: nowrap; }
+        .dp-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--text-primary); white-space: nowrap; }
+        .dp-table tr:nth-child(even) { background: var(--bg-secondary); }
+        .dp-table tr:hover { background: rgba(52,152,219,0.1); }
+        .dp-drop-active { border-color: #3498db !important; background: rgba(52,152,219,0.08) !important; }
+        .dp-sheet-tab { display: inline-block; padding: 8px 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px 8px 0 0; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-right: 4px; transition: var(--transition); }
+        .dp-sheet-tab.active { background: #3498db; color: white; border-color: #3498db; }
+        .dp-sheet-tab:hover:not(.active) { background: var(--bg-input); }
+
         .confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 99998; overflow: hidden; }
         .confetti-piece { position: absolute; width: 10px; height: 10px; top: -10px; animation: confetti-fall 3s ease-out forwards; }
         @keyframes confetti-fall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
 </head>
 <body>
     <div class="offline-banner" id="offlineBanner">
@@ -621,6 +633,15 @@
                 </div>
             </div>
             
+            <!-- Dienstplan -->
+            <div class="tiles-grid top-tiles" style="grid-template-columns: repeat(1, 1fr); margin-bottom:24px;">
+                <div class="tile blue" onclick="openApp('dienstplan')" style="background:linear-gradient(135deg,rgba(52,152,219,0.15),rgba(41,128,185,0.08));">
+                    <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM7 11h5v5H7v-5z"/></svg></div>
+                    <div class="tile-title">Dienstplan</div>
+                    <div class="tile-desc" id="dienstplanPreview">Kein Dienstplan hochgeladen</div>
+                </div>
+            </div>
+
             <div class="tiles-section-title">Tägliche Aufgaben</div>
             <div class="tiles-grid">
                 <div class="tile red" onclick="openApp('ambulanzcheck')">
@@ -905,6 +926,35 @@
             <div id="einsatzStatCards" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;"></div>
             <h3 style="font-size:16px;margin-bottom:12px;color:var(--text-secondary);">Letzte Einsätze</h3>
             <div id="einsatzStatListe"></div>
+        </div>
+    </div>
+
+    <!-- DIENSTPLAN -->
+    <div class="screen app-screen" id="dienstplanScreen">
+        <header class="app-header" style="border-left: 4px solid #3498db;">
+            <div class="header-top">
+                <button class="back-btn" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+                <h1 class="header-title">Dienstplan</h1>
+                <div class="header-actions">
+                    <button class="header-btn" onclick="document.getElementById('dpFileInput').click()" title="Excel hochladen" style="background:#3498db;"><svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg></button>
+                </div>
+            </div>
+            <div class="header-sub">
+                <span class="header-date" id="dpUploadInfo">Kein Dienstplan hochgeladen</span>
+            </div>
+        </header>
+        <input type="file" id="dpFileInput" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleDienstplanUpload(event)">
+        <div style="padding:20px;max-width:900px;margin:0 auto;padding-bottom:80px;">
+            <!-- Drag & Drop Zone -->
+            <div id="dpDropZone" style="border:2px dashed var(--border);border-radius:16px;padding:40px 20px;text-align:center;margin-bottom:20px;transition:all 0.3s;cursor:pointer;" onclick="document.getElementById('dpFileInput').click()">
+                <div style="font-size:48px;margin-bottom:12px;">📋</div>
+                <div style="font-size:16px;font-weight:600;color:var(--text-primary);margin-bottom:8px;">Excel-Datei hierher ziehen</div>
+                <div style="font-size:13px;color:var(--text-muted);">oder klicken zum Auswählen (.xlsx, .xls, .csv)</div>
+            </div>
+            <!-- Sheet Tabs -->
+            <div id="dpSheetTabs" style="display:none;overflow-x:auto;white-space:nowrap;margin-bottom:16px;padding-bottom:4px;"></div>
+            <!-- Table Content -->
+            <div id="dpTableContainer" style="overflow-x:auto;"></div>
         </div>
     </div>
 
@@ -1748,6 +1798,7 @@
                 updateLastCheckInfo();
                 updateVerfallBadge();
                 updateVerfallWarning();
+                updateDpDashboardPreview();
             }
         }
 
@@ -1966,6 +2017,7 @@
             else if (app === 'benutzer') { loadBenutzerList(); showScreen('benutzer'); }
             else if (app === 'auditlog') { loadAuditLog(); showScreen('auditlog'); }
             else if (app === 'deletelog') { loadDeleteLog(); showScreen('deletelog'); }
+            else if (app === 'dienstplan') { initDienstplan(); showScreen('dienstplan'); }
         }
         
 
@@ -4418,6 +4470,206 @@
                 reader.readAsText(file);
             };
             input.click();
+        }
+
+        // ============ DIENSTPLAN ============
+        var dpWorkbook = null;
+        var dpCurrentSheet = 0;
+
+        function initDienstplan() {
+            setupDpDragDrop();
+            loadSavedDienstplan();
+        }
+
+        function setupDpDragDrop() {
+            var zone = document.getElementById('dpDropZone');
+            if (!zone) return;
+            zone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                zone.classList.add('dp-drop-active');
+            });
+            zone.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                zone.classList.remove('dp-drop-active');
+            });
+            zone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                zone.classList.remove('dp-drop-active');
+                var files = e.dataTransfer.files;
+                if (files.length > 0) processDienstplanFile(files[0]);
+            });
+        }
+
+        function handleDienstplanUpload(event) {
+            var file = event.target.files[0];
+            if (file) processDienstplanFile(file);
+            event.target.value = '';
+        }
+
+        function processDienstplanFile(file) {
+            if (!window.XLSX) {
+                alert('Excel-Bibliothek nicht geladen. Bitte Seite neu laden.');
+                return;
+            }
+            var validTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel', 'text/csv'];
+            var validExt = ['.xlsx', '.xls', '.csv'];
+            var ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+            if (!validTypes.includes(file.type) && !validExt.includes(ext)) {
+                alert('Bitte eine Excel-Datei (.xlsx, .xls) oder CSV hochladen.');
+                return;
+            }
+
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    var data = new Uint8Array(e.target.result);
+                    dpWorkbook = XLSX.read(data, { type: 'array', cellStyles: true, cellDates: true });
+
+                    // Speichern
+                    var dpData = {
+                        fileName: file.name,
+                        uploadedAt: new Date().toISOString(),
+                        uploadedBy: currentUser ? currentUser.name : 'Unbekannt',
+                        base64: arrayBufferToBase64(e.target.result),
+                        sheetNames: dpWorkbook.SheetNames
+                    };
+                    localStorage.setItem('mbwd_dienstplan', JSON.stringify(dpData));
+
+                    // Cloud-Sync (nur Metadaten, base64 zu groß für Supabase)
+                    cloudUpsert('app_settings', {
+                        key: 'dienstplan_meta',
+                        value: JSON.stringify({ fileName: dpData.fileName, uploadedAt: dpData.uploadedAt, uploadedBy: dpData.uploadedBy, sheetNames: dpData.sheetNames }),
+                        updated_at: new Date().toISOString()
+                    });
+
+                    dpCurrentSheet = 0;
+                    renderDienstplan();
+                    updateDpPreview(dpData);
+                    addAuditEntry('DIENSTPLAN_HOCHGELADEN', 'Dienstplan "' + file.name + '" hochgeladen');
+                } catch (err) {
+                    console.error('Excel Parse Error:', err);
+                    alert('Fehler beim Lesen der Excel-Datei: ' + err.message);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function arrayBufferToBase64(buffer) {
+            var bytes = new Uint8Array(buffer);
+            var binary = '';
+            for (var i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binary);
+        }
+
+        function base64ToArrayBuffer(base64) {
+            var binary = atob(base64);
+            var bytes = new Uint8Array(binary.length);
+            for (var i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        function loadSavedDienstplan() {
+            try {
+                var saved = JSON.parse(localStorage.getItem('mbwd_dienstplan') || 'null');
+                if (!saved || !saved.base64) {
+                    document.getElementById('dpTableContainer').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Noch kein Dienstplan hochgeladen.<br>Excel-Datei oben hochladen oder reinziehen.</div>';
+                    return;
+                }
+                var data = base64ToArrayBuffer(saved.base64);
+                dpWorkbook = XLSX.read(new Uint8Array(data), { type: 'array', cellStyles: true, cellDates: true });
+                dpCurrentSheet = 0;
+                renderDienstplan();
+                updateDpPreview(saved);
+            } catch (err) {
+                console.warn('Dienstplan laden fehlgeschlagen:', err);
+            }
+        }
+
+        function renderDienstplan() {
+            if (!dpWorkbook) return;
+            var tabsEl = document.getElementById('dpSheetTabs');
+            var tableEl = document.getElementById('dpTableContainer');
+            var zone = document.getElementById('dpDropZone');
+
+            // Drop-Zone verkleinern wenn Daten da sind
+            zone.style.padding = '16px 20px';
+            zone.querySelector('div:first-child').style.fontSize = '24px';
+            zone.querySelector('div:first-child').style.marginBottom = '4px';
+            zone.querySelector('div:nth-child(2)').style.fontSize = '13px';
+            zone.querySelector('div:nth-child(3)').style.fontSize = '11px';
+
+            // Sheet Tabs rendern
+            if (dpWorkbook.SheetNames.length > 1) {
+                tabsEl.style.display = 'block';
+                tabsEl.innerHTML = dpWorkbook.SheetNames.map(function(name, idx) {
+                    return '<button class="dp-sheet-tab ' + (idx === dpCurrentSheet ? 'active' : '') + '" onclick="switchDpSheet(' + idx + ')">' + sanitizeHTML(name) + '</button>';
+                }).join('');
+            } else {
+                tabsEl.style.display = 'none';
+            }
+
+            // Tabelle rendern
+            var sheetName = dpWorkbook.SheetNames[dpCurrentSheet];
+            var sheet = dpWorkbook.Sheets[sheetName];
+            var json = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+
+            if (json.length === 0) {
+                tableEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">Leeres Tabellenblatt</div>';
+                return;
+            }
+
+            var html = '<table class="dp-table">';
+            json.forEach(function(row, rowIdx) {
+                html += '<tr>';
+                row.forEach(function(cell) {
+                    var tag = rowIdx === 0 ? 'th' : 'td';
+                    var val = cell;
+                    if (cell instanceof Date) {
+                        val = cell.toLocaleDateString('de-DE');
+                    } else if (typeof cell === 'number' && cell > 40000 && cell < 50000) {
+                        // Excel Seriennummer → Datum
+                        try {
+                            var d = XLSX.SSF.parse_date_code(cell);
+                            val = (d.d < 10 ? '0' : '') + d.d + '.' + (d.m < 10 ? '0' : '') + d.m + '.' + d.y;
+                        } catch(e) { val = cell; }
+                    }
+                    html += '<' + tag + '>' + sanitizeHTML(String(val)) + '</' + tag + '>';
+                });
+                html += '</tr>';
+            });
+            html += '</table>';
+            tableEl.innerHTML = html;
+        }
+
+        function switchDpSheet(idx) {
+            dpCurrentSheet = idx;
+            renderDienstplan();
+        }
+
+        function updateDpPreview(dpData) {
+            var preview = document.getElementById('dienstplanPreview');
+            var info = document.getElementById('dpUploadInfo');
+            if (preview) {
+                var d = new Date(dpData.uploadedAt);
+                preview.textContent = dpData.fileName + ' (' + d.toLocaleDateString('de-DE') + ')';
+            }
+            if (info) {
+                var d2 = new Date(dpData.uploadedAt);
+                info.textContent = dpData.fileName + ' • Hochgeladen: ' + d2.toLocaleDateString('de-DE') + ' ' + d2.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' von ' + dpData.uploadedBy;
+            }
+        }
+
+        function updateDpDashboardPreview() {
+            try {
+                var saved = JSON.parse(localStorage.getItem('mbwd_dienstplan') || 'null');
+                if (saved && saved.fileName) {
+                    updateDpPreview(saved);
+                }
+            } catch(e) {}
         }
 
         function updateLastCheckInfo() {
