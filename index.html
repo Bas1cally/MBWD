@@ -544,7 +544,7 @@
         .confetti-piece { position: absolute; width: 10px; height: 10px; top: -10px; animation: confetti-fall 3s ease-out forwards; }
         @keyframes confetti-fall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 </head>
 <body>
@@ -605,6 +605,7 @@
                 </div>
             </div>
             <div class="dashboard-date" id="dashboardDate"></div>
+            <div id="syncStatus" style="display:none;font-size:12px;font-weight:600;margin-top:4px;align-items:center;gap:4px;"></div>
         </header>
         <div class="tiles-container">
             <!-- Top-Bereich: Meldungen -->
@@ -1172,17 +1173,48 @@
         let isOnline = navigator.onLine;
         let realtimeChannel = null;
 
+        function updateSyncStatus(status, text) {
+            var el = document.getElementById('syncStatus');
+            if (!el) return;
+            el.style.display = 'inline-flex';
+            if (status === 'connected') {
+                el.innerHTML = '🟢 ' + (text || 'Cloud verbunden');
+                el.style.color = 'var(--success)';
+            } else if (status === 'error') {
+                el.innerHTML = '🔴 ' + (text || 'Nur lokal');
+                el.style.color = '#e74c3c';
+            } else {
+                el.innerHTML = '🟡 ' + (text || 'Verbinde...');
+                el.style.color = '#f59e0b';
+            }
+        }
+
         function initSupabase() {
-            if (SUPABASE_URL === 'DEINE-SUPABASE-URL' || !window.supabase) {
-                console.warn('Supabase nicht konfiguriert – Offline/localStorage-Modus.');
+            updateSyncStatus('connecting', 'Verbinde mit Cloud...');
+
+            if (SUPABASE_URL === 'DEINE-SUPABASE-URL') {
+                console.warn('Supabase URL nicht konfiguriert.');
+                updateSyncStatus('error', 'Nicht konfiguriert');
+                return false;
+            }
+            if (!window.supabase) {
+                console.error('Supabase JS Library nicht geladen! window.supabase =', typeof window.supabase);
+                updateSyncStatus('error', 'Library fehlt');
+                return false;
+            }
+            if (!window.supabase.createClient) {
+                console.error('createClient nicht gefunden! Keys:', Object.keys(window.supabase));
+                updateSyncStatus('error', 'API Fehler');
                 return false;
             }
             try {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                console.log('Supabase verbunden.');
+                console.log('Supabase Client erstellt.');
+                updateSyncStatus('connected', 'Cloud verbunden');
                 return true;
             } catch (e) {
                 console.error('Supabase Init Fehler:', e);
+                updateSyncStatus('error', 'Init Fehler: ' + e.message);
                 return false;
             }
         }
@@ -4310,14 +4342,18 @@
             // Supabase initialisieren
             try {
                 if (initSupabase()) {
+                    console.log('Starte pullFromCloud...');
                     await pullFromCloud();
                     setupRealtime();
                     console.log('✅ Supabase Sync aktiv');
+                    updateSyncStatus('connected', 'Cloud verbunden');
                 } else {
                     console.warn('⚠️ Supabase nicht aktiv - nur localStorage');
+                    updateSyncStatus('error', 'Nur lokal');
                 }
             } catch (e) {
                 console.error('❌ Supabase Fehler:', e);
+                updateSyncStatus('error', 'Fehler: ' + e.message);
             }
             // Setup modal close handlers
             document.getElementById('detailModal').addEventListener('click', e => { 
