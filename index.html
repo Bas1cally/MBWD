@@ -2188,7 +2188,7 @@
                         <div class="meldung-meta">
                             <span>👤 ${sanitizeHTML(m.ersteller)} • ${dateStr} ${timeStr}</span>
                             <div class="meldung-actions">
-                                <button class="meldung-action-btn rueckmeldung" onclick="openRueckmeldungModal('${m.id}')" title="Kommentar hinzufügen"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg></button>
+                                ${(istZustaendig || isAdmin) ? `<button class="meldung-action-btn rueckmeldung" onclick="openRueckmeldungModal('${m.id}')" title="Kommentar hinzufügen"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg></button>` : ''}
                                 ${(hatRueckmeldung && istZustaendig) ? `<button class="meldung-action-btn erledigt" onclick="meldungErledigen('${m.id}')" title="Als erledigt markieren & löschen"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></button>` : ''}
                                 ${isAdmin ? `<button class="meldung-action-btn delete" onclick="deleteMeldung('${m.id}')" title="Löschen"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>` : ''}
                             </div>
