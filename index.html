@@ -2024,14 +2024,15 @@
         function updateMeldungenBadge() {
             const meldungen = getMeldungen();
             const userFunktionen = currentUser ? (currentUser.funktionen || []) : [];
-            
+            const isAdmin = currentUser && currentUser.role === 'admin';
+
             // Hilfsfunktion: Hat User diese Funktion?
             const hatFunktion = (zustaendig) => userFunktionen.includes(zustaendig);
-            
-            // Alle aktiven Meldungen die für diesen User relevant sind
+
+            // Alle aktiven Meldungen (Admin sieht alles, andere nach Funktion)
             const aktiveMeldungen = meldungen.filter(m => {
                 if (m.erledigt) return false;
-                // Alle sehen "alle" Meldungen oder die für ihre Funktion(en)
+                if (isAdmin) return true;
                 return !m.zustaendig || m.zustaendig === 'alle' || hatFunktion(m.zustaendig);
             });
             
