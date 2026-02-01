@@ -522,10 +522,35 @@
         @media (max-width: 600px) { .tiles-grid { grid-template-columns: 1fr; } .tiles-grid.top-tiles { grid-template-columns: 1fr !important; } .tile { padding: 20px; } .toggle-switch { width: 64px; height: 40px; } .toggle-slider:before { height: 32px; width: 32px; } .toggle-switch input:checked + .toggle-slider:before { transform: translateX(24px); } }
         @keyframes spin { to { transform: rotate(360deg); } }
         .spinner { animation: spin 1s linear infinite; }
+        .offline-banner { position: fixed; top: 0; left: 0; right: 0; background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; text-align: center; padding: 8px 16px; font-size: 13px; font-weight: 600; z-index: 99999; transform: translateY(-100%); transition: transform 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .offline-banner.show { transform: translateY(0); }
+        .offline-banner svg { width: 16px; height: 16px; fill: white; }
+        :root.light-mode {
+            --bg-primary: #f5f5f5; --bg-secondary: #e8e8e8; --bg-card: #ffffff; --bg-input: #f0f0f0;
+            --text-primary: #1a1a1a; --text-secondary: #555555; --text-muted: #888888;
+            --border: #d0d0d0; --shadow: 0 4px 24px rgba(0,0,0,0.1);
+        }
+        :root.light-mode .login-screen { background: var(--bg-primary); }
+        :root.light-mode .dashboard-screen { background: var(--bg-primary); }
+        :root.light-mode .login-input { color: var(--text-primary); }
+        :root.light-mode .pin-dot { border-color: #999; }
+        :root.light-mode .pin-dot.filled { background: var(--accent); border-color: var(--accent); }
+        .theme-toggle { position: fixed; bottom: 20px; right: 20px; width: 44px; height: 44px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 9998; box-shadow: var(--shadow); transition: var(--transition); }
+        .theme-toggle:hover { transform: scale(1.1); }
+        .theme-toggle svg { width: 22px; height: 22px; fill: var(--text-secondary); }
+        .tile-last { font-size: 11px; color: var(--success); margin-top: 6px; font-weight: 500; opacity: 0.8; }
+        .tile-last.overdue { color: #e74c3c; }
+        .confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 99998; overflow: hidden; }
+        .confetti-piece { position: absolute; width: 10px; height: 10px; top: -10px; animation: confetti-fall 3s ease-out forwards; }
+        @keyframes confetti-fall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 </head>
 <body>
+    <div class="offline-banner" id="offlineBanner">
+        <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4c-1.48 0-2.85.43-4.01 1.17l1.46 1.46C10.21 6.23 11.08 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3 0 1.13-.64 2.11-1.56 2.62l1.45 1.45C23.16 18.16 24 16.68 24 15c0-2.64-2.05-4.78-4.65-4.96zM3 5.27l2.75 2.74C2.56 8.15 0 10.77 0 14c0 3.31 2.69 6 6 6h11.73l2 2 1.27-1.27L4.27 4 3 5.27zM7.73 10l8 8H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h1.73z"/></svg>
+        Offline — Einige Funktionen eingeschränkt
+    </div>
     <!-- LOGIN -->
     <div class="screen login-screen active" id="loginScreen">
         <div class="login-logo" style="background:none;box-shadow:none;"><img src="login-logo.png" alt="MBWD" style="width:100%;height:100%;border-radius:24px;object-fit:cover;"></div>
@@ -597,24 +622,37 @@
                     <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/></svg></div>
                     <div class="tile-title">Ambulanzcheck</div>
                     <div class="tile-desc">Tägliche Checkliste Gesundheitszentrum</div>
+                    <div class="tile-last" id="lastCheck_ambulanz"></div>
                 </div>
                 <div class="tile blue" onclick="openApp('mpgcheck')">
                     <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zM19.5 9.5L21 12h-3.5v3h-1v-3H10V9.5h9.5zM6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zM20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4h3zM3 6v9h.76c.55-.61 1.35-1 2.24-1s1.69.39 2.24 1H10V6H3z"/></svg></div>
                     <div class="tile-title">MPG-Check RTW</div>
                     <div class="tile-desc">Täglicher Medizinprodukte-Check</div>
+                    <div class="tile-last" id="lastCheck_mpg"></div>
                 </div>
             </div>
             <div class="tiles-section-title">Wöchentliche Aufgaben</div>
             <div class="tiles-grid">
                 <div class="tile orange" onclick="openApp('wochencheck')">
+                    <span class="tile-badge verfall" id="verfallBadge" style="display:none;background:#e74c3c;">0</span>
                     <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg></div>
                     <div class="tile-title">RTW Wochencheck</div>
                     <div class="tile-desc">Wöchentliche Fahrzeugprüfung</div>
+                    <div class="tile-last" id="lastCheck_wochen"></div>
                 </div>
                 <div class="tile teal" onclick="openApp('reinigungsplan')">
                     <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M19.36 2.72L20.78 4.14l-1.08 1.08c.63.96.91 2.12.64 3.34-.38 1.72-1.8 3.04-3.55 3.31-1.13.18-2.18-.12-3.02-.72L8 16.91V19H6v-2.5l1.5-1.5 1.91-1.91-.85-.85L2 18.8V21h3v-1.69l1.42-1.42L12.5 13c-.6-.84-.9-1.89-.72-3.02.27-1.75 1.59-3.17 3.31-3.55 1.22-.27 2.38.01 3.34.64l1.08-1.08zM17.17 8.83l-2.34-2.34c-.39-.39-.39-1.02 0-1.41l1.41-1.41c.39-.39 1.02-.39 1.41 0l2.34 2.34c.39.39.39 1.02 0 1.41l-1.41 1.41c-.39.39-1.02.39-1.41 0z"/></svg></div>
                     <div class="tile-title">Reinigungsplan</div>
                     <div class="tile-desc">Woechentlicher Reinigungsplan GZ</div>
+                    <div class="tile-last" id="lastCheck_reinigung"></div>
+                </div>
+            </div>
+            <div class="tiles-section-title">Statistiken</div>
+            <div class="tiles-grid">
+                <div class="tile red" onclick="openApp('einsatzstatistik')">
+                    <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg></div>
+                    <div class="tile-title">Einsatz-Statistik</div>
+                    <div class="tile-desc">Notfalleinsätze erfassen & auswerten</div>
                 </div>
             </div>
             <div class="tiles-section-title">Dokumente</div>
@@ -647,6 +685,16 @@
                     <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></div>
                     <div class="tile-title">Lösch-Protokoll</div>
                     <div class="tile-desc">Gelöschte Dokumente einsehen</div>
+                </div>
+                <div class="tile purple" onclick="exportBackup()">
+                    <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M19 12v7H5v-7H3v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2zm-6 .67l2.59-2.58L17 11.5l-5 5-5-5 1.41-1.41L11 12.67V3h2v9.67z"/></svg></div>
+                    <div class="tile-title">Backup</div>
+                    <div class="tile-desc">Daten exportieren / importieren</div>
+                </div>
+                <div class="tile purple" onclick="importBackup()">
+                    <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg></div>
+                    <div class="tile-title">Import</div>
+                    <div class="tile-desc">Backup-Datei wiederherstellen</div>
                 </div>
             </div>
         </div>
@@ -826,7 +874,32 @@
             </div>
         </header>
         <div style="padding:20px;max-width:700px;margin:0 auto;padding-bottom:80px;">
+            <div style="margin-bottom:20px;">
+                <input type="text" id="dokumentenboxSearch" placeholder="Dokument suchen..." oninput="renderDokumentenbox()" style="width:100%;padding:12px 16px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-family:inherit;font-size:15px;">
+            </div>
             <div id="dokumentenboxContent"></div>
+        </div>
+    </div>
+
+    <!-- EINSATZSTATISTIK -->
+    <div class="screen app-screen" id="einsatzstatistikScreen">
+        <header class="app-header" style="border-left: 4px solid var(--accent);">
+            <div class="header-top">
+                <button class="back-btn" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+                <h1 class="header-title">Einsatz-Statistik</h1>
+            </div>
+            <div class="header-sub">
+                <span class="header-date" id="einsatzStatDatum"></span>
+            </div>
+        </header>
+        <div style="padding:20px;max-width:700px;margin:0 auto;padding-bottom:120px;">
+            <div style="display:flex;gap:12px;margin-bottom:24px;">
+                <button class="btn btn-primary" onclick="neuerEinsatz('rtw')" style="flex:1;background:var(--accent);">🚑 RTW Einsatz</button>
+                <button class="btn btn-primary" onclick="neuerEinsatz('ambulanz')" style="flex:1;background:var(--blue);">🏥 Ambulanz</button>
+            </div>
+            <div id="einsatzStatCards" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;"></div>
+            <h3 style="font-size:16px;margin-bottom:12px;color:var(--text-secondary);">Letzte Einsätze</h3>
+            <div id="einsatzStatListe"></div>
         </div>
     </div>
 
@@ -937,6 +1010,25 @@
                 In Teams teilen
             </button>
             <button class="teams-share-close" id="teamsMeldungCloseBtn" onclick="closeTeamsMeldungModal()" disabled>Schließen</button>
+        </div>
+    </div>
+
+    <!-- TEAMS CHECK SHARE MODAL -->
+    <div class="teams-share-modal" id="teamsCheckModal" style="display:none;">
+        <div class="teams-share-content">
+            <div class="teams-share-icon">✅</div>
+            <h2 id="teamsCheckModalTitle">Check abgeschlossen!</h2>
+            <p class="teams-share-id" id="teamsCheckTitel"></p>
+            <div class="teams-share-warning">
+                <svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+                <span>Dieser Check muss in Teams geteilt werden, damit alle Kollegen informiert sind.</span>
+            </div>
+            <div id="teamsCheckPreview" style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:20px;text-align:left;font-size:13px;color:var(--text-secondary);white-space:pre-line;max-height:200px;overflow-y:auto;"></div>
+            <button class="teams-share-btn" id="teamsCheckShareBtn" onclick="shareCheckToTeams()">
+                <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+                In Teams teilen
+            </button>
+            <button class="teams-share-close" id="teamsCheckCloseBtn" onclick="closeTeamsCheckModal()" disabled>Schließen</button>
         </div>
     </div>
 
@@ -1304,6 +1396,10 @@
             document.getElementById(name + 'Screen').classList.add('active');
             window.scrollTo(0, 0);
             
+            if (name === 'dashboard') {
+                updateLastCheckInfo();
+                updateVerfallBadge();
+            }
         }
 
         // PIN
@@ -1394,6 +1490,8 @@
             updateMeldungenBadge();
             
             showScreen('dashboard');
+            updateLastCheckInfo();
+            updateVerfallBadge();
         }
         function logout() { 
             if (currentUser) {
@@ -1421,10 +1519,15 @@
             'banf': '📝 BANF-Ersteller'
         };
 
-        const TEAMS_CHANNEL_URL = 'https://teams.microsoft.com/l/channel/19%3Axxxxxxxxxxxx%40thread.tacv2/Meldungen?groupId=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx&tenantId=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
-        const TEAMS_GROUP_ID = 'DEINE-GROUP-ID';
-        const TEAMS_CHANNEL_ID = '19:DEIN-CHANNEL-ID@thread.tacv2';
         const TEAMS_TENANT_ID = 'DEIN-TENANT-ID';
+        const TEAMS_GROUP_ID = 'DEINE-GROUP-ID';
+        const TEAMS_CHANNELS = {
+            meldungen:  { id: '19:DEIN-MELDUNGEN-CHANNEL-ID@thread.tacv2',  name: 'Meldungen' },
+            ambulanz:   { id: '19:DEIN-AMBULANZ-CHANNEL-ID@thread.tacv2',   name: 'Ambulanzcheck' },
+            mpg:        { id: '19:DEIN-MPG-CHANNEL-ID@thread.tacv2',        name: 'MPG-Check' },
+            wochen:     { id: '19:DEIN-WOCHEN-CHANNEL-ID@thread.tacv2',     name: 'Wochencheck' },
+            reinigung:  { id: '19:DEIN-REINIGUNG-CHANNEL-ID@thread.tacv2',  name: 'Reinigungsplan' }
+        };
 
         function loadBenutzerList() {
             const users = getUsers();
@@ -1506,6 +1609,7 @@
             else if (app === 'wochencheck') { currentCheckType = 'wochen'; initWochenCheck(); showScreen('wochencheck'); }
             else if (app === 'reinigungsplan') { currentCheckType = 'reinigung'; initReinigungsplan(); showScreen('reinigungsplan'); }
             else if (app === 'dokumentenbox') { renderDokumentenbox(); showScreen('dokumentenbox'); }
+            else if (app === 'einsatzstatistik') { renderEinsatzStatistik(); showScreen('einsatzstatistik'); }
             else if (app === 'meldungen') { loadMeldungen(); showScreen('meldungen'); }
             else if (app === 'archiv') { loadArchive(); showScreen('archiv'); }
             else if (app === 'benutzer') { loadBenutzerList(); showScreen('benutzer'); }
@@ -1552,14 +1656,23 @@
 
         function renderDokumentenbox() {
             var container = document.getElementById('dokumentenboxContent');
+            var searchInput = document.getElementById('dokumentenboxSearch');
+            var query = searchInput ? searchInput.value.trim().toLowerCase() : '';
             var html = '';
+            var totalResults = 0;
             DOKUMENTENBOX.forEach(function(kat) {
+                var filteredDocs = kat.docs.filter(function(doc) {
+                    if (!query) return true;
+                    return doc.name.toLowerCase().indexOf(query) !== -1 || doc.file.toLowerCase().indexOf(query) !== -1 || kat.kategorie.toLowerCase().indexOf(query) !== -1;
+                });
+                if (filteredDocs.length === 0) return;
+                totalResults += filteredDocs.length;
                 html += '<div style="margin-bottom:24px;">';
                 html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">';
                 html += '<span style="font-size:24px;">' + kat.icon + '</span>';
                 html += '<h3 style="margin:0;font-size:16px;font-weight:600;color:var(--text-primary);">' + sanitizeHTML(kat.kategorie) + '</h3>';
                 html += '</div>';
-                kat.docs.forEach(function(doc) {
+                filteredDocs.forEach(function(doc) {
                     html += '<a href="docs/' + encodeURIComponent(doc.file) + '" target="_blank" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;text-decoration:none;color:var(--text-primary);transition:var(--transition);" onmouseover="this.style.borderColor=\'#2ecc71\'" onmouseout="this.style.borderColor=\'var(--border)\'">';
                     html += '<div style="width:40px;height:40px;background:rgba(46,204,113,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:#2ecc71;"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg></div>';
                     html += '<div style="flex:1;min-width:0;">';
@@ -1571,6 +1684,9 @@
                 });
                 html += '</div>';
             });
+            if (query && totalResults === 0) {
+                html = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Keine Dokumente gefunden für "' + sanitizeHTML(query) + '"</div>';
+            }
             container.innerHTML = html;
         }
 
@@ -1828,7 +1944,8 @@
             message += '\n✍️ Erstellt von: ' + m.ersteller;
             message += '\n📅 ' + new Date(m.datum).toLocaleString('de-DE');
 
-            var teamsUrl = 'https://teams.microsoft.com/l/channel/' + encodeURIComponent(TEAMS_CHANNEL_ID) + '/Meldungen?groupId=' + TEAMS_GROUP_ID + '&tenantId=' + TEAMS_TENANT_ID + '&message=' + encodeURIComponent(message);
+            var ch = TEAMS_CHANNELS.meldungen;
+            var teamsUrl = 'https://teams.microsoft.com/l/channel/' + encodeURIComponent(ch.id) + '/' + encodeURIComponent(ch.name) + '?groupId=' + TEAMS_GROUP_ID + '&tenantId=' + TEAMS_TENANT_ID + '&message=' + encodeURIComponent(message);
 
             window.open(teamsUrl, '_blank');
 
@@ -1844,6 +1961,62 @@
             document.getElementById('teamsMeldungShareBtn').innerHTML = '<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg> In Teams teilen';
             document.getElementById('teamsMeldungShareBtn').style.background = '';
             pendingTeamsMeldung = null;
+        }
+
+        // === GENERIC TEAMS SHARING FOR CHECKLISTS ===
+        var pendingTeamsCheck = null;
+
+        function openTeamsCheckModal(type, title, data) {
+            pendingTeamsCheck = { type: type, title: title, data: data };
+
+            document.getElementById('teamsCheckModalTitle').textContent = title + ' abgeschlossen!';
+            document.getElementById('teamsCheckTitel').textContent = data.docId;
+
+            var preview = '✅ ' + title.toUpperCase() + ' ABGESCHLOSSEN\n';
+            preview += '━━━━━━━━━━━━━━━━━━\n';
+            preview += '📋 Dokument-ID: ' + data.docId + '\n';
+            preview += '📅 Datum: ' + data.meta.datum + ' ' + data.meta.uhrzeit + '\n';
+            preview += '👤 Mitarbeiter: ' + data.meta.mitarbeiter + '\n';
+            preview += '🏢 Standort: ' + data.meta.standort + '\n';
+            if (data.meta.kw) preview += '📆 KW: ' + data.meta.kw + '\n';
+            preview += '✍️ Erstellt von: ' + data.meta.user + '\n';
+            preview += '━━━━━━━━━━━━━━━━━━';
+
+            document.getElementById('teamsCheckPreview').textContent = preview;
+            document.getElementById('teamsCheckCloseBtn').disabled = true;
+            document.getElementById('teamsCheckShareBtn').innerHTML = '<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg> In Teams teilen';
+            document.getElementById('teamsCheckShareBtn').style.background = '';
+            document.getElementById('teamsCheckModal').style.display = 'flex';
+        }
+
+        function shareCheckToTeams() {
+            if (!pendingTeamsCheck) return;
+            var c = pendingTeamsCheck;
+            var ch = TEAMS_CHANNELS[c.type];
+            if (!ch) { alert('Kein Teams-Kanal für ' + c.type + ' konfiguriert.'); return; }
+
+            var message = '✅ ' + c.title.toUpperCase() + ' ABGESCHLOSSEN\n\n';
+            message += '📋 Dokument-ID: ' + c.data.docId + '\n';
+            message += '📅 Datum: ' + c.data.meta.datum + ' ' + c.data.meta.uhrzeit + '\n';
+            message += '👤 Mitarbeiter: ' + c.data.meta.mitarbeiter + '\n';
+            message += '🏢 Standort: ' + c.data.meta.standort;
+            if (c.data.meta.kw) message += '\n📆 KW: ' + c.data.meta.kw;
+            message += '\n✍️ Erstellt von: ' + c.data.meta.user;
+
+            var teamsUrl = 'https://teams.microsoft.com/l/channel/' + encodeURIComponent(ch.id) + '/' + encodeURIComponent(ch.name) + '?groupId=' + TEAMS_GROUP_ID + '&tenantId=' + TEAMS_TENANT_ID + '&message=' + encodeURIComponent(message);
+
+            window.open(teamsUrl, '_blank');
+
+            document.getElementById('teamsCheckCloseBtn').disabled = false;
+            document.getElementById('teamsCheckShareBtn').innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg> In Teams geöffnet!';
+            document.getElementById('teamsCheckShareBtn').style.background = 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)';
+
+            addAuditEntry('CHECK_TEAMS_GETEILT', c.title + ' (' + c.data.docId + ') in Teams geteilt');
+        }
+
+        function closeTeamsCheckModal() {
+            document.getElementById('teamsCheckModal').style.display = 'none';
+            pendingTeamsCheck = null;
         }
 
         // Rückmeldung Modal
@@ -2877,6 +3050,8 @@
                     document.querySelector('.success-message').textContent = 'Der Reinigungsplan wurde erfolgreich abgeschlossen.';
                     document.getElementById('successDocId').textContent = data.docId;
                     showScreen('success');
+                    showConfetti();
+                    openTeamsCheckModal('reinigung', 'Reinigungsplan', data);
                 } catch (e) {
                     alert('Fehler beim Speichern: ' + e.message);
                     btn.disabled = false;
@@ -2946,6 +3121,8 @@
                 document.querySelector('.success-message').textContent = 'Der ' + checkTitle + ' wurde erfolgreich abgeschlossen.';
                 document.getElementById('successDocId').textContent = data.docId;
                 showScreen('success');
+                showConfetti();
+                openTeamsCheckModal(type, checkTitle, data);
             } catch (e) { 
                 alert('Fehler beim Speichern: ' + e.message); 
                 btn.disabled = false; 
@@ -3631,6 +3808,209 @@
 
 
         // INIT
+        function toggleTheme() {
+            var root = document.documentElement;
+            var isLight = root.classList.toggle('light-mode');
+            localStorage.setItem('mbwd_theme', isLight ? 'light' : 'dark');
+            var icon = document.getElementById('themeIcon');
+            if (isLight) {
+                icon.innerHTML = '<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>';
+            } else {
+                icon.innerHTML = '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>';
+            }
+        }
+
+        function showConfetti() {
+            var container = document.createElement('div');
+            container.className = 'confetti-container';
+            document.body.appendChild(container);
+            var colors = ['#e74c3c', '#f39c12', '#2ecc71', '#3498db', '#9b59b6', '#1abc9c', '#e67e22', '#c41e3a'];
+            for (var i = 0; i < 80; i++) {
+                var piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + '%';
+                piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.animationDelay = Math.random() * 2 + 's';
+                piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+                piece.style.width = (6 + Math.random() * 8) + 'px';
+                piece.style.height = (6 + Math.random() * 8) + 'px';
+                piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                container.appendChild(piece);
+            }
+            setTimeout(function() { container.remove(); }, 5000);
+        }
+
+        // ============ EINSATZ-STATISTIK ============
+        function getEinsatzLog() {
+            try { return JSON.parse(localStorage.getItem('mbwd_einsatz_log') || '[]'); } catch(e) { return []; }
+        }
+        function saveEinsatzLog(log) {
+            localStorage.setItem('mbwd_einsatz_log', JSON.stringify(log));
+        }
+        function neuerEinsatz(typ) {
+            var typLabel = typ === 'rtw' ? 'RTW Einsatz' : 'Einsatz in Ambulanz';
+            var notiz = prompt(typLabel + '\n\nOptionale Notiz (z.B. Meldebild, Ort):');
+            if (notiz === null) return;
+            var log = getEinsatzLog();
+            log.unshift({ id: generateId(), typ: typ, datum: new Date().toISOString(), notiz: notiz || '', erfasser: currentUser ? currentUser.name : 'Unbekannt' });
+            if (log.length > 1000) log = log.slice(0, 1000);
+            saveEinsatzLog(log);
+            addAuditEntry('EINSATZ_ERFASST', typLabel + (notiz ? ': ' + notiz : ''));
+            renderEinsatzStatistik();
+        }
+        function renderEinsatzStatistik() {
+            var log = getEinsatzLog();
+            var now = new Date();
+            var year = now.getFullYear();
+            var month = now.getMonth();
+            document.getElementById('einsatzStatDatum').textContent = now.toLocaleDateString('de-DE', { year: 'numeric' });
+            var jahresRtw = 0, jahresAmb = 0, monatsRtw = 0, monatsAmb = 0;
+            log.forEach(function(e) {
+                var d = new Date(e.datum);
+                if (d.getFullYear() === year) {
+                    if (e.typ === 'rtw') jahresRtw++; else jahresAmb++;
+                    if (d.getMonth() === month) { if (e.typ === 'rtw') monatsRtw++; else monatsAmb++; }
+                }
+            });
+            document.getElementById('einsatzStatCards').innerHTML =
+                '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;"><div style="font-size:28px;font-weight:700;color:var(--accent);">' + (jahresRtw + jahresAmb) + '</div><div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Gesamt ' + year + '</div></div>' +
+                '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;"><div style="font-size:28px;font-weight:700;color:var(--blue);">' + (monatsRtw + monatsAmb) + '</div><div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Diesen Monat</div></div>' +
+                '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;"><div style="font-size:28px;font-weight:700;color:var(--accent);">🚑 ' + jahresRtw + '</div><div style="font-size:12px;color:var(--text-muted);margin-top:4px;">RTW ' + year + '</div></div>' +
+                '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;"><div style="font-size:28px;font-weight:700;color:var(--blue);">🏥 ' + jahresAmb + '</div><div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Ambulanz ' + year + '</div></div>';
+            var listeHtml = '';
+            var recent = log.slice(0, 20);
+            if (recent.length === 0) {
+                listeHtml = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Noch keine Einsätze erfasst</div>';
+            } else {
+                recent.forEach(function(e) {
+                    var d = new Date(e.datum);
+                    var icon = e.typ === 'rtw' ? '🚑' : '🏥';
+                    listeHtml += '<div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;">';
+                    listeHtml += '<div style="font-size:24px;">' + icon + '</div>';
+                    listeHtml += '<div style="flex:1;min-width:0;">';
+                    listeHtml += '<div style="font-size:14px;font-weight:600;">' + (e.typ === 'rtw' ? 'RTW Einsatz' : 'Ambulanz') + '</div>';
+                    listeHtml += '<div style="font-size:12px;color:var(--text-muted);">' + d.toLocaleDateString('de-DE') + ' ' + d.toLocaleTimeString('de-DE', {hour:'2-digit',minute:'2-digit'}) + ' — ' + sanitizeHTML(e.erfasser) + '</div>';
+                    if (e.notiz) listeHtml += '<div style="font-size:13px;color:var(--text-secondary);margin-top:4px;">' + sanitizeHTML(e.notiz) + '</div>';
+                    listeHtml += '</div></div>';
+                });
+            }
+            document.getElementById('einsatzStatListe').innerHTML = listeHtml;
+        }
+
+        function exportBackup() {
+            var data = {};
+            var keys = ['mbwd_users', 'mbwd_archive_ambulanz', 'mbwd_archive_mpg', 'mbwd_archive_wochen', 'mbwd_archive_reinigung', 'mbwd_meldungen', 'mbwd_audit_log', 'mbwd_delete_log', 'mbwd_expiry_items', 'mbwd_einsatz_statistik', 'mbwd_einsatz_log', 'mbwd_theme'];
+            keys.forEach(function(key) {
+                var val = localStorage.getItem(key);
+                if (val) data[key] = JSON.parse(val);
+            });
+            data._exportDate = new Date().toISOString();
+            data._version = 'MBWD-Backup-v1';
+            var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'MBWD-Backup-' + new Date().toISOString().slice(0, 10) + '.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            addAuditEntry('BACKUP_EXPORTIERT', 'Vollständiges Daten-Backup erstellt');
+            alert('Backup erfolgreich exportiert!');
+        }
+
+        function importBackup() {
+            var input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                var file = e.target.files[0];
+                if (!file) return;
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    try {
+                        var data = JSON.parse(event.target.result);
+                        if (!data._version || !data._version.startsWith('MBWD-Backup')) {
+                            alert('Ungültige Backup-Datei.');
+                            return;
+                        }
+                        if (!confirm('Backup vom ' + new Date(data._exportDate).toLocaleString('de-DE') + ' importieren?\n\nACHTUNG: Bestehende Daten werden überschrieben!')) return;
+                        Object.keys(data).forEach(function(key) {
+                            if (key.startsWith('mbwd_')) {
+                                localStorage.setItem(key, JSON.stringify(data[key]));
+                            }
+                        });
+                        addAuditEntry('BACKUP_IMPORTIERT', 'Daten-Backup importiert vom ' + data._exportDate);
+                        alert('Backup erfolgreich importiert! Die App wird neu geladen.');
+                        location.reload();
+                    } catch (err) {
+                        alert('Fehler beim Import: ' + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function updateLastCheckInfo() {
+            var types = ['ambulanz', 'mpg', 'wochen', 'reinigung'];
+            types.forEach(function(type) {
+                var el = document.getElementById('lastCheck_' + type);
+                if (!el) return;
+                try {
+                    var archive = JSON.parse(localStorage.getItem('mbwd_archive_' + type) || '[]');
+                    if (archive.length > 0) {
+                        var last = archive[0];
+                        var datum = last.meta ? last.meta.datum : last.datum;
+                        if (datum) {
+                            var d = new Date(datum);
+                            var today = new Date();
+                            today.setHours(0,0,0,0);
+                            d.setHours(0,0,0,0);
+                            var diffDays = Math.floor((today - d) / 86400000);
+                            if (diffDays === 0) {
+                                el.textContent = 'Heute erledigt';
+                                el.className = 'tile-last';
+                            } else if (diffDays === 1) {
+                                el.textContent = 'Gestern erledigt';
+                                el.className = 'tile-last';
+                            } else {
+                                el.textContent = 'Vor ' + diffDays + ' Tagen';
+                                el.className = 'tile-last overdue';
+                            }
+                        }
+                    } else {
+                        el.textContent = 'Noch nie durchgeführt';
+                        el.className = 'tile-last overdue';
+                    }
+                } catch(e) { el.textContent = ''; }
+            });
+        }
+
+        function updateVerfallBadge() {
+            try {
+                var items = JSON.parse(localStorage.getItem('mbwd_expiry_items') || '[]');
+                var now = new Date();
+                var warningCount = 0;
+                items.forEach(function(item) {
+                    if (item.datum) {
+                        var expDate = new Date(item.datum);
+                        var diffDays = Math.floor((expDate - now) / 86400000);
+                        if (diffDays <= 30) warningCount++;
+                    }
+                });
+                var badge = document.getElementById('verfallBadge');
+                if (badge) {
+                    if (warningCount > 0) {
+                        badge.textContent = warningCount;
+                        badge.style.display = 'flex';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            } catch(e) {}
+        }
+
         function initApp() {
             // Setup modal close handlers
             document.getElementById('detailModal').addEventListener('click', e => { 
@@ -3655,6 +4035,17 @@
             // Register service worker
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('sw.js').catch(() => {});
+
+            // Offline indicator
+            window.addEventListener('online', function() { document.getElementById('offlineBanner').classList.remove('show'); });
+            window.addEventListener('offline', function() { document.getElementById('offlineBanner').classList.add('show'); });
+            if (!navigator.onLine) document.getElementById('offlineBanner').classList.add('show');
+
+            // Theme
+            if (localStorage.getItem('mbwd_theme') === 'light') {
+                document.documentElement.classList.add('light-mode');
+                document.getElementById('themeIcon').innerHTML = '<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>';
+            }
             }
             
             // Log app start
@@ -3663,5 +4054,8 @@
         
         initApp();
     </script>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Dark/Light Mode">
+        <svg id="themeIcon" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+    </button>
 </body>
 </html>
