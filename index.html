@@ -1168,7 +1168,7 @@
         const SUPABASE_URL = 'https://mlocmimpsepzopmqgmtq.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1sb2NtaW1wc2Vwem9wbXFnbXRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5Mzg4MTksImV4cCI6MjA4NTUxNDgxOX0.BadecVV6NKnZwqOqHuQ0xBnzL38nv3u72m8ibaLbGVw';
 
-        let supabase = null;
+        let supabaseClient = null;
         let isOnline = navigator.onLine;
         let realtimeChannel = null;
 
@@ -1178,7 +1178,7 @@
                 return false;
             }
             try {
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 console.log('Supabase verbunden.');
                 return true;
             } catch (e) {
@@ -1201,9 +1201,9 @@
 
         // ============ CLOUD HELPER ============
         async function cloudGet(table, options) {
-            if (!supabase || !isOnline) return null;
+            if (!supabaseClient || !isOnline) return null;
             try {
-                let query = supabase.from(table).select('*');
+                let query = supabaseClient.from(table).select('*');
                 if (options && options.order) query = query.order(options.order, { ascending: options.asc || false });
                 if (options && options.limit) query = query.limit(options.limit);
                 if (options && options.eq) query = query.eq(options.eq[0], options.eq[1]);
@@ -1214,33 +1214,33 @@
         }
 
         async function cloudUpsert(table, data) {
-            if (!supabase || !isOnline) { queueOffline('upsert', table, data); return; }
+            if (!supabaseClient || !isOnline) { queueOffline('upsert', table, data); return; }
             try {
-                const { error } = await supabase.from(table).upsert(data);
+                const { error } = await supabaseClient.from(table).upsert(data);
                 if (error) throw error;
             } catch (e) { console.warn('cloudUpsert(' + table + '):', e.message); queueOffline('upsert', table, data); }
         }
 
         async function cloudInsert(table, data) {
-            if (!supabase || !isOnline) { queueOffline('insert', table, data); return; }
+            if (!supabaseClient || !isOnline) { queueOffline('insert', table, data); return; }
             try {
-                const { error } = await supabase.from(table).insert(data);
+                const { error } = await supabaseClient.from(table).insert(data);
                 if (error && !error.message.includes('duplicate')) throw error;
             } catch (e) { console.warn('cloudInsert(' + table + '):', e.message); queueOffline('insert', table, data); }
         }
 
         async function cloudDelete(table, col, val) {
-            if (!supabase || !isOnline) { queueOffline('delete', table, {_col: col, _val: val}); return; }
+            if (!supabaseClient || !isOnline) { queueOffline('delete', table, {_col: col, _val: val}); return; }
             try {
-                const { error } = await supabase.from(table).delete().eq(col, val);
+                const { error } = await supabaseClient.from(table).delete().eq(col, val);
                 if (error) throw error;
             } catch (e) { console.warn('cloudDelete(' + table + '):', e.message); queueOffline('delete', table, {_col: col, _val: val}); }
         }
 
         async function cloudUpdate(table, col, val, upd) {
-            if (!supabase || !isOnline) { queueOffline('update', table, {_col: col, _val: val, ...upd}); return; }
+            if (!supabaseClient || !isOnline) { queueOffline('update', table, {_col: col, _val: val, ...upd}); return; }
             try {
-                const { error } = await supabase.from(table).update(upd).eq(col, val);
+                const { error } = await supabaseClient.from(table).update(upd).eq(col, val);
                 if (error) throw error;
             } catch (e) { console.warn('cloudUpdate(' + table + '):', e.message); queueOffline('update', table, {_col: col, _val: val, ...upd}); }
         }
@@ -1255,7 +1255,7 @@
         }
 
         async function syncToCloud() {
-            if (!supabase || !isOnline) return;
+            if (!supabaseClient || !isOnline) return;
             var q = JSON.parse(localStorage.getItem('mbwd_offline_queue') || '[]');
             if (!q.length) return;
             console.log('Synce ' + q.length + ' Offline-Aktionen...');
@@ -1264,16 +1264,16 @@
                 var item = q[i];
                 try {
                     if (item.action === 'upsert') {
-                        await supabase.from(item.table).upsert(item.data);
+                        await supabaseClient.from(item.table).upsert(item.data);
                     } else if (item.action === 'insert') {
-                        await supabase.from(item.table).insert(item.data);
+                        await supabaseClient.from(item.table).insert(item.data);
                     } else if (item.action === 'delete') {
-                        await supabase.from(item.table).delete().eq(item.data._col, item.data._val);
+                        await supabaseClient.from(item.table).delete().eq(item.data._col, item.data._val);
                     } else if (item.action === 'update') {
                         var d = Object.assign({}, item.data);
                         var col = d._col, val = d._val;
                         delete d._col; delete d._val;
-                        await supabase.from(item.table).update(d).eq(col, val);
+                        await supabaseClient.from(item.table).update(d).eq(col, val);
                     }
                 } catch (e) { failed.push(item); }
             }
@@ -1284,7 +1284,7 @@
 
         // ============ PULL FROM CLOUD ============
         async function pullFromCloud() {
-            if (!supabase || !isOnline) return;
+            if (!supabaseClient || !isOnline) return;
             try {
                 // Users
                 var users = await cloudGet('users');
@@ -1350,8 +1350,8 @@
 
         // ============ REALTIME ============
         function setupRealtime() {
-            if (!supabase) return;
-            realtimeChannel = supabase.channel('mbwd-sync')
+            if (!supabaseClient) return;
+            realtimeChannel = supabaseClient.channel('mbwd-sync')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'meldungen' }, function() {
                     pullTable('meldungen');
                 })
@@ -1371,7 +1371,7 @@
         }
 
         async function pullTable(table) {
-            if (!supabase || !isOnline) return;
+            if (!supabaseClient || !isOnline) return;
             try {
                 if (table === 'meldungen') {
                     var m = await cloudGet('meldungen', { order: 'created_at' });
@@ -4252,7 +4252,8 @@
                 var el = document.getElementById('lastCheck_' + type);
                 if (!el) return;
                 try {
-                    var archive = JSON.parse(localStorage.getItem('mbwd_archive_' + type) || '[]');
+                    var archiveKeys = { ambulanz: 'ambulanzcheck_archive', mpg: 'mpgcheck_archive', wochen: 'wochencheck_archive', reinigung: 'reinigung_archive' };
+                    var archive = JSON.parse(localStorage.getItem(archiveKeys[type]) || '[]');
                     if (archive.length > 0) {
                         var last = archive[0];
                         var datum = last.meta ? last.meta.datum : last.datum;
@@ -4283,7 +4284,7 @@
 
         function updateVerfallBadge() {
             try {
-                var items = JSON.parse(localStorage.getItem('mbwd_expiry_items') || '[]');
+                var items = JSON.parse(localStorage.getItem('rtw_expiry_tracker') || '[]');
                 var now = new Date();
                 var warningCount = 0;
                 items.forEach(function(item) {
