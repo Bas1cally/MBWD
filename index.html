@@ -1334,7 +1334,7 @@
                             zustaendig: m.zustaendig, ersteller: m.ersteller,
                             erstellerKuerzel: m.ersteller_kuerzel, datum: m.datum,
                             erledigt: m.erledigt, rueckmeldung: m.rueckmeldung,
-                            rueckmeldungVon: m.rueckmeldung_von, rueckmeldungZeit: m.rueckmeldung_zeit };
+                            rueckmeldungVon: m.rueckmeldung_von, rueckmeldungAm: m.rueckmeldung_zeit };
                     });
                     localStorage.setItem('mbwd_meldungen', JSON.stringify(mapped));
                     try { updateMeldungenBadge(); } catch(e) {}
@@ -1414,7 +1414,7 @@
                                 zustaendig: x.zustaendig, ersteller: x.ersteller,
                                 erstellerKuerzel: x.ersteller_kuerzel, datum: x.datum,
                                 erledigt: x.erledigt, rueckmeldung: x.rueckmeldung,
-                                rueckmeldungVon: x.rueckmeldung_von, rueckmeldungZeit: x.rueckmeldung_zeit };
+                                rueckmeldungVon: x.rueckmeldung_von, rueckmeldungAm: x.rueckmeldung_zeit };
                         })));
                         try { updateMeldungenBadge(); loadMeldungen(); } catch(e) {}
                     }
@@ -1533,7 +1533,7 @@
         }
         
         function addDeleteEntry(docId, docType, docMeta) {
-            const log = getDeleteLog();
+            let log = getDeleteLog();
             const entry = {
                 id: generateId(),
                 timestamp: new Date().toISOString(),
@@ -2017,7 +2017,7 @@
                 ersteller_kuerzel: m.erstellerKuerzel, datum: m.datum,
                 erledigt: m.erledigt || false, rueckmeldung: m.rueckmeldung || null,
                 rueckmeldung_von: m.rueckmeldungVon || null,
-                rueckmeldung_zeit: m.rueckmeldungZeit || null
+                rueckmeldung_zeit: m.rueckmeldungAm || null
             });
         }
 
@@ -2370,7 +2370,8 @@
                 meldung.rueckmeldungVonKuerzel = currentUser ? currentUser.kuerzel : 'UNKNOWN';
                 meldung.rueckmeldungAm = new Date().toISOString();
                 saveMeldungen(meldungen);
-                
+                syncMeldungToCloud(meldung);
+
                 addAuditEntry('MELDUNG_RUECKMELDUNG', `${currentUser ? currentUser.name : 'Unbekannt'} hat Rückmeldung zu "${meldung.titel}" gegeben: ${text}`);
             }
             
@@ -2388,7 +2389,6 @@
             if (!confirm(`Meldung "${meldung.titel}" als erledigt markieren und aus der Liste entfernen?`)) return;
             
             // Audit-Log Eintrag
-            syncMeldungToCloud(m);
             addAuditEntry('MELDUNG_ERLEDIGT', `${currentUser ? currentUser.name : 'Unbekannt'} (${currentUser ? currentUser.kuerzel : 'UNKNOWN'}) hat "${meldung.titel}" als erledigt markiert. Rückmeldung war: ${meldung.rueckmeldung || 'Keine'}`);
             
             // Meldung als erledigt markieren (wird nicht mehr angezeigt)
@@ -2398,10 +2398,11 @@
             meldung.erledigtAm = new Date().toISOString();
             
             saveMeldungen(meldungen);
+            syncMeldungToCloud(meldung);
             loadMeldungen();
             updateMeldungenBadge();
         }
-        
+
         function toggleMeldungErledigt(id) {
             // Cloud-Sync passiert über saveMeldungen
             // Legacy-Funktion - leitet zu meldungErledigen weiter
@@ -2919,7 +2920,7 @@
                         '<div class="expiry-item-meta">Eingetragen von ' + sanitizeHTML(item.addedBy) + ' am ' + addedDate + '</div>' +
                     '</div>' +
                     '<span class="expiry-item-days">' + daysText + '</span>' +
-                    '<button class="expiry-delete" onclick="deleteExpiryItem(' + item.id + ')" title="Löschen (wenn ersetzt)">' +
+                    '<button class="expiry-delete" onclick="deleteExpiryItem(\'' + item.id + '\')" title="Löschen (wenn ersetzt)">' +
                         '<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>' +
                     '</button>' +
                 '</div>';
@@ -4022,7 +4023,7 @@
                 const mpgArchive = JSON.parse(localStorage.getItem('mpgcheck_archive') || '[]').map(x => ({...x, type: 'mpg'}));
                 const wochenArchive = JSON.parse(localStorage.getItem('wochencheck_archive') || '[]').map(x => ({...x, type: 'wochen'}));
                 const reinigungArchive = JSON.parse(localStorage.getItem('reinigung_archive') || '[]').map(x => ({...x, type: 'reinigung'}));
-                const archive = [...ambulanzArchive, ...mpgArchive, ...wochenArchive, ...reinigungArchive].sort((a, b) => b.id - a.id);
+                const archive = [...ambulanzArchive, ...mpgArchive, ...wochenArchive, ...reinigungArchive].sort((a, b) => (b.id || '').localeCompare(a.id || ''));
                 
                 if (!archive.length) { 
                     c.innerHTML = '<div class="archive-empty"><div class="archive-empty-icon"><svg viewBox="0 0 24 24"><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27z"/></svg></div><p class="archive-empty-text">Noch keine Checks gespeichert.</p></div>'; 
@@ -4049,7 +4050,7 @@
                         typeName = 'Reinigung KW' + (kw || '');
                         if (x.auto_archived) typeName += ' ⏰';
                     }
-                    return `<div class="archive-item" onclick="showCheckDetail(${x.id}, '${x.type}')">
+                    return `<div class="archive-item" onclick="showCheckDetail('${x.id}', '${x.type}')">
                         <div class="archive-item-header">
                             <span class="archive-item-date">${d}</span>
                             <span class="archive-item-badge" style="background:${badgeColor}">${typeName}</span>
@@ -4252,9 +4253,11 @@
             var notiz = prompt(typLabel + '\n\nOptionale Notiz (z.B. Meldebild, Ort):');
             if (notiz === null) return;
             var log = getEinsatzLog();
-            log.unshift({ id: generateId(), typ: typ, datum: new Date().toISOString(), notiz: notiz || '', erfasser: currentUser ? currentUser.name : 'Unbekannt' });
+            var eintrag = { id: generateId(), typ: typ, datum: new Date().toISOString(), notiz: notiz || '', erfasser: currentUser ? currentUser.name : 'Unbekannt' };
+            log.unshift(eintrag);
             if (log.length > 1000) log = log.slice(0, 1000);
             saveEinsatzLog(log);
+            cloudInsert('einsatz_log', { id: eintrag.id, typ: eintrag.typ, datum: eintrag.datum, notizen: eintrag.notiz, erfasst_von: currentUser ? currentUser.kuerzel : 'UNKNOWN', erfasst_von_name: eintrag.erfasser });
             addAuditEntry('EINSATZ_ERFASST', typLabel + (notiz ? ': ' + notiz : ''));
             renderEinsatzStatistik();
         }
@@ -4299,7 +4302,7 @@
 
         function exportBackup() {
             var data = {};
-            var keys = ['mbwd_users', 'mbwd_archive_ambulanz', 'mbwd_archive_mpg', 'mbwd_archive_wochen', 'mbwd_archive_reinigung', 'mbwd_meldungen', 'mbwd_audit_log', 'mbwd_delete_log', 'mbwd_expiry_items', 'mbwd_einsatz_statistik', 'mbwd_einsatz_log', 'mbwd_theme'];
+            var keys = ['mbwd_users', 'ambulanzcheck_archive', 'mpgcheck_archive', 'wochencheck_archive', 'reinigung_archive', 'mbwd_meldungen', 'mbwd_audit_log', 'mbwd_delete_log', 'rtw_expiry_tracker', 'mbwd_einsatz_log', 'mbwd_theme', 'mbwd_doc_counters'];
             keys.forEach(function(key) {
                 var val = localStorage.getItem(key);
                 if (val) data[key] = JSON.parse(val);
@@ -4336,9 +4339,8 @@
                         }
                         if (!confirm('Backup vom ' + new Date(data._exportDate).toLocaleString('de-DE') + ' importieren?\n\nACHTUNG: Bestehende Daten werden überschrieben!')) return;
                         Object.keys(data).forEach(function(key) {
-                            if (key.startsWith('mbwd_')) {
-                                localStorage.setItem(key, JSON.stringify(data[key]));
-                            }
+                            if (key.startsWith('_')) return;
+                            localStorage.setItem(key, JSON.stringify(data[key]));
                         });
                         addAuditEntry('BACKUP_IMPORTIERT', 'Daten-Backup importiert vom ' + data._exportDate);
                         alert('Backup erfolgreich importiert! Die App wird neu geladen.');
@@ -4394,8 +4396,8 @@
                 var now = new Date();
                 var warningCount = 0;
                 items.forEach(function(item) {
-                    if (item.datum) {
-                        var expDate = new Date(item.datum);
+                    if (item.date) {
+                        var expDate = new Date(item.date);
                         var diffDays = Math.floor((expDate - now) / 86400000);
                         if (diffDays <= 30) warningCount++;
                     }
@@ -4452,6 +4454,7 @@
             // Register service worker
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('sw.js').catch(() => {});
+            }
 
             // Offline indicator
             window.addEventListener('online', function() { document.getElementById('offlineBanner').classList.remove('show'); });
@@ -4463,8 +4466,7 @@
                 document.documentElement.classList.add('light-mode');
                 document.getElementById('themeIcon').innerHTML = '<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>';
             }
-            }
-            
+
             // Log app start
             addAuditEntry('APP_GESTARTET', 'MBWD App geöffnet');
         }
