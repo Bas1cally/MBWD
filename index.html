@@ -1013,6 +1013,25 @@
         </div>
     </div>
 
+    <!-- TEAMS CHECK SHARE MODAL -->
+    <div class="teams-share-modal" id="teamsCheckModal" style="display:none;">
+        <div class="teams-share-content">
+            <div class="teams-share-icon">✅</div>
+            <h2 id="teamsCheckModalTitle">Check abgeschlossen!</h2>
+            <p class="teams-share-id" id="teamsCheckTitel"></p>
+            <div class="teams-share-warning">
+                <svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+                <span>Dieser Check muss in Teams geteilt werden, damit alle Kollegen informiert sind.</span>
+            </div>
+            <div id="teamsCheckPreview" style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:20px;text-align:left;font-size:13px;color:var(--text-secondary);white-space:pre-line;max-height:200px;overflow-y:auto;"></div>
+            <button class="teams-share-btn" id="teamsCheckShareBtn" onclick="shareCheckToTeams()">
+                <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+                In Teams teilen
+            </button>
+            <button class="teams-share-close" id="teamsCheckCloseBtn" onclick="closeTeamsCheckModal()" disabled>Schließen</button>
+        </div>
+    </div>
+
     <!-- ARCHIV -->
     <div class="screen app-screen" id="archivScreen">
         <header class="app-header">
@@ -1500,10 +1519,15 @@
             'banf': '📝 BANF-Ersteller'
         };
 
-        const TEAMS_CHANNEL_URL = 'https://teams.microsoft.com/l/channel/19%3Axxxxxxxxxxxx%40thread.tacv2/Meldungen?groupId=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx&tenantId=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
-        const TEAMS_GROUP_ID = 'DEINE-GROUP-ID';
-        const TEAMS_CHANNEL_ID = '19:DEIN-CHANNEL-ID@thread.tacv2';
         const TEAMS_TENANT_ID = 'DEIN-TENANT-ID';
+        const TEAMS_GROUP_ID = 'DEINE-GROUP-ID';
+        const TEAMS_CHANNELS = {
+            meldungen:  { id: '19:DEIN-MELDUNGEN-CHANNEL-ID@thread.tacv2',  name: 'Meldungen' },
+            ambulanz:   { id: '19:DEIN-AMBULANZ-CHANNEL-ID@thread.tacv2',   name: 'Ambulanzcheck' },
+            mpg:        { id: '19:DEIN-MPG-CHANNEL-ID@thread.tacv2',        name: 'MPG-Check' },
+            wochen:     { id: '19:DEIN-WOCHEN-CHANNEL-ID@thread.tacv2',     name: 'Wochencheck' },
+            reinigung:  { id: '19:DEIN-REINIGUNG-CHANNEL-ID@thread.tacv2',  name: 'Reinigungsplan' }
+        };
 
         function loadBenutzerList() {
             const users = getUsers();
@@ -1920,7 +1944,8 @@
             message += '\n✍️ Erstellt von: ' + m.ersteller;
             message += '\n📅 ' + new Date(m.datum).toLocaleString('de-DE');
 
-            var teamsUrl = 'https://teams.microsoft.com/l/channel/' + encodeURIComponent(TEAMS_CHANNEL_ID) + '/Meldungen?groupId=' + TEAMS_GROUP_ID + '&tenantId=' + TEAMS_TENANT_ID + '&message=' + encodeURIComponent(message);
+            var ch = TEAMS_CHANNELS.meldungen;
+            var teamsUrl = 'https://teams.microsoft.com/l/channel/' + encodeURIComponent(ch.id) + '/' + encodeURIComponent(ch.name) + '?groupId=' + TEAMS_GROUP_ID + '&tenantId=' + TEAMS_TENANT_ID + '&message=' + encodeURIComponent(message);
 
             window.open(teamsUrl, '_blank');
 
@@ -1936,6 +1961,62 @@
             document.getElementById('teamsMeldungShareBtn').innerHTML = '<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg> In Teams teilen';
             document.getElementById('teamsMeldungShareBtn').style.background = '';
             pendingTeamsMeldung = null;
+        }
+
+        // === GENERIC TEAMS SHARING FOR CHECKLISTS ===
+        var pendingTeamsCheck = null;
+
+        function openTeamsCheckModal(type, title, data) {
+            pendingTeamsCheck = { type: type, title: title, data: data };
+
+            document.getElementById('teamsCheckModalTitle').textContent = title + ' abgeschlossen!';
+            document.getElementById('teamsCheckTitel').textContent = data.docId;
+
+            var preview = '✅ ' + title.toUpperCase() + ' ABGESCHLOSSEN\n';
+            preview += '━━━━━━━━━━━━━━━━━━\n';
+            preview += '📋 Dokument-ID: ' + data.docId + '\n';
+            preview += '📅 Datum: ' + data.meta.datum + ' ' + data.meta.uhrzeit + '\n';
+            preview += '👤 Mitarbeiter: ' + data.meta.mitarbeiter + '\n';
+            preview += '🏢 Standort: ' + data.meta.standort + '\n';
+            if (data.meta.kw) preview += '📆 KW: ' + data.meta.kw + '\n';
+            preview += '✍️ Erstellt von: ' + data.meta.user + '\n';
+            preview += '━━━━━━━━━━━━━━━━━━';
+
+            document.getElementById('teamsCheckPreview').textContent = preview;
+            document.getElementById('teamsCheckCloseBtn').disabled = true;
+            document.getElementById('teamsCheckShareBtn').innerHTML = '<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg> In Teams teilen';
+            document.getElementById('teamsCheckShareBtn').style.background = '';
+            document.getElementById('teamsCheckModal').style.display = 'flex';
+        }
+
+        function shareCheckToTeams() {
+            if (!pendingTeamsCheck) return;
+            var c = pendingTeamsCheck;
+            var ch = TEAMS_CHANNELS[c.type];
+            if (!ch) { alert('Kein Teams-Kanal für ' + c.type + ' konfiguriert.'); return; }
+
+            var message = '✅ ' + c.title.toUpperCase() + ' ABGESCHLOSSEN\n\n';
+            message += '📋 Dokument-ID: ' + c.data.docId + '\n';
+            message += '📅 Datum: ' + c.data.meta.datum + ' ' + c.data.meta.uhrzeit + '\n';
+            message += '👤 Mitarbeiter: ' + c.data.meta.mitarbeiter + '\n';
+            message += '🏢 Standort: ' + c.data.meta.standort;
+            if (c.data.meta.kw) message += '\n📆 KW: ' + c.data.meta.kw;
+            message += '\n✍️ Erstellt von: ' + c.data.meta.user;
+
+            var teamsUrl = 'https://teams.microsoft.com/l/channel/' + encodeURIComponent(ch.id) + '/' + encodeURIComponent(ch.name) + '?groupId=' + TEAMS_GROUP_ID + '&tenantId=' + TEAMS_TENANT_ID + '&message=' + encodeURIComponent(message);
+
+            window.open(teamsUrl, '_blank');
+
+            document.getElementById('teamsCheckCloseBtn').disabled = false;
+            document.getElementById('teamsCheckShareBtn').innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg> In Teams geöffnet!';
+            document.getElementById('teamsCheckShareBtn').style.background = 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)';
+
+            addAuditEntry('CHECK_TEAMS_GETEILT', c.title + ' (' + c.data.docId + ') in Teams geteilt');
+        }
+
+        function closeTeamsCheckModal() {
+            document.getElementById('teamsCheckModal').style.display = 'none';
+            pendingTeamsCheck = null;
         }
 
         // Rückmeldung Modal
@@ -2970,6 +3051,7 @@
                     document.getElementById('successDocId').textContent = data.docId;
                     showScreen('success');
                     showConfetti();
+                    openTeamsCheckModal('reinigung', 'Reinigungsplan', data);
                 } catch (e) {
                     alert('Fehler beim Speichern: ' + e.message);
                     btn.disabled = false;
@@ -3040,6 +3122,7 @@
                 document.getElementById('successDocId').textContent = data.docId;
                 showScreen('success');
                 showConfetti();
+                openTeamsCheckModal(type, checkTitle, data);
             } catch (e) { 
                 alert('Fehler beim Speichern: ' + e.message); 
                 btn.disabled = false; 
