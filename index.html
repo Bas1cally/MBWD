@@ -897,6 +897,25 @@
         </div>
     </div>
 
+    <!-- TEAMS MELDUNG SHARE MODAL -->
+    <div class="teams-share-modal" id="teamsMeldungModal" style="display:none;">
+        <div class="teams-share-content">
+            <div class="teams-share-icon">📢</div>
+            <h2>Meldung erstellt!</h2>
+            <p class="teams-share-id" id="teamsMeldungTitel"></p>
+            <div class="teams-share-warning">
+                <svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+                <span>Diese Meldung muss in Teams geteilt werden, damit alle Kollegen informiert sind.</span>
+            </div>
+            <div id="teamsMeldungPreview" style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:20px;text-align:left;font-size:13px;color:var(--text-secondary);white-space:pre-line;max-height:200px;overflow-y:auto;"></div>
+            <button class="teams-share-btn" id="teamsMeldungShareBtn" onclick="shareMeldungToTeams()">
+                <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+                In Teams teilen
+            </button>
+            <button class="teams-share-close" id="teamsMeldungCloseBtn" onclick="closeTeamsMeldungModal()" disabled>Schließen</button>
+        </div>
+    </div>
+
     <!-- ARCHIV -->
     <div class="screen app-screen" id="archivScreen">
         <header class="app-header">
@@ -1377,7 +1396,12 @@
             'it': '💻 IT Admin',
             'banf': '📝 BANF-Ersteller'
         };
-        
+
+        const TEAMS_CHANNEL_URL = 'https://teams.microsoft.com/l/channel/19%3Axxxxxxxxxxxx%40thread.tacv2/Meldungen?groupId=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx&tenantId=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
+        const TEAMS_GROUP_ID = 'DEINE-GROUP-ID';
+        const TEAMS_CHANNEL_ID = '19:DEIN-CHANNEL-ID@thread.tacv2';
+        const TEAMS_TENANT_ID = 'DEIN-TENANT-ID';
+
         function loadBenutzerList() {
             const users = getUsers();
             const list = document.getElementById('benutzerList');
@@ -1659,8 +1683,84 @@
             
             closeMeldungModal();
             loadMeldungen();
+            openTeamsMeldungModal(neueMeldung);
         }
-        
+
+        var pendingTeamsMeldung = null;
+
+        function openTeamsMeldungModal(meldung) {
+            pendingTeamsMeldung = meldung;
+
+            const kategorieMap = {
+                'defekt': '🔧 Defekt/Kaputt',
+                'nachbestellen': '📦 Nachbestellen',
+                'reinigung': '🧴 Reinigung/Hygiene',
+                'verbesserung': '💡 Verbesserungsvorschlag',
+                'sonstiges': '📌 Sonstiges'
+            };
+            const prioMap = { 'niedrig': '🟢 Niedrig', 'mittel': '🟡 Mittel', 'hoch': '🔴 Hoch' };
+            const zustaendigLabel = FUNKTIONEN[meldung.zustaendig] || '👥 Alle';
+
+            document.getElementById('teamsMeldungTitel').textContent = meldung.titel;
+
+            var preview = '📢 NEUE MELDUNG\n';
+            preview += '━━━━━━━━━━━━━━━━━━\n';
+            preview += '📋 ' + meldung.titel + '\n';
+            if (meldung.beschreibung) preview += '📝 ' + meldung.beschreibung + '\n';
+            preview += '\n';
+            preview += '🏷️ Kategorie: ' + (kategorieMap[meldung.kategorie] || meldung.kategorie) + '\n';
+            preview += '⚠️ Priorität: ' + (prioMap[meldung.prioritaet] || meldung.prioritaet) + '\n';
+            preview += '👤 Zuständig: ' + zustaendigLabel + '\n';
+            preview += '✍️ Erstellt von: ' + meldung.ersteller + '\n';
+            preview += '📅 ' + new Date(meldung.datum).toLocaleString('de-DE') + '\n';
+            preview += '━━━━━━━━━━━━━━━━━━';
+
+            document.getElementById('teamsMeldungPreview').textContent = preview;
+            document.getElementById('teamsMeldungCloseBtn').disabled = true;
+            document.getElementById('teamsMeldungModal').style.display = 'flex';
+        }
+
+        function shareMeldungToTeams() {
+            if (!pendingTeamsMeldung) return;
+            var m = pendingTeamsMeldung;
+
+            var kategorieMap = {
+                'defekt': '🔧 Defekt/Kaputt',
+                'nachbestellen': '📦 Nachbestellen',
+                'reinigung': '🧴 Reinigung/Hygiene',
+                'verbesserung': '💡 Verbesserungsvorschlag',
+                'sonstiges': '📌 Sonstiges'
+            };
+            var prioMap = { 'niedrig': '🟢 Niedrig', 'mittel': '🟡 Mittel', 'hoch': '🔴 Hoch' };
+            var zustaendigLabel = FUNKTIONEN[m.zustaendig] || '👥 Alle';
+
+            var message = '📢 NEUE MELDUNG\n\n';
+            message += '📋 ' + m.titel + '\n';
+            if (m.beschreibung) message += '📝 ' + m.beschreibung + '\n';
+            message += '\n🏷️ Kategorie: ' + (kategorieMap[m.kategorie] || m.kategorie);
+            message += '\n⚠️ Priorität: ' + (prioMap[m.prioritaet] || m.prioritaet);
+            message += '\n👤 Zuständig: ' + zustaendigLabel;
+            message += '\n✍️ Erstellt von: ' + m.ersteller;
+            message += '\n📅 ' + new Date(m.datum).toLocaleString('de-DE');
+
+            var teamsUrl = 'https://teams.microsoft.com/l/channel/' + encodeURIComponent(TEAMS_CHANNEL_ID) + '/Meldungen?groupId=' + TEAMS_GROUP_ID + '&tenantId=' + TEAMS_TENANT_ID + '&message=' + encodeURIComponent(message);
+
+            window.open(teamsUrl, '_blank');
+
+            document.getElementById('teamsMeldungCloseBtn').disabled = false;
+            document.getElementById('teamsMeldungShareBtn').innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg> In Teams geöffnet!';
+            document.getElementById('teamsMeldungShareBtn').style.background = 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)';
+
+            addAuditEntry('MELDUNG_TEAMS_GETEILT', 'Meldung "' + m.titel + '" in Teams geteilt');
+        }
+
+        function closeTeamsMeldungModal() {
+            document.getElementById('teamsMeldungModal').style.display = 'none';
+            document.getElementById('teamsMeldungShareBtn').innerHTML = '<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg> In Teams teilen';
+            document.getElementById('teamsMeldungShareBtn').style.background = '';
+            pendingTeamsMeldung = null;
+        }
+
         // Rückmeldung Modal
         var currentRueckmeldungId = null;
         
