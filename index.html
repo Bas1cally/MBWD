@@ -3453,10 +3453,86 @@
         }
 
         // REINIGUNGSPLAN
+        function autoArchiveOldWeeks() {
+            const currentKw = getWeekNumber(new Date());
+            // Prüfe ob alte Wochen-Daten existieren (letzte 10 KWs durchsuchen)
+            for (var i = 1; i <= 10; i++) {
+                var oldKw = currentKw - i;
+                if (oldKw <= 0) oldKw += 52; // Jahreswechsel
+                var oldKey = 'reinigung_current_kw' + oldKw;
+                var oldData = localStorage.getItem(oldKey);
+                if (!oldData) continue;
+
+                try {
+                    var oldState = JSON.parse(oldData);
+                    // Prüfe ob schon archiviert
+                    var archive = JSON.parse(localStorage.getItem('reinigung_archive') || '[]');
+                    var alreadyArchived = archive.some(function(a) { return a.meta && a.meta.kw === oldKw && a.auto_archived; });
+                    if (alreadyArchived) {
+                        localStorage.removeItem(oldKey);
+                        continue;
+                    }
+
+                    // Alte Woche archivieren (auch unvollständig)
+                    var reinigungResults = {};
+                    Object.entries(reinigungsPlanData).forEach(function([day, tasks]) {
+                        reinigungResults[day] = [];
+                        tasks.forEach(function(task, idx) {
+                            var taskId = day + '-' + idx;
+                            var state = oldState[taskId] || {};
+                            reinigungResults[day].push({
+                                schicht: task.schicht,
+                                bereich: task.bereich,
+                                umfang: task.umfang,
+                                noSign: task.noSign || false,
+                                checked: state.checked || false,
+                                name: state.name || '',
+                                timestamp: state.timestamp || '',
+                                signature: state.signature || null
+                            });
+                        });
+                    });
+
+                    var data = {
+                        id: generateId(),
+                        docId: getNextDocId('reinigung'),
+                        type: 'reinigung',
+                        auto_archived: true,
+                        meta: {
+                            datum: 'KW ' + oldKw + ' (Auto-Archiv)',
+                            uhrzeit: new Date().toLocaleTimeString('de-DE'),
+                            mitarbeiter: 'Auto-Archivierung',
+                            user: 'SYSTEM',
+                            userKuerzel: 'SYSTEM',
+                            standort: 'Mercedes-Benz Rastatt',
+                            kw: oldKw
+                        },
+                        reinigung: reinigungResults,
+                        exported: false
+                    };
+                    data.checksum = generateChecksum({ meta: data.meta, reinigung: data.reinigung });
+
+                    archive.unshift(data);
+                    if (archive.length > 100) archive = archive.slice(0, 100);
+                    localStorage.setItem('reinigung_archive', JSON.stringify(archive));
+                    cloudInsert('check_archive', { id: data.id, doc_id: data.docId, type: 'reinigung', meta: data.meta, reinigung: data.reinigung, checksum: data.checksum });
+
+                    addAuditEntry('REINIGUNG_AUTO_ARCHIV', 'Reinigungsplan KW ' + oldKw + ' automatisch archiviert (' + data.docId + ')');
+                    console.log('Reinigungsplan KW ' + oldKw + ' automatisch archiviert.');
+                    localStorage.removeItem(oldKey);
+                } catch (e) {
+                    console.warn('Auto-Archivierung KW ' + oldKw + ' fehlgeschlagen:', e);
+                }
+            }
+        }
+
         function initReinigungsplan() {
             const kw = getWeekNumber(new Date());
             document.getElementById('reinigungKW').textContent = 'KW ' + kw;
-            
+
+            // Auto-Archivierung alter Wochen
+            autoArchiveOldWeeks();
+
             // Load saved state from localStorage (persists through the week)
             const savedState = localStorage.getItem('reinigung_current_kw' + kw);
             if (savedState) {
@@ -3971,6 +4047,7 @@
                     } else if (x.type === 'reinigung') {
                         badgeColor = '#1abc9c';
                         typeName = 'Reinigung KW' + (kw || '');
+                        if (x.auto_archived) typeName += ' ⏰';
                     }
                     return `<div class="archive-item" onclick="showCheckDetail(${x.id}, '${x.type}')">
                         <div class="archive-item-header">
