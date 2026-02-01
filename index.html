@@ -540,6 +540,9 @@
         .theme-toggle svg { width: 22px; height: 22px; fill: var(--text-secondary); }
         .tile-last { font-size: 11px; color: var(--success); margin-top: 6px; font-weight: 500; opacity: 0.8; }
         .tile-last.overdue { color: #e74c3c; }
+        .confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 99998; overflow: hidden; }
+        .confetti-piece { position: absolute; width: 10px; height: 10px; top: -10px; animation: confetti-fall 3s ease-out forwards; }
+        @keyframes confetti-fall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 </head>
@@ -642,6 +645,14 @@
                     <div class="tile-title">Reinigungsplan</div>
                     <div class="tile-desc">Woechentlicher Reinigungsplan GZ</div>
                     <div class="tile-last" id="lastCheck_reinigung"></div>
+                </div>
+            </div>
+            <div class="tiles-section-title">Statistiken</div>
+            <div class="tiles-grid">
+                <div class="tile red" onclick="openApp('einsatzstatistik')">
+                    <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg></div>
+                    <div class="tile-title">Einsatz-Statistik</div>
+                    <div class="tile-desc">Notfalleinsätze erfassen & auswerten</div>
                 </div>
             </div>
             <div class="tiles-section-title">Dokumente</div>
@@ -863,7 +874,32 @@
             </div>
         </header>
         <div style="padding:20px;max-width:700px;margin:0 auto;padding-bottom:80px;">
+            <div style="margin-bottom:20px;">
+                <input type="text" id="dokumentenboxSearch" placeholder="Dokument suchen..." oninput="renderDokumentenbox()" style="width:100%;padding:12px 16px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-family:inherit;font-size:15px;">
+            </div>
             <div id="dokumentenboxContent"></div>
+        </div>
+    </div>
+
+    <!-- EINSATZSTATISTIK -->
+    <div class="screen app-screen" id="einsatzstatistikScreen">
+        <header class="app-header" style="border-left: 4px solid var(--accent);">
+            <div class="header-top">
+                <button class="back-btn" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+                <h1 class="header-title">Einsatz-Statistik</h1>
+            </div>
+            <div class="header-sub">
+                <span class="header-date" id="einsatzStatDatum"></span>
+            </div>
+        </header>
+        <div style="padding:20px;max-width:700px;margin:0 auto;padding-bottom:120px;">
+            <div style="display:flex;gap:12px;margin-bottom:24px;">
+                <button class="btn btn-primary" onclick="neuerEinsatz('rtw')" style="flex:1;background:var(--accent);">🚑 RTW Einsatz</button>
+                <button class="btn btn-primary" onclick="neuerEinsatz('ambulanz')" style="flex:1;background:var(--blue);">🏥 Ambulanz</button>
+            </div>
+            <div id="einsatzStatCards" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;"></div>
+            <h3 style="font-size:16px;margin-bottom:12px;color:var(--text-secondary);">Letzte Einsätze</h3>
+            <div id="einsatzStatListe"></div>
         </div>
     </div>
 
@@ -1549,6 +1585,7 @@
             else if (app === 'wochencheck') { currentCheckType = 'wochen'; initWochenCheck(); showScreen('wochencheck'); }
             else if (app === 'reinigungsplan') { currentCheckType = 'reinigung'; initReinigungsplan(); showScreen('reinigungsplan'); }
             else if (app === 'dokumentenbox') { renderDokumentenbox(); showScreen('dokumentenbox'); }
+            else if (app === 'einsatzstatistik') { renderEinsatzStatistik(); showScreen('einsatzstatistik'); }
             else if (app === 'meldungen') { loadMeldungen(); showScreen('meldungen'); }
             else if (app === 'archiv') { loadArchive(); showScreen('archiv'); }
             else if (app === 'benutzer') { loadBenutzerList(); showScreen('benutzer'); }
@@ -1595,14 +1632,23 @@
 
         function renderDokumentenbox() {
             var container = document.getElementById('dokumentenboxContent');
+            var searchInput = document.getElementById('dokumentenboxSearch');
+            var query = searchInput ? searchInput.value.trim().toLowerCase() : '';
             var html = '';
+            var totalResults = 0;
             DOKUMENTENBOX.forEach(function(kat) {
+                var filteredDocs = kat.docs.filter(function(doc) {
+                    if (!query) return true;
+                    return doc.name.toLowerCase().indexOf(query) !== -1 || doc.file.toLowerCase().indexOf(query) !== -1 || kat.kategorie.toLowerCase().indexOf(query) !== -1;
+                });
+                if (filteredDocs.length === 0) return;
+                totalResults += filteredDocs.length;
                 html += '<div style="margin-bottom:24px;">';
                 html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">';
                 html += '<span style="font-size:24px;">' + kat.icon + '</span>';
                 html += '<h3 style="margin:0;font-size:16px;font-weight:600;color:var(--text-primary);">' + sanitizeHTML(kat.kategorie) + '</h3>';
                 html += '</div>';
-                kat.docs.forEach(function(doc) {
+                filteredDocs.forEach(function(doc) {
                     html += '<a href="docs/' + encodeURIComponent(doc.file) + '" target="_blank" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;text-decoration:none;color:var(--text-primary);transition:var(--transition);" onmouseover="this.style.borderColor=\'#2ecc71\'" onmouseout="this.style.borderColor=\'var(--border)\'">';
                     html += '<div style="width:40px;height:40px;background:rgba(46,204,113,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:#2ecc71;"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg></div>';
                     html += '<div style="flex:1;min-width:0;">';
@@ -1614,6 +1660,9 @@
                 });
                 html += '</div>';
             });
+            if (query && totalResults === 0) {
+                html = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Keine Dokumente gefunden für "' + sanitizeHTML(query) + '"</div>';
+            }
             container.innerHTML = html;
         }
 
@@ -2920,6 +2969,7 @@
                     document.querySelector('.success-message').textContent = 'Der Reinigungsplan wurde erfolgreich abgeschlossen.';
                     document.getElementById('successDocId').textContent = data.docId;
                     showScreen('success');
+                    showConfetti();
                 } catch (e) {
                     alert('Fehler beim Speichern: ' + e.message);
                     btn.disabled = false;
@@ -2989,6 +3039,7 @@
                 document.querySelector('.success-message').textContent = 'Der ' + checkTitle + ' wurde erfolgreich abgeschlossen.';
                 document.getElementById('successDocId').textContent = data.docId;
                 showScreen('success');
+                showConfetti();
             } catch (e) { 
                 alert('Fehler beim Speichern: ' + e.message); 
                 btn.disabled = false; 
@@ -3686,9 +3737,86 @@
             }
         }
 
+        function showConfetti() {
+            var container = document.createElement('div');
+            container.className = 'confetti-container';
+            document.body.appendChild(container);
+            var colors = ['#e74c3c', '#f39c12', '#2ecc71', '#3498db', '#9b59b6', '#1abc9c', '#e67e22', '#c41e3a'];
+            for (var i = 0; i < 80; i++) {
+                var piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + '%';
+                piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.animationDelay = Math.random() * 2 + 's';
+                piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+                piece.style.width = (6 + Math.random() * 8) + 'px';
+                piece.style.height = (6 + Math.random() * 8) + 'px';
+                piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                container.appendChild(piece);
+            }
+            setTimeout(function() { container.remove(); }, 5000);
+        }
+
+        // ============ EINSATZ-STATISTIK ============
+        function getEinsatzLog() {
+            try { return JSON.parse(localStorage.getItem('mbwd_einsatz_log') || '[]'); } catch(e) { return []; }
+        }
+        function saveEinsatzLog(log) {
+            localStorage.setItem('mbwd_einsatz_log', JSON.stringify(log));
+        }
+        function neuerEinsatz(typ) {
+            var typLabel = typ === 'rtw' ? 'RTW Einsatz' : 'Einsatz in Ambulanz';
+            var notiz = prompt(typLabel + '\n\nOptionale Notiz (z.B. Meldebild, Ort):');
+            if (notiz === null) return;
+            var log = getEinsatzLog();
+            log.unshift({ id: generateId(), typ: typ, datum: new Date().toISOString(), notiz: notiz || '', erfasser: currentUser ? currentUser.name : 'Unbekannt' });
+            if (log.length > 1000) log = log.slice(0, 1000);
+            saveEinsatzLog(log);
+            addAuditEntry('EINSATZ_ERFASST', typLabel + (notiz ? ': ' + notiz : ''));
+            renderEinsatzStatistik();
+        }
+        function renderEinsatzStatistik() {
+            var log = getEinsatzLog();
+            var now = new Date();
+            var year = now.getFullYear();
+            var month = now.getMonth();
+            document.getElementById('einsatzStatDatum').textContent = now.toLocaleDateString('de-DE', { year: 'numeric' });
+            var jahresRtw = 0, jahresAmb = 0, monatsRtw = 0, monatsAmb = 0;
+            log.forEach(function(e) {
+                var d = new Date(e.datum);
+                if (d.getFullYear() === year) {
+                    if (e.typ === 'rtw') jahresRtw++; else jahresAmb++;
+                    if (d.getMonth() === month) { if (e.typ === 'rtw') monatsRtw++; else monatsAmb++; }
+                }
+            });
+            document.getElementById('einsatzStatCards').innerHTML =
+                '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;"><div style="font-size:28px;font-weight:700;color:var(--accent);">' + (jahresRtw + jahresAmb) + '</div><div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Gesamt ' + year + '</div></div>' +
+                '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;"><div style="font-size:28px;font-weight:700;color:var(--blue);">' + (monatsRtw + monatsAmb) + '</div><div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Diesen Monat</div></div>' +
+                '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;"><div style="font-size:28px;font-weight:700;color:var(--accent);">🚑 ' + jahresRtw + '</div><div style="font-size:12px;color:var(--text-muted);margin-top:4px;">RTW ' + year + '</div></div>' +
+                '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;"><div style="font-size:28px;font-weight:700;color:var(--blue);">🏥 ' + jahresAmb + '</div><div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Ambulanz ' + year + '</div></div>';
+            var listeHtml = '';
+            var recent = log.slice(0, 20);
+            if (recent.length === 0) {
+                listeHtml = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Noch keine Einsätze erfasst</div>';
+            } else {
+                recent.forEach(function(e) {
+                    var d = new Date(e.datum);
+                    var icon = e.typ === 'rtw' ? '🚑' : '🏥';
+                    listeHtml += '<div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;">';
+                    listeHtml += '<div style="font-size:24px;">' + icon + '</div>';
+                    listeHtml += '<div style="flex:1;min-width:0;">';
+                    listeHtml += '<div style="font-size:14px;font-weight:600;">' + (e.typ === 'rtw' ? 'RTW Einsatz' : 'Ambulanz') + '</div>';
+                    listeHtml += '<div style="font-size:12px;color:var(--text-muted);">' + d.toLocaleDateString('de-DE') + ' ' + d.toLocaleTimeString('de-DE', {hour:'2-digit',minute:'2-digit'}) + ' — ' + sanitizeHTML(e.erfasser) + '</div>';
+                    if (e.notiz) listeHtml += '<div style="font-size:13px;color:var(--text-secondary);margin-top:4px;">' + sanitizeHTML(e.notiz) + '</div>';
+                    listeHtml += '</div></div>';
+                });
+            }
+            document.getElementById('einsatzStatListe').innerHTML = listeHtml;
+        }
+
         function exportBackup() {
             var data = {};
-            var keys = ['mbwd_users', 'mbwd_archive_ambulanz', 'mbwd_archive_mpg', 'mbwd_archive_wochen', 'mbwd_archive_reinigung', 'mbwd_meldungen', 'mbwd_audit_log', 'mbwd_delete_log', 'mbwd_expiry_items', 'mbwd_einsatz_statistik', 'mbwd_theme'];
+            var keys = ['mbwd_users', 'mbwd_archive_ambulanz', 'mbwd_archive_mpg', 'mbwd_archive_wochen', 'mbwd_archive_reinigung', 'mbwd_meldungen', 'mbwd_audit_log', 'mbwd_delete_log', 'mbwd_expiry_items', 'mbwd_einsatz_statistik', 'mbwd_einsatz_log', 'mbwd_theme'];
             keys.forEach(function(key) {
                 var val = localStorage.getItem(key);
                 if (val) data[key] = JSON.parse(val);
