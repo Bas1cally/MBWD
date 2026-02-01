@@ -522,10 +522,32 @@
         @media (max-width: 600px) { .tiles-grid { grid-template-columns: 1fr; } .tiles-grid.top-tiles { grid-template-columns: 1fr !important; } .tile { padding: 20px; } .toggle-switch { width: 64px; height: 40px; } .toggle-slider:before { height: 32px; width: 32px; } .toggle-switch input:checked + .toggle-slider:before { transform: translateX(24px); } }
         @keyframes spin { to { transform: rotate(360deg); } }
         .spinner { animation: spin 1s linear infinite; }
+        .offline-banner { position: fixed; top: 0; left: 0; right: 0; background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; text-align: center; padding: 8px 16px; font-size: 13px; font-weight: 600; z-index: 99999; transform: translateY(-100%); transition: transform 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .offline-banner.show { transform: translateY(0); }
+        .offline-banner svg { width: 16px; height: 16px; fill: white; }
+        :root.light-mode {
+            --bg-primary: #f5f5f5; --bg-secondary: #e8e8e8; --bg-card: #ffffff; --bg-input: #f0f0f0;
+            --text-primary: #1a1a1a; --text-secondary: #555555; --text-muted: #888888;
+            --border: #d0d0d0; --shadow: 0 4px 24px rgba(0,0,0,0.1);
+        }
+        :root.light-mode .login-screen { background: var(--bg-primary); }
+        :root.light-mode .dashboard-screen { background: var(--bg-primary); }
+        :root.light-mode .login-input { color: var(--text-primary); }
+        :root.light-mode .pin-dot { border-color: #999; }
+        :root.light-mode .pin-dot.filled { background: var(--accent); border-color: var(--accent); }
+        .theme-toggle { position: fixed; bottom: 20px; right: 20px; width: 44px; height: 44px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 9998; box-shadow: var(--shadow); transition: var(--transition); }
+        .theme-toggle:hover { transform: scale(1.1); }
+        .theme-toggle svg { width: 22px; height: 22px; fill: var(--text-secondary); }
+        .tile-last { font-size: 11px; color: var(--success); margin-top: 6px; font-weight: 500; opacity: 0.8; }
+        .tile-last.overdue { color: #e74c3c; }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 </head>
 <body>
+    <div class="offline-banner" id="offlineBanner">
+        <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4c-1.48 0-2.85.43-4.01 1.17l1.46 1.46C10.21 6.23 11.08 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3 0 1.13-.64 2.11-1.56 2.62l1.45 1.45C23.16 18.16 24 16.68 24 15c0-2.64-2.05-4.78-4.65-4.96zM3 5.27l2.75 2.74C2.56 8.15 0 10.77 0 14c0 3.31 2.69 6 6 6h11.73l2 2 1.27-1.27L4.27 4 3 5.27zM7.73 10l8 8H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h1.73z"/></svg>
+        Offline — Einige Funktionen eingeschränkt
+    </div>
     <!-- LOGIN -->
     <div class="screen login-screen active" id="loginScreen">
         <div class="login-logo" style="background:none;box-shadow:none;"><img src="login-logo.png" alt="MBWD" style="width:100%;height:100%;border-radius:24px;object-fit:cover;"></div>
@@ -597,24 +619,29 @@
                     <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/></svg></div>
                     <div class="tile-title">Ambulanzcheck</div>
                     <div class="tile-desc">Tägliche Checkliste Gesundheitszentrum</div>
+                    <div class="tile-last" id="lastCheck_ambulanz"></div>
                 </div>
                 <div class="tile blue" onclick="openApp('mpgcheck')">
                     <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zM19.5 9.5L21 12h-3.5v3h-1v-3H10V9.5h9.5zM6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zM20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4h3zM3 6v9h.76c.55-.61 1.35-1 2.24-1s1.69.39 2.24 1H10V6H3z"/></svg></div>
                     <div class="tile-title">MPG-Check RTW</div>
                     <div class="tile-desc">Täglicher Medizinprodukte-Check</div>
+                    <div class="tile-last" id="lastCheck_mpg"></div>
                 </div>
             </div>
             <div class="tiles-section-title">Wöchentliche Aufgaben</div>
             <div class="tiles-grid">
                 <div class="tile orange" onclick="openApp('wochencheck')">
+                    <span class="tile-badge verfall" id="verfallBadge" style="display:none;background:#e74c3c;">0</span>
                     <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg></div>
                     <div class="tile-title">RTW Wochencheck</div>
                     <div class="tile-desc">Wöchentliche Fahrzeugprüfung</div>
+                    <div class="tile-last" id="lastCheck_wochen"></div>
                 </div>
                 <div class="tile teal" onclick="openApp('reinigungsplan')">
                     <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M19.36 2.72L20.78 4.14l-1.08 1.08c.63.96.91 2.12.64 3.34-.38 1.72-1.8 3.04-3.55 3.31-1.13.18-2.18-.12-3.02-.72L8 16.91V19H6v-2.5l1.5-1.5 1.91-1.91-.85-.85L2 18.8V21h3v-1.69l1.42-1.42L12.5 13c-.6-.84-.9-1.89-.72-3.02.27-1.75 1.59-3.17 3.31-3.55 1.22-.27 2.38.01 3.34.64l1.08-1.08zM17.17 8.83l-2.34-2.34c-.39-.39-.39-1.02 0-1.41l1.41-1.41c.39-.39 1.02-.39 1.41 0l2.34 2.34c.39.39.39 1.02 0 1.41l-1.41 1.41c-.39.39-1.02.39-1.41 0z"/></svg></div>
                     <div class="tile-title">Reinigungsplan</div>
                     <div class="tile-desc">Woechentlicher Reinigungsplan GZ</div>
+                    <div class="tile-last" id="lastCheck_reinigung"></div>
                 </div>
             </div>
             <div class="tiles-section-title">Dokumente</div>
@@ -647,6 +674,16 @@
                     <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></div>
                     <div class="tile-title">Lösch-Protokoll</div>
                     <div class="tile-desc">Gelöschte Dokumente einsehen</div>
+                </div>
+                <div class="tile purple" onclick="exportBackup()">
+                    <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M19 12v7H5v-7H3v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2zm-6 .67l2.59-2.58L17 11.5l-5 5-5-5 1.41-1.41L11 12.67V3h2v9.67z"/></svg></div>
+                    <div class="tile-title">Backup</div>
+                    <div class="tile-desc">Daten exportieren / importieren</div>
+                </div>
+                <div class="tile purple" onclick="importBackup()">
+                    <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg></div>
+                    <div class="tile-title">Import</div>
+                    <div class="tile-desc">Backup-Datei wiederherstellen</div>
                 </div>
             </div>
         </div>
@@ -1304,6 +1341,10 @@
             document.getElementById(name + 'Screen').classList.add('active');
             window.scrollTo(0, 0);
             
+            if (name === 'dashboard') {
+                updateLastCheckInfo();
+                updateVerfallBadge();
+            }
         }
 
         // PIN
@@ -1394,6 +1435,8 @@
             updateMeldungenBadge();
             
             showScreen('dashboard');
+            updateLastCheckInfo();
+            updateVerfallBadge();
         }
         function logout() { 
             if (currentUser) {
@@ -3631,6 +3674,132 @@
 
 
         // INIT
+        function toggleTheme() {
+            var root = document.documentElement;
+            var isLight = root.classList.toggle('light-mode');
+            localStorage.setItem('mbwd_theme', isLight ? 'light' : 'dark');
+            var icon = document.getElementById('themeIcon');
+            if (isLight) {
+                icon.innerHTML = '<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>';
+            } else {
+                icon.innerHTML = '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>';
+            }
+        }
+
+        function exportBackup() {
+            var data = {};
+            var keys = ['mbwd_users', 'mbwd_archive_ambulanz', 'mbwd_archive_mpg', 'mbwd_archive_wochen', 'mbwd_archive_reinigung', 'mbwd_meldungen', 'mbwd_audit_log', 'mbwd_delete_log', 'mbwd_expiry_items', 'mbwd_einsatz_statistik', 'mbwd_theme'];
+            keys.forEach(function(key) {
+                var val = localStorage.getItem(key);
+                if (val) data[key] = JSON.parse(val);
+            });
+            data._exportDate = new Date().toISOString();
+            data._version = 'MBWD-Backup-v1';
+            var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'MBWD-Backup-' + new Date().toISOString().slice(0, 10) + '.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            addAuditEntry('BACKUP_EXPORTIERT', 'Vollständiges Daten-Backup erstellt');
+            alert('Backup erfolgreich exportiert!');
+        }
+
+        function importBackup() {
+            var input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                var file = e.target.files[0];
+                if (!file) return;
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    try {
+                        var data = JSON.parse(event.target.result);
+                        if (!data._version || !data._version.startsWith('MBWD-Backup')) {
+                            alert('Ungültige Backup-Datei.');
+                            return;
+                        }
+                        if (!confirm('Backup vom ' + new Date(data._exportDate).toLocaleString('de-DE') + ' importieren?\n\nACHTUNG: Bestehende Daten werden überschrieben!')) return;
+                        Object.keys(data).forEach(function(key) {
+                            if (key.startsWith('mbwd_')) {
+                                localStorage.setItem(key, JSON.stringify(data[key]));
+                            }
+                        });
+                        addAuditEntry('BACKUP_IMPORTIERT', 'Daten-Backup importiert vom ' + data._exportDate);
+                        alert('Backup erfolgreich importiert! Die App wird neu geladen.');
+                        location.reload();
+                    } catch (err) {
+                        alert('Fehler beim Import: ' + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function updateLastCheckInfo() {
+            var types = ['ambulanz', 'mpg', 'wochen', 'reinigung'];
+            types.forEach(function(type) {
+                var el = document.getElementById('lastCheck_' + type);
+                if (!el) return;
+                try {
+                    var archive = JSON.parse(localStorage.getItem('mbwd_archive_' + type) || '[]');
+                    if (archive.length > 0) {
+                        var last = archive[0];
+                        var datum = last.meta ? last.meta.datum : last.datum;
+                        if (datum) {
+                            var d = new Date(datum);
+                            var today = new Date();
+                            today.setHours(0,0,0,0);
+                            d.setHours(0,0,0,0);
+                            var diffDays = Math.floor((today - d) / 86400000);
+                            if (diffDays === 0) {
+                                el.textContent = 'Heute erledigt';
+                                el.className = 'tile-last';
+                            } else if (diffDays === 1) {
+                                el.textContent = 'Gestern erledigt';
+                                el.className = 'tile-last';
+                            } else {
+                                el.textContent = 'Vor ' + diffDays + ' Tagen';
+                                el.className = 'tile-last overdue';
+                            }
+                        }
+                    } else {
+                        el.textContent = 'Noch nie durchgeführt';
+                        el.className = 'tile-last overdue';
+                    }
+                } catch(e) { el.textContent = ''; }
+            });
+        }
+
+        function updateVerfallBadge() {
+            try {
+                var items = JSON.parse(localStorage.getItem('mbwd_expiry_items') || '[]');
+                var now = new Date();
+                var warningCount = 0;
+                items.forEach(function(item) {
+                    if (item.datum) {
+                        var expDate = new Date(item.datum);
+                        var diffDays = Math.floor((expDate - now) / 86400000);
+                        if (diffDays <= 30) warningCount++;
+                    }
+                });
+                var badge = document.getElementById('verfallBadge');
+                if (badge) {
+                    if (warningCount > 0) {
+                        badge.textContent = warningCount;
+                        badge.style.display = 'flex';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            } catch(e) {}
+        }
+
         function initApp() {
             // Setup modal close handlers
             document.getElementById('detailModal').addEventListener('click', e => { 
@@ -3655,6 +3824,17 @@
             // Register service worker
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('sw.js').catch(() => {});
+
+            // Offline indicator
+            window.addEventListener('online', function() { document.getElementById('offlineBanner').classList.remove('show'); });
+            window.addEventListener('offline', function() { document.getElementById('offlineBanner').classList.add('show'); });
+            if (!navigator.onLine) document.getElementById('offlineBanner').classList.add('show');
+
+            // Theme
+            if (localStorage.getItem('mbwd_theme') === 'light') {
+                document.documentElement.classList.add('light-mode');
+                document.getElementById('themeIcon').innerHTML = '<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>';
+            }
             }
             
             // Log app start
@@ -3663,5 +3843,8 @@
         
         initApp();
     </script>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Dark/Light Mode">
+        <svg id="themeIcon" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+    </button>
 </body>
 </html>
