@@ -544,6 +544,7 @@
         .confetti-piece { position: absolute; width: 10px; height: 10px; top: -10px; animation: confetti-fall 3s ease-out forwards; }
         @keyframes confetti-fall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
     </style>
+    <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 </head>
 <body>
@@ -1160,6 +1161,269 @@
             return Date.now().toString(36) + '-' + Math.random().toString(36).substr(2, 9);
         }
 
+                // ============ SUPABASE KONFIGURATION ============
+        // 1. https://supabase.com → Neues Projekt erstellen
+        // 2. SQL Editor → supabase-schema.sql ausführen
+        // 3. Project Settings → API → URL und anon key hier eintragen
+        const SUPABASE_URL = 'DEINE-SUPABASE-URL';
+        const SUPABASE_ANON_KEY = 'DEIN-SUPABASE-ANON-KEY';
+
+        let supabase = null;
+        let isOnline = navigator.onLine;
+        let realtimeChannel = null;
+
+        function initSupabase() {
+            if (SUPABASE_URL === 'DEINE-SUPABASE-URL' || !window.supabase) {
+                console.warn('Supabase nicht konfiguriert – Offline/localStorage-Modus.');
+                return false;
+            }
+            try {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log('Supabase verbunden.');
+                return true;
+            } catch (e) {
+                console.error('Supabase Init Fehler:', e);
+                return false;
+            }
+        }
+
+        window.addEventListener('online', function() {
+            isOnline = true;
+            var ob = document.getElementById('offlineBanner');
+            if (ob) ob.style.display = 'none';
+            syncToCloud();
+        });
+        window.addEventListener('offline', function() {
+            isOnline = false;
+            var ob = document.getElementById('offlineBanner');
+            if (ob) ob.style.display = 'flex';
+        });
+
+        // ============ CLOUD HELPER ============
+        async function cloudGet(table, options) {
+            if (!supabase || !isOnline) return null;
+            try {
+                let query = supabase.from(table).select('*');
+                if (options && options.order) query = query.order(options.order, { ascending: options.asc || false });
+                if (options && options.limit) query = query.limit(options.limit);
+                if (options && options.eq) query = query.eq(options.eq[0], options.eq[1]);
+                const { data, error } = await query;
+                if (error) throw error;
+                return data;
+            } catch (e) { console.warn('cloudGet(' + table + '):', e.message); return null; }
+        }
+
+        async function cloudUpsert(table, data) {
+            if (!supabase || !isOnline) { queueOffline('upsert', table, data); return; }
+            try {
+                const { error } = await supabase.from(table).upsert(data);
+                if (error) throw error;
+            } catch (e) { console.warn('cloudUpsert(' + table + '):', e.message); queueOffline('upsert', table, data); }
+        }
+
+        async function cloudInsert(table, data) {
+            if (!supabase || !isOnline) { queueOffline('insert', table, data); return; }
+            try {
+                const { error } = await supabase.from(table).insert(data);
+                if (error && !error.message.includes('duplicate')) throw error;
+            } catch (e) { console.warn('cloudInsert(' + table + '):', e.message); queueOffline('insert', table, data); }
+        }
+
+        async function cloudDelete(table, col, val) {
+            if (!supabase || !isOnline) { queueOffline('delete', table, {_col: col, _val: val}); return; }
+            try {
+                const { error } = await supabase.from(table).delete().eq(col, val);
+                if (error) throw error;
+            } catch (e) { console.warn('cloudDelete(' + table + '):', e.message); queueOffline('delete', table, {_col: col, _val: val}); }
+        }
+
+        async function cloudUpdate(table, col, val, upd) {
+            if (!supabase || !isOnline) { queueOffline('update', table, {_col: col, _val: val, ...upd}); return; }
+            try {
+                const { error } = await supabase.from(table).update(upd).eq(col, val);
+                if (error) throw error;
+            } catch (e) { console.warn('cloudUpdate(' + table + '):', e.message); queueOffline('update', table, {_col: col, _val: val, ...upd}); }
+        }
+
+        // ============ OFFLINE QUEUE ============
+        function queueOffline(action, table, data) {
+            try {
+                var q = JSON.parse(localStorage.getItem('mbwd_offline_queue') || '[]');
+                q.push({ action: action, table: table, data: data, t: Date.now() });
+                localStorage.setItem('mbwd_offline_queue', JSON.stringify(q));
+            } catch (e) {}
+        }
+
+        async function syncToCloud() {
+            if (!supabase || !isOnline) return;
+            var q = JSON.parse(localStorage.getItem('mbwd_offline_queue') || '[]');
+            if (!q.length) return;
+            console.log('Synce ' + q.length + ' Offline-Aktionen...');
+            var failed = [];
+            for (var i = 0; i < q.length; i++) {
+                var item = q[i];
+                try {
+                    if (item.action === 'upsert') {
+                        await supabase.from(item.table).upsert(item.data);
+                    } else if (item.action === 'insert') {
+                        await supabase.from(item.table).insert(item.data);
+                    } else if (item.action === 'delete') {
+                        await supabase.from(item.table).delete().eq(item.data._col, item.data._val);
+                    } else if (item.action === 'update') {
+                        var d = Object.assign({}, item.data);
+                        var col = d._col, val = d._val;
+                        delete d._col; delete d._val;
+                        await supabase.from(item.table).update(d).eq(col, val);
+                    }
+                } catch (e) { failed.push(item); }
+            }
+            localStorage.setItem('mbwd_offline_queue', JSON.stringify(failed));
+            if (!failed.length) console.log('Alle Offline-Aktionen synchronisiert!');
+            await pullFromCloud();
+        }
+
+        // ============ PULL FROM CLOUD ============
+        async function pullFromCloud() {
+            if (!supabase || !isOnline) return;
+            try {
+                // Users
+                var users = await cloudGet('users');
+                if (users) {
+                    var obj = {};
+                    users.forEach(function(u) { obj[u.kuerzel] = { name: u.name, pin: u.pin, funktionen: u.funktionen || [] }; });
+                    localStorage.setItem('mbwd_users', JSON.stringify(obj));
+                }
+                // Meldungen
+                var meldungen = await cloudGet('meldungen', { order: 'created_at' });
+                if (meldungen) {
+                    var mapped = meldungen.map(function(m) {
+                        return { id: m.id, titel: m.titel, beschreibung: m.beschreibung,
+                            kategorie: m.kategorie, prioritaet: m.prioritaet,
+                            zustaendig: m.zustaendig, ersteller: m.ersteller,
+                            erstellerKuerzel: m.ersteller_kuerzel, datum: m.datum,
+                            erledigt: m.erledigt, rueckmeldung: m.rueckmeldung,
+                            rueckmeldungVon: m.rueckmeldung_von, rueckmeldungZeit: m.rueckmeldung_zeit };
+                    });
+                    localStorage.setItem('mbwd_meldungen', JSON.stringify(mapped));
+                    try { updateMeldungenBadge(); } catch(e) {}
+                }
+                // Archives
+                var archives = await cloudGet('check_archive', { order: 'created_at' });
+                if (archives) {
+                    var byType = { ambulanz: [], mpg: [], wochen: [], reinigung: [] };
+                    archives.forEach(function(a) {
+                        var item = { id: a.id, docId: a.doc_id, type: a.type,
+                            meta: a.meta, checkliste: a.checkliste, reinigung: a.reinigung,
+                            unterschrift: a.unterschrift, exported: a.exported,
+                            exportedAt: a.exported_at, exportedBy: a.exported_by, checksum: a.checksum };
+                        if (byType[a.type]) byType[a.type].push(item);
+                    });
+                    localStorage.setItem('ambulanzcheck_archive', JSON.stringify(byType.ambulanz));
+                    localStorage.setItem('mpgcheck_archive', JSON.stringify(byType.mpg));
+                    localStorage.setItem('wochencheck_archive', JSON.stringify(byType.wochen));
+                    localStorage.setItem('reinigung_archive', JSON.stringify(byType.reinigung));
+                }
+                // Einsatz Log
+                var einsaetze = await cloudGet('einsatz_log', { order: 'datum' });
+                if (einsaetze) {
+                    localStorage.setItem('mbwd_einsatz_log', JSON.stringify(einsaetze.map(function(e) {
+                        return { id: e.id, typ: e.typ, datum: e.datum, notizen: e.notizen, erfasstVon: e.erfasst_von, erfasstVonName: e.erfasst_von_name };
+                    })));
+                }
+                // Expiry Tracker
+                var expiry = await cloudGet('expiry_tracker', { order: 'date', asc: true });
+                if (expiry) {
+                    localStorage.setItem('rtw_expiry_tracker', JSON.stringify(expiry.map(function(e) {
+                        return { id: e.id, name: e.name, date: e.date, addedBy: e.added_by };
+                    })));
+                }
+                // Doc counters
+                var counters = await cloudGet('doc_counters');
+                if (counters) {
+                    counters.forEach(function(c) {
+                        localStorage.setItem('mbwd_doc_counter_' + c.key, c.counter.toString());
+                    });
+                }
+                console.log('Cloud-Daten synchronisiert.');
+            } catch (e) { console.warn('pullFromCloud Fehler:', e.message); }
+        }
+
+        // ============ REALTIME ============
+        function setupRealtime() {
+            if (!supabase) return;
+            realtimeChannel = supabase.channel('mbwd-sync')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'meldungen' }, function() {
+                    pullTable('meldungen');
+                })
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'check_archive' }, function() {
+                    pullTable('check_archive');
+                })
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'einsatz_log' }, function() {
+                    pullTable('einsatz_log');
+                })
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, function() {
+                    pullTable('users');
+                })
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'expiry_tracker' }, function() {
+                    pullTable('expiry_tracker');
+                })
+                .subscribe();
+        }
+
+        async function pullTable(table) {
+            if (!supabase || !isOnline) return;
+            try {
+                if (table === 'meldungen') {
+                    var m = await cloudGet('meldungen', { order: 'created_at' });
+                    if (m) {
+                        localStorage.setItem('mbwd_meldungen', JSON.stringify(m.map(function(x) {
+                            return { id: x.id, titel: x.titel, beschreibung: x.beschreibung,
+                                kategorie: x.kategorie, prioritaet: x.prioritaet,
+                                zustaendig: x.zustaendig, ersteller: x.ersteller,
+                                erstellerKuerzel: x.ersteller_kuerzel, datum: x.datum,
+                                erledigt: x.erledigt, rueckmeldung: x.rueckmeldung,
+                                rueckmeldungVon: x.rueckmeldung_von, rueckmeldungZeit: x.rueckmeldung_zeit };
+                        })));
+                        try { updateMeldungenBadge(); loadMeldungen(); } catch(e) {}
+                    }
+                } else if (table === 'check_archive') {
+                    var a = await cloudGet('check_archive', { order: 'created_at' });
+                    if (a) {
+                        var bt = { ambulanz: [], mpg: [], wochen: [], reinigung: [] };
+                        a.forEach(function(x) {
+                            var item = { id: x.id, docId: x.doc_id, type: x.type, meta: x.meta,
+                                checkliste: x.checkliste, reinigung: x.reinigung,
+                                unterschrift: x.unterschrift, exported: x.exported,
+                                exportedAt: x.exported_at, exportedBy: x.exported_by, checksum: x.checksum };
+                            if (bt[x.type]) bt[x.type].push(item);
+                        });
+                        localStorage.setItem('ambulanzcheck_archive', JSON.stringify(bt.ambulanz));
+                        localStorage.setItem('mpgcheck_archive', JSON.stringify(bt.mpg));
+                        localStorage.setItem('wochencheck_archive', JSON.stringify(bt.wochen));
+                        localStorage.setItem('reinigung_archive', JSON.stringify(bt.reinigung));
+                    }
+                } else if (table === 'einsatz_log') {
+                    var e = await cloudGet('einsatz_log', { order: 'datum' });
+                    if (e) localStorage.setItem('mbwd_einsatz_log', JSON.stringify(e.map(function(x) {
+                        return { id: x.id, typ: x.typ, datum: x.datum, notizen: x.notizen, erfasstVon: x.erfasst_von, erfasstVonName: x.erfasst_von_name };
+                    })));
+                } else if (table === 'users') {
+                    var u = await cloudGet('users');
+                    if (u) {
+                        var obj = {};
+                        u.forEach(function(x) { obj[x.kuerzel] = { name: x.name, pin: x.pin, funktionen: x.funktionen || [] }; });
+                        localStorage.setItem('mbwd_users', JSON.stringify(obj));
+                    }
+                } else if (table === 'expiry_tracker') {
+                    var ex = await cloudGet('expiry_tracker', { order: 'date', asc: true });
+                    if (ex) localStorage.setItem('rtw_expiry_tracker', JSON.stringify(ex.map(function(x) {
+                        return { id: x.id, name: x.name, date: x.date, addedBy: x.added_by };
+                    })));
+                }
+            } catch (e) { console.warn('pullTable(' + table + '):', e); }
+        }
+
+
         // USERS - Admin ist fest, andere aus localStorage
         const ADMIN_PIN = '5400';
         let loginAttempts = 0;
@@ -1177,6 +1441,10 @@
         }
         function saveUsers(users) {
             localStorage.setItem('mbwd_users', JSON.stringify(users));
+            // Cloud-Sync
+            Object.entries(users).forEach(function([k, u]) {
+                cloudUpsert('users', { kuerzel: k, name: u.name, pin: u.pin, funktionen: u.funktionen || [], updated_at: new Date().toISOString() });
+            });
         }
         
         // ============ AUDIT LOG ============
@@ -1202,6 +1470,7 @@
             // Maximal 1000 Einträge behalten
             if (log.length > 1000) log.length = 1000;
             localStorage.setItem('mbwd_audit_log', JSON.stringify(log));
+            cloudInsert('audit_log', { id: entry.id, timestamp: entry.timestamp, user_kuerzel: entry.user, user_name: entry.userName, action: entry.action, details: entry.details });
         }
         
         // ============ FORTLAUFENDE DOKUMENTEN-ID ============
@@ -1210,6 +1479,7 @@
             const counterKey = `mbwd_doc_counter_${type}_${year}`;
             let counter = parseInt(localStorage.getItem(counterKey) || '0') + 1;
             localStorage.setItem(counterKey, counter.toString());
+            cloudUpsert('doc_counters', { key: type + '_' + year, counter: counter });
             
             const typePrefix = {
                 'ambulanz': 'AMB',
@@ -1244,6 +1514,7 @@
             log.unshift(entry);
             if (log.length > 500) log = log.slice(0, 500);
             localStorage.setItem('mbwd_delete_log', JSON.stringify(log));
+            cloudInsert('delete_log', { id: entry.id, timestamp: entry.timestamp, deleted_by: entry.deletedBy, deleted_by_name: entry.deletedByName, document_id: entry.documentId, document_type: entry.documentType, document_meta: entry.documentMeta });
             addAuditEntry('DOKUMENT_GELÖSCHT', `Dokument ${docId} (${docType}) gelöscht`);
         }
         
@@ -1271,6 +1542,7 @@
                     item.exportedAt = new Date().toISOString();
                     item.exportedBy = currentUser ? currentUser.kuerzel : 'UNKNOWN';
                     localStorage.setItem(storageKey, JSON.stringify(archive));
+                    cloudUpdate('check_archive', 'id', docId, { exported: true, exported_at: item.exportedAt, exported_by: item.exportedBy });
                     addAuditEntry('DOKUMENT_EXPORTIERT', `Dokument ${item.docId || docId} exportiert`);
                 }
             } catch (e) { console.warn('Storage error:', e.message); }
@@ -1599,6 +1871,7 @@
             const users = getUsers();
             delete users[kuerzel];
             saveUsers(users);
+            cloudDelete('users', 'kuerzel', kuerzel);
             loadBenutzerList();
         }
 
@@ -1703,7 +1976,19 @@
             localStorage.setItem('mbwd_meldungen', JSON.stringify(meldungen));
             updateMeldungenBadge();
         }
-        
+
+        function syncMeldungToCloud(m) {
+            cloudUpsert('meldungen', {
+                id: m.id, titel: m.titel, beschreibung: m.beschreibung || '',
+                kategorie: m.kategorie, prioritaet: m.prioritaet,
+                zustaendig: m.zustaendig, ersteller: m.ersteller,
+                ersteller_kuerzel: m.erstellerKuerzel, datum: m.datum,
+                erledigt: m.erledigt || false, rueckmeldung: m.rueckmeldung || null,
+                rueckmeldung_von: m.rueckmeldungVon || null,
+                rueckmeldung_zeit: m.rueckmeldungZeit || null
+            });
+        }
+
         function updateMeldungenBadge() {
             const meldungen = getMeldungen();
             const userFunktionen = currentUser ? (currentUser.funktionen || []) : [];
@@ -1879,6 +2164,7 @@
             
             meldungen.unshift(neueMeldung);
             saveMeldungen(meldungen);
+            syncMeldungToCloud(neueMeldung);
             
             addAuditEntry('MELDUNG_ERSTELLT', `Neue Meldung: ${titel} (Zuständig: ${FUNKTIONEN[zustaendig] || 'Alle'})`);
             
@@ -2073,6 +2359,7 @@
             if (!confirm(`Meldung "${meldung.titel}" als erledigt markieren und aus der Liste entfernen?`)) return;
             
             // Audit-Log Eintrag
+            syncMeldungToCloud(m);
             addAuditEntry('MELDUNG_ERLEDIGT', `${currentUser ? currentUser.name : 'Unbekannt'} (${currentUser ? currentUser.kuerzel : 'UNKNOWN'}) hat "${meldung.titel}" als erledigt markiert. Rückmeldung war: ${meldung.rueckmeldung || 'Keine'}`);
             
             // Meldung als erledigt markieren (wird nicht mehr angezeigt)
@@ -2087,6 +2374,7 @@
         }
         
         function toggleMeldungErledigt(id) {
+            // Cloud-Sync passiert über saveMeldungen
             // Legacy-Funktion - leitet zu meldungErledigen weiter
             meldungErledigen(id);
         }
@@ -2098,11 +2386,12 @@
             const meldung = meldungen.find(m => m.id === id);
             const filtered = meldungen.filter(m => m.id !== id);
             saveMeldungen(filtered);
-            
+            cloudDelete('meldungen', 'id', id);
+
             if (meldung) {
                 addAuditEntry('MELDUNG_GELÖSCHT', `Meldung gelöscht: ${meldung.titel}`);
             }
-            
+
             loadMeldungen();
         }
 
@@ -2511,8 +2800,9 @@
         
         function saveExpiryItems(items) {
             localStorage.setItem('rtw_expiry_tracker', JSON.stringify(items));
+            items.forEach(function(item) { cloudUpsert('expiry_tracker', { id: item.id, name: item.name, date: item.date, added_by: item.addedBy }); });
         }
-        
+
         function addExpiryItem() {
             var name = document.getElementById('expiryItemName').value.trim();
             var date = document.getElementById('expiryItemDate').value;
@@ -2544,6 +2834,7 @@
             if (!confirm('Eintrag löschen? (z.B. weil ersetzt oder entsorgt)')) return;
             var items = getExpiryItems().filter(x => x.id !== id);
             saveExpiryItems(items);
+            cloudDelete('expiry_tracker', 'id', id);
             renderExpiryTracker();
         }
         
@@ -3028,7 +3319,8 @@
                     archive.unshift(data);
                     if (archive.length > 100) archive = archive.slice(0, 100);
                     localStorage.setItem('reinigung_archive', JSON.stringify(archive));
-                    
+                    cloudInsert('check_archive', { id: data.id, doc_id: data.docId, type: 'reinigung', meta: data.meta, reinigung: data.reinigung, checksum: data.checksum });
+
                     // Clear current week's state after archiving
                     localStorage.removeItem('reinigung_current_kw' + kw);
                     reinigungState = {};
@@ -3103,7 +3395,8 @@
                 archive.unshift(data);
                 if (archive.length > 100) archive = archive.slice(0, 100);
                 localStorage.setItem(storageKey, JSON.stringify(archive));
-                
+                cloudInsert('check_archive', { id: data.id, doc_id: data.docId, type: type, meta: data.meta, checkliste: data.checkliste, unterschrift: data.unterschrift, checksum: data.checksum });
+
                 // Audit Log
                 addAuditEntry('CHECK_ABGESCHLOSSEN', `${checkTitle} abgeschlossen (${data.docId})`);
                 
@@ -3778,6 +4071,7 @@
                 
                 archive = archive.filter(x => x.id !== currentDetailId);
                 localStorage.setItem(storageKey, JSON.stringify(archive));
+                cloudDelete('check_archive', 'id', currentDetailId);
                 document.getElementById('detailModal').classList.remove('active');
                 loadArchive();
                 updateExportBadge();
@@ -4011,7 +4305,12 @@
             } catch(e) {}
         }
 
-        function initApp() {
+        async function initApp() {
+            // Supabase initialisieren
+            if (initSupabase()) {
+                await pullFromCloud();
+                setupRealtime();
+            }
             // Setup modal close handlers
             document.getElementById('detailModal').addEventListener('click', e => { 
                 if (e.target.id === 'detailModal') e.target.classList.remove('active'); 

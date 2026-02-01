@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mbwd-app-v16';
+const CACHE_NAME = 'mbwd-app-v17';
 const urlsToCache = [
   './',
   './index.html',
@@ -28,8 +28,9 @@ self.addEventListener('install', event => {
 
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
-  // Don't cache blob: URLs or external CDN resources unboundedly
+  // Don't cache blob: URLs, Supabase API calls, or external CDN resources unboundedly
   if (url.protocol === 'blob:') return;
+  if (url.hostname.includes('supabase.co') || url.hostname.includes('supabase.io')) return;
 
   event.respondWith(
     Promise.race([
