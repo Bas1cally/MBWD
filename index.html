@@ -639,6 +639,7 @@
                     <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM7 11h5v5H7v-5z"/></svg></div>
                     <div class="tile-title">Dienstplan</div>
                     <div class="tile-desc" id="dienstplanPreview">Kein Dienstplan hochgeladen</div>
+                    <div class="tile-last" id="dienstplanLastUpdate"></div>
                 </div>
             </div>
 
@@ -935,7 +936,7 @@
             <div class="header-top">
                 <button class="back-btn" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
                 <h1 class="header-title">Dienstplan</h1>
-                <div class="header-actions">
+                <div class="header-actions" id="dpUploadBtn" style="display:none;">
                     <button class="header-btn" onclick="document.getElementById('dpFileInput').click()" title="Excel hochladen" style="background:#3498db;"><svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg></button>
                 </div>
             </div>
@@ -945,8 +946,8 @@
         </header>
         <input type="file" id="dpFileInput" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleDienstplanUpload(event)">
         <div style="padding:20px;max-width:900px;margin:0 auto;padding-bottom:80px;">
-            <!-- Drag & Drop Zone -->
-            <div id="dpDropZone" style="border:2px dashed var(--border);border-radius:16px;padding:40px 20px;text-align:center;margin-bottom:20px;transition:all 0.3s;cursor:pointer;" onclick="document.getElementById('dpFileInput').click()">
+            <!-- Drag & Drop Zone (nur für Berechtigte) -->
+            <div id="dpDropZone" style="border:2px dashed var(--border);border-radius:16px;padding:40px 20px;text-align:center;margin-bottom:20px;transition:all 0.3s;cursor:pointer;display:none;" onclick="document.getElementById('dpFileInput').click()">
                 <div style="font-size:48px;margin-bottom:12px;">📋</div>
                 <div style="font-size:16px;font-weight:600;color:var(--text-primary);margin-bottom:8px;">Excel-Datei hierher ziehen</div>
                 <div style="font-size:13px;color:var(--text-muted);">oder klicken zum Auswählen (.xlsx, .xls, .csv)</div>
@@ -4476,8 +4477,18 @@
         var dpWorkbook = null;
         var dpCurrentSheet = 0;
 
+        function canUploadDienstplan() {
+            if (!currentUser) return false;
+            if (currentUser.role === 'admin') return true;
+            var funktionen = currentUser.funktionen || [];
+            return funktionen.includes('koordinator');
+        }
+
         function initDienstplan() {
-            setupDpDragDrop();
+            var canUpload = canUploadDienstplan();
+            document.getElementById('dpUploadBtn').style.display = canUpload ? '' : 'none';
+            document.getElementById('dpDropZone').style.display = canUpload ? 'block' : 'none';
+            if (canUpload) setupDpDragDrop();
             loadSavedDienstplan();
         }
 
@@ -4507,6 +4518,10 @@
         }
 
         function processDienstplanFile(file) {
+            if (!canUploadDienstplan()) {
+                alert('Nur Dienstplaner und Admins können den Dienstplan hochladen.');
+                return;
+            }
             if (!window.XLSX) {
                 alert('Excel-Bibliothek nicht geladen. Bitte Seite neu laden.');
                 return;
@@ -4653,13 +4668,19 @@
         function updateDpPreview(dpData) {
             var preview = document.getElementById('dienstplanPreview');
             var info = document.getElementById('dpUploadInfo');
+            var lastUpdate = document.getElementById('dienstplanLastUpdate');
+            var d = new Date(dpData.uploadedAt);
+            var dateStr = d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            var timeStr = d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
             if (preview) {
-                var d = new Date(dpData.uploadedAt);
-                preview.textContent = dpData.fileName + ' (' + d.toLocaleDateString('de-DE') + ')';
+                preview.textContent = dpData.fileName;
+            }
+            if (lastUpdate) {
+                lastUpdate.textContent = 'Zuletzt aktualisiert: ' + dateStr + ' ' + timeStr + ' von ' + (dpData.uploadedBy || 'Unbekannt');
+                lastUpdate.className = 'tile-last';
             }
             if (info) {
-                var d2 = new Date(dpData.uploadedAt);
-                info.textContent = dpData.fileName + ' • Hochgeladen: ' + d2.toLocaleDateString('de-DE') + ' ' + d2.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' von ' + dpData.uploadedBy;
+                info.textContent = dpData.fileName + ' • ' + dateStr + ' ' + timeStr + ' von ' + (dpData.uploadedBy || 'Unbekannt');
             }
         }
 
