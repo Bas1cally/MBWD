@@ -1021,8 +1021,14 @@
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
         }
 
+        function generateId() {
+            return Date.now().toString(36) + '-' + Math.random().toString(36).substr(2, 9);
+        }
+
         // USERS - Admin ist fest, andere aus localStorage
         const ADMIN_PIN = '5400';
+        let loginAttempts = 0;
+        let lockoutUntil = 0;
         const SESSION_TIMEOUT_MIN = 15; // Automatischer Logout nach 15 Minuten
         let sessionTimer = null;
         let lastActivity = Date.now();
@@ -1050,7 +1056,7 @@
         function addAuditEntry(action, details) {
             const log = getAuditLog();
             const entry = {
-                id: Date.now(),
+                id: generateId(),
                 timestamp: new Date().toISOString(),
                 user: currentUser ? currentUser.kuerzel : 'SYSTEM',
                 userName: currentUser ? currentUser.name : 'System',
@@ -1092,7 +1098,7 @@
         function addDeleteEntry(docId, docType, docMeta) {
             const log = getDeleteLog();
             const entry = {
-                id: Date.now(),
+                id: generateId(),
                 timestamp: new Date().toISOString(),
                 deletedBy: currentUser ? currentUser.kuerzel : 'UNKNOWN',
                 deletedByName: currentUser ? currentUser.name : 'Unbekannt',
@@ -1101,6 +1107,7 @@
                 documentMeta: docMeta
             };
             log.unshift(entry);
+            if (log.length > 500) log = log.slice(0, 500);
             localStorage.setItem('mbwd_delete_log', JSON.stringify(log));
             addAuditEntry('DOKUMENT_GELÖSCHT', `Dokument ${docId} (${docType}) gelöscht`);
         }
@@ -1115,7 +1122,7 @@
                     archive.forEach(item => {
                         if (!item.exported) count++;
                     });
-                } catch (e) {}
+                } catch (e) { console.warn('Storage error:', e.message); }
             });
             return count;
         }
@@ -1131,7 +1138,7 @@
                     localStorage.setItem(storageKey, JSON.stringify(archive));
                     addAuditEntry('DOKUMENT_EXPORTIERT', `Dokument ${item.docId || docId} exportiert`);
                 }
-            } catch (e) {}
+            } catch (e) { console.warn('Storage error:', e.message); }
         }
         
         function updateExportBadge() {
@@ -1284,6 +1291,13 @@
             setTimeout(() => { currentPin = ''; updatePinDisplay(); }, 1500);
         }
         function checkPin() {
+            // Brute-force protection
+            if (Date.now() < lockoutUntil) {
+                const remaining = Math.ceil((lockoutUntil - Date.now()) / 1000);
+                showLoginError('Gesperrt für ' + remaining + ' Sekunden');
+                currentPin = ''; updatePinDisplay();
+                return;
+            }
             const kuerzel = document.getElementById('loginKuerzel').value.trim().toUpperCase();
             
             // Admin Login (Kürzel: ADMIN, PIN: 5400)
@@ -1302,15 +1316,21 @@
             }
             
             // Fehler
-            if (!kuerzel) {
+            loginAttempts++;
+            if (loginAttempts >= 5) {
+                lockoutUntil = Date.now() + 30000;
+                loginAttempts = 0;
+                showLoginError('Zu viele Versuche. 30 Sekunden gesperrt.');
+            } else if (!kuerzel) {
                 showLoginError('Bitte Kürzel eingeben');
             } else if (!users[kuerzel] && kuerzel !== 'ADMIN') {
                 showLoginError('Kürzel nicht gefunden');
             } else {
-                showLoginError('Falsche PIN');
+                showLoginError('Falsche PIN (' + (5 - loginAttempts) + ' Versuche übrig)');
             }
         }
         function loginSuccess() {
+            loginAttempts = 0;
             document.getElementById('userBadge').textContent = currentUser.kuerzel;
             document.getElementById('userBadge').classList.toggle('admin', currentUser.role === 'admin');
             document.getElementById('adminSection').style.display = currentUser.role === 'admin' ? 'block' : 'none';
@@ -1620,7 +1640,7 @@
             
             const meldungen = getMeldungen();
             const neueMeldung = {
-                id: Date.now().toString(),
+                id: generateId(),
                 titel: titel,
                 beschreibung: beschreibung,
                 kategorie: kategorie,
@@ -1838,64 +1858,155 @@
             renderChecklist(); updateProgress();
             // Delay signature canvas setup until screen is fully visible
             setTimeout(setupSignatureCanvas, 500);
-            document.getElementById('employeeName').addEventListener('input', function() {
+            var empInput = document.getElementById('employeeName');
+            empInput.oninput = function() {
                 validateForm();
                 document.getElementById('signatureName').textContent = this.value.toUpperCase();
-            });
+            };
         }
-        function renderChecklist() {
-            const c = document.getElementById('checklistContainer'), sun = new Date().getDay() === 0;
-            let h = ''; checklistData.forEach(s => {
-                if (s.isSunday && !sun) return;
-                h += `<div class="${s.isSunday ? 'section sunday-section' : 'section'}" data-section="${s.id}"><div class="section-header" onclick="toggleSection('${s.id}')"><div class="section-icon">${s.icon}</div><div class="section-info"><div class="section-title">${s.title}</div><div class="section-count" id="count-${s.id}">0 / ${s.items.length}</div></div><div class="section-toggle"><svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg></div></div><div class="section-content">${s.items.map((it, i) => `<div class="check-item"><div class="check-item-row"><span class="check-label" id="label-${s.id}-${i}">${it}</span><button class="comment-toggle" onclick="toggleComment('${s.id}-${i}')" title="Kommentar hinzufügen"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12zM7 9h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/></svg></button><label class="toggle-switch"><input type="checkbox" data-key="${s.id}-${i}" onchange="handleCheckChange(this)"><span class="toggle-slider"></span></label></div><div class="comment-field" id="comment-field-${s.id}-${i}"><textarea class="comment-input" id="comment-${s.id}-${i}" placeholder="Kommentar eingeben (z.B. O2: 85 bar, Fehlfunktion...)" oninput="updateCommentToggle('${s.id}-${i}')"></textarea></div></div>`).join('')}</div></div>`;
+        // === GENERIC CHECKLIST FUNCTIONS ===
+        function getChecklistConfig(type) {
+            var configs = {
+                ambulanz: {
+                    data: checklistData, stateKey: 'checklistState', commentsKey: 'commentsState',
+                    containerId: 'checklistContainer', progressFillId: 'progressFill',
+                    progressCountId: 'progressCount', totalCountId: 'totalCount',
+                    submitBtnId: 'submitBtn', employeeNameId: 'employeeName',
+                    commentPrefix: '', filterKey: 'isSunday', filterFn: function() { return new Date().getDay() === 0; },
+                    hasDocLinks: false, getSignatureData: function() { return signatureData; }
+                },
+                mpg: {
+                    data: mpgChecklistData, stateKey: 'mpgChecklistState', commentsKey: 'mpgCommentsState',
+                    containerId: 'mpgChecklistContainer', progressFillId: 'mpgProgressFill',
+                    progressCountId: 'mpgProgressCount', totalCountId: 'mpgTotalCount',
+                    submitBtnId: 'mpgSubmitBtn', employeeNameId: 'mpgEmployeeName',
+                    commentPrefix: 'mpg-', filterKey: null, filterFn: null,
+                    hasDocLinks: false, getSignatureData: function() { return mpgSignatureData; }
+                },
+                wochen: {
+                    data: wochenChecklistData, stateKey: 'wochenChecklistState', commentsKey: 'wochenCommentsState',
+                    containerId: 'wochenChecklistContainer', progressFillId: 'wochenProgressFill',
+                    progressCountId: 'wochenProgressCount', totalCountId: 'wochenTotalCount',
+                    submitBtnId: 'wochenSubmitBtn', employeeNameId: 'wochenEmployeeName',
+                    commentPrefix: 'wochen-', filterKey: 'isLastWeek', filterFn: isLastWeekOfMonth,
+                    hasDocLinks: true, getSignatureData: function() { return wochenSignatureData; }
+                }
+            };
+            return configs[type];
+        }
+        function getState(key) {
+            var stateMap = { checklistState: checklistState, mpgChecklistState: mpgChecklistState, wochenChecklistState: wochenChecklistState };
+            return stateMap[key];
+        }
+        function getComments(key) {
+            var commentsMap = { commentsState: commentsState, mpgCommentsState: mpgCommentsState, wochenCommentsState: wochenCommentsState };
+            return commentsMap[key];
+        }
+        function renderGenericChecklist(type) {
+            var cfg = getChecklistConfig(type);
+            var state = getState(cfg.stateKey);
+            var c = document.getElementById(cfg.containerId);
+            var showFiltered = cfg.filterFn ? cfg.filterFn() : true;
+            var h = '';
+            cfg.data.forEach(function(s) {
+                if (cfg.filterKey && s[cfg.filterKey] && !showFiltered) return;
+                var sectionClass = (cfg.filterKey && s[cfg.filterKey]) ? 'section sunday-section' : 'section';
+                h += '<div class="' + sectionClass + '" data-section="' + s.id + '"><div class="section-header" onclick="toggleSection(\'' + s.id + '\')"><div class="section-icon">' + s.icon + '</div><div class="section-info"><div class="section-title">' + s.title + '</div><div class="section-count" id="count-' + s.id + '">0 / ' + s.items.length + '</div></div><div class="section-toggle"><svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg></div></div><div class="section-content">';
+                s.items.forEach(function(it, i) {
+                    var itemText = typeof it === 'object' ? it.text : it;
+                    var docLink = (cfg.hasDocLinks && typeof it === 'object' && it.doc) ? '<a class="doc-link" href="docs/' + it.doc + '" target="_blank" title="Original-Checkliste öffnen" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg></a>' : '';
+                    h += '<div class="check-item"><div class="check-item-row"><span class="check-label" id="label-' + s.id + '-' + i + '">' + itemText + '</span>' + docLink + '<button class="comment-toggle" onclick="toggleGenericComment(\'' + type + '\',\'' + s.id + '-' + i + '\')" title="Kommentar hinzufügen"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12zM7 9h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/></svg></button><label class="toggle-switch"><input type="checkbox" data-key="' + s.id + '-' + i + '" onchange="handleGenericCheckChange(\'' + type + '\',this)"><span class="toggle-slider"></span></label></div><div class="comment-field" id="' + cfg.commentPrefix + 'comment-field-' + s.id + '-' + i + '"><textarea class="comment-input" id="' + cfg.commentPrefix + 'comment-' + s.id + '-' + i + '" placeholder="Kommentar eingeben..." oninput="updateGenericCommentToggle(\'' + type + '\',\'' + s.id + '-' + i + '\')"></textarea></div></div>';
+                });
+                h += '</div></div>';
             });
             c.innerHTML = h;
-            let tot = 0; checklistData.forEach(s => { if (!s.isSunday || sun) tot += s.items.length; });
-            document.getElementById('totalCount').textContent = tot;
+            var tot = 0;
+            cfg.data.forEach(function(s) { if (cfg.filterKey && s[cfg.filterKey] && !showFiltered) return; tot += s.items.length; });
+            document.getElementById(cfg.totalCountId).textContent = tot;
         }
-        function toggleSection(id) { document.querySelector(`[data-section="${id}"]`).classList.toggle('collapsed'); }
-        function toggleComment(key) { 
-            const field = document.getElementById(`comment-field-${key}`);
+        function toggleGenericComment(type, key) {
+            var cfg = getChecklistConfig(type);
+            var field = document.getElementById(cfg.commentPrefix + 'comment-field-' + key);
             field.classList.toggle('show');
             if (field.classList.contains('show')) {
-                document.getElementById(`comment-${key}`).focus();
+                document.getElementById(cfg.commentPrefix + 'comment-' + key).focus();
             }
         }
-        function updateCommentToggle(key) {
-            const input = document.getElementById(`comment-${key}`);
-            const toggle = input.closest('.check-item').querySelector('.comment-toggle');
-            const hasComment = input.value.trim().length > 0;
+        function updateGenericCommentToggle(type, key) {
+            var cfg = getChecklistConfig(type);
+            var comments = getComments(cfg.commentsKey);
+            var input = document.getElementById(cfg.commentPrefix + 'comment-' + key);
+            var toggle = input.closest('.check-item').querySelector('.comment-toggle');
+            var hasComment = input.value.trim().length > 0;
             toggle.classList.toggle('has-comment', hasComment);
-            commentsState[key] = input.value;
+            comments[key] = input.value;
         }
-        function handleCheckChange(cb) { checklistState[cb.dataset.key] = cb.checked; document.getElementById(`label-${cb.dataset.key}`).classList.toggle('checked', cb.checked); updateProgress(); validateForm(); }
-        function updateProgress() {
-            const sun = new Date().getDay() === 0; let ck = 0, tot = 0;
-            checklistData.forEach(s => { if (s.isSunday && !sun) return; let sc = 0; s.items.forEach((_, i) => { if (checklistState[`${s.id}-${i}`]) { ck++; sc++; } tot++; }); const c = document.getElementById(`count-${s.id}`); if (c) c.textContent = `${sc} / ${s.items.length}`; });
-            document.getElementById('progressCount').textContent = ck;
-            document.getElementById('progressFill').style.width = `${tot > 0 ? (ck / tot) * 100 : 0}%`;
+        function handleGenericCheckChange(type, cb) {
+            var cfg = getChecklistConfig(type);
+            var state = getState(cfg.stateKey);
+            state[cb.dataset.key] = cb.checked;
+            document.getElementById('label-' + cb.dataset.key).classList.toggle('checked', cb.checked);
+            updateGenericProgress(type);
+            validateGenericForm(type);
         }
-        function validateForm() {
-            const sun = new Date().getDay() === 0; let all = true;
-            const employeeName = document.getElementById('employeeName').value.trim();
-            checklistData.forEach(s => { if (s.isSunday && !sun) return; s.items.forEach((_, i) => { if (!checklistState[`${s.id}-${i}`]) all = false; }); });
-            document.getElementById('submitBtn').disabled = !signatureData || !all || !employeeName;
+        function updateGenericProgress(type) {
+            var cfg = getChecklistConfig(type);
+            var state = getState(cfg.stateKey);
+            var showFiltered = cfg.filterFn ? cfg.filterFn() : true;
+            var ck = 0, tot = 0;
+            cfg.data.forEach(function(s) {
+                if (cfg.filterKey && s[cfg.filterKey] && !showFiltered) return;
+                var sc = 0;
+                s.items.forEach(function(_, i) { if (state[s.id + '-' + i]) { ck++; sc++; } tot++; });
+                var c = document.getElementById('count-' + s.id);
+                if (c) c.textContent = sc + ' / ' + s.items.length;
+            });
+            document.getElementById(cfg.progressCountId).textContent = ck;
+            document.getElementById(cfg.progressFillId).style.width = (tot > 0 ? (ck / tot) * 100 : 0) + '%';
         }
-        function setupSignatureCanvas() {
-            var canvas = document.getElementById('signatureCanvas');
-            var cont = document.getElementById('signatureContainer');
+        function validateGenericForm(type) {
+            var cfg = getChecklistConfig(type);
+            var state = getState(cfg.stateKey);
+            var showFiltered = cfg.filterFn ? cfg.filterFn() : true;
+            var all = true;
+            var employeeName = document.getElementById(cfg.employeeNameId).value.trim();
+            cfg.data.forEach(function(s) {
+                if (cfg.filterKey && s[cfg.filterKey] && !showFiltered) return;
+                s.items.forEach(function(_, i) { if (!state[s.id + '-' + i]) all = false; });
+            });
+            document.getElementById(cfg.submitBtnId).disabled = !cfg.getSignatureData() || !all || !employeeName;
+        }
+
+        function renderChecklist() { renderGenericChecklist('ambulanz'); }
+        function toggleComment(key) { toggleGenericComment('ambulanz', key); }
+        function updateCommentToggle(key) { updateGenericCommentToggle('ambulanz', key); }
+        function handleCheckChange(cb) { handleGenericCheckChange('ambulanz', cb); }
+        function updateProgress() { updateGenericProgress('ambulanz'); }
+        function validateForm() { validateGenericForm('ambulanz'); }
+        // === GENERIC SIGNATURE CANVAS ===
+        var _signatureAbortControllers = {};
+        function setupGenericSignatureCanvas(canvasId, containerId, clearBtnId, onDataChange) {
+            // Abort previous listeners for this canvas (memory leak fix)
+            if (_signatureAbortControllers[canvasId]) {
+                _signatureAbortControllers[canvasId].abort();
+            }
+            var ac = new AbortController();
+            _signatureAbortControllers[canvasId] = ac;
+            var signal = ac.signal;
+
+            var canvas = document.getElementById(canvasId);
+            var cont = document.getElementById(containerId);
             var ctx = canvas.getContext('2d');
             var isDrawing = false;
             var canvasReady = false;
-            
-            // Set canvas size
+            var currentData = null;
+
             function initCanvas() {
                 var rect = canvas.getBoundingClientRect();
                 var w = rect.width > 0 ? rect.width : 300;
                 var h = rect.height > 0 ? rect.height : 200;
                 canvas.width = w * 2;
                 canvas.height = h * 2;
-                // Reset transform completely before scaling
                 ctx.setTransform(1, 0, 0, 1, 0, 0);
                 ctx.scale(2, 2);
                 ctx.strokeStyle = '#ffffff';
@@ -1904,9 +2015,10 @@
                 ctx.lineJoin = 'round';
                 ctx.clearRect(0, 0, w, h);
                 canvasReady = true;
+                currentData = null;
             }
             initCanvas();
-            
+
             function getXY(e) {
                 var rect = canvas.getBoundingClientRect();
                 var clientX, clientY;
@@ -1917,12 +2029,9 @@
                     clientX = e.clientX;
                     clientY = e.clientY;
                 }
-                return {
-                    x: clientX - rect.left,
-                    y: clientY - rect.top
-                };
+                return { x: clientX - rect.left, y: clientY - rect.top };
             }
-            
+
             function startDraw(e) {
                 e.preventDefault();
                 if (!canvasReady) initCanvas();
@@ -1931,7 +2040,7 @@
                 ctx.beginPath();
                 ctx.moveTo(pos.x, pos.y);
             }
-            
+
             function doDraw(e) {
                 if (!isDrawing) return;
                 e.preventDefault();
@@ -1941,30 +2050,47 @@
                 ctx.beginPath();
                 ctx.moveTo(pos.x, pos.y);
                 cont.classList.add('has-signature');
-                signatureData = canvas.toDataURL('image/png');
-                validateForm();
             }
-            
+
             function endDraw() {
-                isDrawing = false;
+                if (isDrawing) {
+                    isDrawing = false;
+                    currentData = canvas.toDataURL('image/png');
+                    onDataChange(currentData);
+                }
             }
-            
-            // Mouse events
-            canvas.addEventListener('mousedown', startDraw);
-            canvas.addEventListener('mousemove', doDraw);
-            canvas.addEventListener('mouseup', endDraw);
-            canvas.addEventListener('mouseleave', endDraw);
-            
+
+            // Mouse events (with AbortController signal)
+            canvas.addEventListener('mousedown', startDraw, { signal: signal });
+            canvas.addEventListener('mousemove', doDraw, { signal: signal });
+            canvas.addEventListener('mouseup', endDraw, { signal: signal });
+            canvas.addEventListener('mouseleave', endDraw, { signal: signal });
+
             // Touch events
-            canvas.addEventListener('touchstart', startDraw, { passive: false });
-            canvas.addEventListener('touchmove', doDraw, { passive: false });
-            canvas.addEventListener('touchend', endDraw);
-            
+            canvas.addEventListener('touchstart', startDraw, { passive: false, signal: signal });
+            canvas.addEventListener('touchmove', doDraw, { passive: false, signal: signal });
+            canvas.addEventListener('touchend', endDraw, { signal: signal });
+
             // Clear button
-            document.getElementById('clearSignature').addEventListener('click', function() {
+            document.getElementById(clearBtnId).addEventListener('click', function() {
                 initCanvas();
                 cont.classList.remove('has-signature');
-                signatureData = null;
+                onDataChange(null);
+            }, { signal: signal });
+
+            return {
+                clear: function() {
+                    initCanvas();
+                    cont.classList.remove('has-signature');
+                    onDataChange(null);
+                },
+                getData: function() { return currentData; }
+            };
+        }
+
+        function setupSignatureCanvas() {
+            setupGenericSignatureCanvas('signatureCanvas', 'signatureContainer', 'clearSignature', function(data) {
+                signatureData = data;
                 validateForm();
             });
         }
@@ -1978,120 +2104,21 @@
             mpgChecklistData.forEach(s => s.items.forEach((_, i) => { mpgChecklistState[`${s.id}-${i}`] = false; }));
             renderMpgChecklist(); updateMpgProgress();
             setTimeout(setupMpgSignatureCanvas, 500);
-            document.getElementById('mpgEmployeeName').addEventListener('input', function() {
+            var mpgEmpInput = document.getElementById('mpgEmployeeName');
+            mpgEmpInput.oninput = function() {
                 validateMpgForm();
                 document.getElementById('mpgSignatureName').textContent = this.value.toUpperCase();
-            });
+            };
         }
-        function renderMpgChecklist() {
-            const c = document.getElementById('mpgChecklistContainer');
-            let h = ''; mpgChecklistData.forEach(s => {
-                h += `<div class="section" data-section="${s.id}"><div class="section-header" onclick="toggleSection('${s.id}')"><div class="section-icon">${s.icon}</div><div class="section-info"><div class="section-title">${s.title}</div><div class="section-count" id="count-${s.id}">0 / ${s.items.length}</div></div><div class="section-toggle"><svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg></div></div><div class="section-content">${s.items.map((it, i) => `<div class="check-item"><div class="check-item-row"><span class="check-label" id="label-${s.id}-${i}">${it}</span><button class="comment-toggle" onclick="toggleMpgComment('${s.id}-${i}')" title="Kommentar hinzufügen"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12zM7 9h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/></svg></button><label class="toggle-switch"><input type="checkbox" data-key="${s.id}-${i}" onchange="handleMpgCheckChange(this)"><span class="toggle-slider"></span></label></div><div class="comment-field" id="mpg-comment-field-${s.id}-${i}"><textarea class="comment-input" id="mpg-comment-${s.id}-${i}" placeholder="Kommentar eingeben..." oninput="updateMpgCommentToggle('${s.id}-${i}')"></textarea></div></div>`).join('')}</div></div>`;
-            });
-            c.innerHTML = h;
-            let tot = 0; mpgChecklistData.forEach(s => { tot += s.items.length; });
-            document.getElementById('mpgTotalCount').textContent = tot;
-        }
-        function toggleMpgComment(key) { 
-            const field = document.getElementById(`mpg-comment-field-${key}`);
-            field.classList.toggle('show');
-            if (field.classList.contains('show')) {
-                document.getElementById(`mpg-comment-${key}`).focus();
-            }
-        }
-        function updateMpgCommentToggle(key) {
-            const input = document.getElementById(`mpg-comment-${key}`);
-            const toggle = input.closest('.check-item').querySelector('.comment-toggle');
-            const hasComment = input.value.trim().length > 0;
-            toggle.classList.toggle('has-comment', hasComment);
-            mpgCommentsState[key] = input.value;
-        }
-        function handleMpgCheckChange(cb) { mpgChecklistState[cb.dataset.key] = cb.checked; document.getElementById(`label-${cb.dataset.key}`).classList.toggle('checked', cb.checked); updateMpgProgress(); validateMpgForm(); }
-        function updateMpgProgress() {
-            let ck = 0, tot = 0;
-            mpgChecklistData.forEach(s => { let sc = 0; s.items.forEach((_, i) => { if (mpgChecklistState[`${s.id}-${i}`]) { ck++; sc++; } tot++; }); const c = document.getElementById(`count-${s.id}`); if (c) c.textContent = `${sc} / ${s.items.length}`; });
-            document.getElementById('mpgProgressCount').textContent = ck;
-            document.getElementById('mpgProgressFill').style.width = `${tot > 0 ? (ck / tot) * 100 : 0}%`;
-        }
-        function validateMpgForm() {
-            let all = true;
-            const employeeName = document.getElementById('mpgEmployeeName').value.trim();
-            mpgChecklistData.forEach(s => { s.items.forEach((_, i) => { if (!mpgChecklistState[`${s.id}-${i}`]) all = false; }); });
-            document.getElementById('mpgSubmitBtn').disabled = !mpgSignatureData || !all || !employeeName;
-        }
+        function renderMpgChecklist() { renderGenericChecklist('mpg'); }
+        function toggleMpgComment(key) { toggleGenericComment('mpg', key); }
+        function updateMpgCommentToggle(key) { updateGenericCommentToggle('mpg', key); }
+        function handleMpgCheckChange(cb) { handleGenericCheckChange('mpg', cb); }
+        function updateMpgProgress() { updateGenericProgress('mpg'); }
+        function validateMpgForm() { validateGenericForm('mpg'); }
         function setupMpgSignatureCanvas() {
-            var canvas = document.getElementById('mpgSignatureCanvas');
-            var cont = document.getElementById('mpgSignatureContainer');
-            var ctx = canvas.getContext('2d');
-            var isDrawing = false;
-            var canvasReady = false;
-            
-            function initCanvas() {
-                var rect = canvas.getBoundingClientRect();
-                var w = rect.width > 0 ? rect.width : 300;
-                var h = rect.height > 0 ? rect.height : 200;
-                canvas.width = w * 2;
-                canvas.height = h * 2;
-                ctx.setTransform(1, 0, 0, 1, 0, 0);
-                ctx.scale(2, 2);
-                ctx.strokeStyle = '#ffffff';
-                ctx.lineWidth = 2;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.clearRect(0, 0, w, h);
-                canvasReady = true;
-            }
-            initCanvas();
-            
-            function getXY(e) {
-                var rect = canvas.getBoundingClientRect();
-                var clientX, clientY;
-                if (e.touches && e.touches[0]) {
-                    clientX = e.touches[0].clientX;
-                    clientY = e.touches[0].clientY;
-                } else {
-                    clientX = e.clientX;
-                    clientY = e.clientY;
-                }
-                return { x: clientX - rect.left, y: clientY - rect.top };
-            }
-            
-            function startDraw(e) {
-                e.preventDefault();
-                if (!canvasReady) initCanvas();
-                isDrawing = true;
-                var pos = getXY(e);
-                ctx.beginPath();
-                ctx.moveTo(pos.x, pos.y);
-            }
-            
-            function doDraw(e) {
-                if (!isDrawing) return;
-                e.preventDefault();
-                var pos = getXY(e);
-                ctx.lineTo(pos.x, pos.y);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(pos.x, pos.y);
-                cont.classList.add('has-signature');
-                mpgSignatureData = canvas.toDataURL('image/png');
-                validateMpgForm();
-            }
-            
-            function endDraw() { isDrawing = false; }
-            
-            canvas.addEventListener('mousedown', startDraw);
-            canvas.addEventListener('mousemove', doDraw);
-            canvas.addEventListener('mouseup', endDraw);
-            canvas.addEventListener('mouseleave', endDraw);
-            canvas.addEventListener('touchstart', startDraw, { passive: false });
-            canvas.addEventListener('touchmove', doDraw, { passive: false });
-            canvas.addEventListener('touchend', endDraw);
-            
-            document.getElementById('mpgClearSignature').addEventListener('click', function() {
-                initCanvas();
-                cont.classList.remove('has-signature');
-                mpgSignatureData = null;
+            setupGenericSignatureCanvas('mpgSignatureCanvas', 'mpgSignatureContainer', 'mpgClearSignature', function(data) {
+                mpgSignatureData = data;
                 validateMpgForm();
             });
         }
@@ -2108,10 +2135,11 @@
             renderWochenChecklist(); updateWochenProgress();
             renderExpiryTracker(); // Verfall-Tracker laden
             setTimeout(setupWochenSignatureCanvas, 500);
-            document.getElementById('wochenEmployeeName').addEventListener('input', function() {
+            var wochenEmpInput = document.getElementById('wochenEmployeeName');
+            wochenEmpInput.oninput = function() {
                 validateWochenForm();
                 document.getElementById('wochenSignatureName').textContent = this.value.toUpperCase();
-            });
+            };
         }
         
         // VERFALL-TRACKER FUNCTIONS
@@ -2138,7 +2166,7 @@
             
             var items = getExpiryItems();
             items.push({
-                id: Date.now(),
+                id: generateId(),
                 name: name,
                 date: date,
                 addedBy: currentUser ? currentUser.name : 'Unbekannt',
@@ -2267,123 +2295,15 @@
             var daysLeft = lastDay.getDate() - now.getDate();
             return daysLeft < 7;
         }
-        function renderWochenChecklist() {
-            const c = document.getElementById('wochenChecklistContainer');
-            const lastWeek = isLastWeekOfMonth();
-            let h = ''; wochenChecklistData.forEach(s => {
-                if (s.isLastWeek && !lastWeek) return;
-                h += `<div class="${s.isLastWeek ? 'section sunday-section' : 'section'}" data-section="${s.id}"><div class="section-header" onclick="toggleSection('${s.id}')"><div class="section-icon">${s.icon}</div><div class="section-info"><div class="section-title">${s.title}</div><div class="section-count" id="count-${s.id}">0 / ${s.items.length}</div></div><div class="section-toggle"><svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg></div></div><div class="section-content">${s.items.map((it, i) => {
-                    const itemText = typeof it === 'object' ? it.text : it;
-                    const docLink = typeof it === 'object' && it.doc ? `<a class="doc-link" href="docs/${it.doc}" target="_blank" title="Original-Checkliste öffnen" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg></a>` : '';
-                    return `<div class="check-item"><div class="check-item-row"><span class="check-label" id="label-${s.id}-${i}">${itemText}</span>${docLink}<button class="comment-toggle" onclick="toggleWochenComment('${s.id}-${i}')" title="Kommentar hinzufügen"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12zM7 9h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/></svg></button><label class="toggle-switch"><input type="checkbox" data-key="${s.id}-${i}" onchange="handleWochenCheckChange(this)"><span class="toggle-slider"></span></label></div><div class="comment-field" id="wochen-comment-field-${s.id}-${i}"><textarea class="comment-input" id="wochen-comment-${s.id}-${i}" placeholder="Kommentar/Bemerkungen..." oninput="updateWochenCommentToggle('${s.id}-${i}')"></textarea></div></div>`;
-                }).join('')}</div></div>`;
-            });
-            c.innerHTML = h;
-            let tot = 0; wochenChecklistData.forEach(s => { if (!s.isLastWeek || lastWeek) tot += s.items.length; });
-            document.getElementById('wochenTotalCount').textContent = tot;
-        }
-        function toggleWochenComment(key) { 
-            const field = document.getElementById(`wochen-comment-field-${key}`);
-            field.classList.toggle('show');
-            if (field.classList.contains('show')) {
-                document.getElementById(`wochen-comment-${key}`).focus();
-            }
-        }
-        function updateWochenCommentToggle(key) {
-            const input = document.getElementById(`wochen-comment-${key}`);
-            const toggle = input.closest('.check-item').querySelector('.comment-toggle');
-            const hasComment = input.value.trim().length > 0;
-            toggle.classList.toggle('has-comment', hasComment);
-            wochenCommentsState[key] = input.value;
-        }
-        function handleWochenCheckChange(cb) { wochenChecklistState[cb.dataset.key] = cb.checked; document.getElementById(`label-${cb.dataset.key}`).classList.toggle('checked', cb.checked); updateWochenProgress(); validateWochenForm(); }
-        function updateWochenProgress() {
-            const lastWeek = isLastWeekOfMonth();
-            let ck = 0, tot = 0;
-            wochenChecklistData.forEach(s => { if (s.isLastWeek && !lastWeek) return; let sc = 0; s.items.forEach((_, i) => { if (wochenChecklistState[`${s.id}-${i}`]) { ck++; sc++; } tot++; }); const c = document.getElementById(`count-${s.id}`); if (c) c.textContent = `${sc} / ${s.items.length}`; });
-            document.getElementById('wochenProgressCount').textContent = ck;
-            document.getElementById('wochenProgressFill').style.width = `${tot > 0 ? (ck / tot) * 100 : 0}%`;
-        }
-        function validateWochenForm() {
-            const lastWeek = isLastWeekOfMonth();
-            let all = true;
-            const employeeName = document.getElementById('wochenEmployeeName').value.trim();
-            wochenChecklistData.forEach(s => { if (s.isLastWeek && !lastWeek) return; s.items.forEach((_, i) => { if (!wochenChecklistState[`${s.id}-${i}`]) all = false; }); });
-            document.getElementById('wochenSubmitBtn').disabled = !wochenSignatureData || !all || !employeeName;
-        }
+        function renderWochenChecklist() { renderGenericChecklist('wochen'); }
+        function toggleWochenComment(key) { toggleGenericComment('wochen', key); }
+        function updateWochenCommentToggle(key) { updateGenericCommentToggle('wochen', key); }
+        function handleWochenCheckChange(cb) { handleGenericCheckChange('wochen', cb); }
+        function updateWochenProgress() { updateGenericProgress('wochen'); }
+        function validateWochenForm() { validateGenericForm('wochen'); }
         function setupWochenSignatureCanvas() {
-            var canvas = document.getElementById('wochenSignatureCanvas');
-            var cont = document.getElementById('wochenSignatureContainer');
-            var ctx = canvas.getContext('2d');
-            var isDrawing = false;
-            var canvasReady = false;
-            
-            function initCanvas() {
-                var rect = canvas.getBoundingClientRect();
-                var w = rect.width > 0 ? rect.width : 300;
-                var h = rect.height > 0 ? rect.height : 200;
-                canvas.width = w * 2;
-                canvas.height = h * 2;
-                ctx.setTransform(1, 0, 0, 1, 0, 0);
-                ctx.scale(2, 2);
-                ctx.strokeStyle = '#ffffff';
-                ctx.lineWidth = 2;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.clearRect(0, 0, w, h);
-                canvasReady = true;
-            }
-            initCanvas();
-            
-            function getXY(e) {
-                var rect = canvas.getBoundingClientRect();
-                var clientX, clientY;
-                if (e.touches && e.touches[0]) {
-                    clientX = e.touches[0].clientX;
-                    clientY = e.touches[0].clientY;
-                } else {
-                    clientX = e.clientX;
-                    clientY = e.clientY;
-                }
-                return { x: clientX - rect.left, y: clientY - rect.top };
-            }
-            
-            function startDraw(e) {
-                e.preventDefault();
-                if (!canvasReady) initCanvas();
-                isDrawing = true;
-                var pos = getXY(e);
-                ctx.beginPath();
-                ctx.moveTo(pos.x, pos.y);
-            }
-            
-            function doDraw(e) {
-                if (!isDrawing) return;
-                e.preventDefault();
-                var pos = getXY(e);
-                ctx.lineTo(pos.x, pos.y);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(pos.x, pos.y);
-                cont.classList.add('has-signature');
-                wochenSignatureData = canvas.toDataURL('image/png');
-                validateWochenForm();
-            }
-            
-            function endDraw() { isDrawing = false; }
-            
-            canvas.addEventListener('mousedown', startDraw);
-            canvas.addEventListener('mousemove', doDraw);
-            canvas.addEventListener('mouseup', endDraw);
-            canvas.addEventListener('mouseleave', endDraw);
-            canvas.addEventListener('touchstart', startDraw, { passive: false });
-            canvas.addEventListener('touchmove', doDraw, { passive: false });
-            canvas.addEventListener('touchend', endDraw);
-            
-            document.getElementById('wochenClearSignature').addEventListener('click', function() {
-                initCanvas();
-                cont.classList.remove('has-signature');
-                wochenSignatureData = null;
+            setupGenericSignatureCanvas('wochenSignatureCanvas', 'wochenSignatureContainer', 'wochenClearSignature', function(data) {
+                wochenSignatureData = data;
                 validateWochenForm();
             });
         }
@@ -2727,7 +2647,7 @@
                 });
                 
                 var data = {
-                    id: Date.now(),
+                    id: generateId(),
                     docId: getNextDocId('reinigung'),
                     type: 'reinigung',
                     meta: {
@@ -2799,7 +2719,7 @@
             });
             
             var data = { 
-                id: Date.now(),
+                id: generateId(),
                 docId: getNextDocId(type),
                 type: type,
                 meta: { 
@@ -2985,100 +2905,76 @@
         }
         
         function setupSignModalCanvas() {
-            const container = document.getElementById('signModalCanvasWrap');
+            var container = document.getElementById('signModalCanvasWrap');
             if (!container) return;
-            
-            // Remove old canvas and create fresh one
+
+            // Remove old canvas and create fresh one (special behavior for modal)
             container.innerHTML = '<canvas class="sign-modal-canvas" id="signModalCanvas"></canvas><span class="sign-modal-canvas-placeholder">Hier unterschreiben</span><button class="sign-modal-canvas-clear" onclick="clearSignModal()">Löschen</button>';
-            
-            const canvas = document.getElementById('signModalCanvas');
-            const ctx = canvas.getContext('2d');
-            const rect = container.getBoundingClientRect();
+
+            var canvas = document.getElementById('signModalCanvas');
+            var ctx = canvas.getContext('2d');
+            var rect = container.getBoundingClientRect();
             canvas.width = rect.width;
             canvas.height = 120;
+
+            // Fill background (special behavior for modal)
             ctx.fillStyle = '#2a2a2a';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.strokeStyle = '#ffffff';
             ctx.lineWidth = 2;
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
-            
-            let drawing = false;
-            let lastX = 0, lastY = 0;
-            
+
+            // Abort previous listeners
+            if (_signatureAbortControllers['signModalCanvas']) {
+                _signatureAbortControllers['signModalCanvas'].abort();
+            }
+            var ac = new AbortController();
+            _signatureAbortControllers['signModalCanvas'] = ac;
+            var signal = ac.signal;
+
+            var drawing = false;
+
             function getPos(e) {
-                const r = canvas.getBoundingClientRect();
-                const t = e.touches ? e.touches[0] : e;
+                var r = canvas.getBoundingClientRect();
+                var t = e.touches ? e.touches[0] : e;
                 return { x: t.clientX - r.left, y: t.clientY - r.top };
             }
-            
-            canvas.onmousedown = function(e) {
+
+            function startDraw(e) {
+                e.preventDefault();
                 drawing = true;
-                const p = getPos(e);
-                lastX = p.x;
-                lastY = p.y;
+                var p = getPos(e);
                 ctx.beginPath();
-                ctx.moveTo(lastX, lastY);
-            };
-            
-            canvas.onmousemove = function(e) {
+                ctx.moveTo(p.x, p.y);
+            }
+
+            function doDraw(e) {
                 if (!drawing) return;
-                const p = getPos(e);
+                e.preventDefault();
+                var p = getPos(e);
                 ctx.lineTo(p.x, p.y);
                 ctx.stroke();
                 ctx.beginPath();
                 ctx.moveTo(p.x, p.y);
-                lastX = p.x;
-                lastY = p.y;
                 container.classList.add('has-signature');
-            };
-            
-            canvas.onmouseup = function() {
+            }
+
+            function endDraw() {
                 if (drawing) {
                     drawing = false;
                     signModalSignature = canvas.toDataURL();
                     validateSignModal();
                 }
-            };
-            
-            canvas.onmouseleave = function() {
-                if (drawing) {
-                    drawing = false;
-                    signModalSignature = canvas.toDataURL();
-                    validateSignModal();
-                }
-            };
-            
-            canvas.ontouchstart = function(e) {
-                e.preventDefault();
-                drawing = true;
-                const p = getPos(e);
-                lastX = p.x;
-                lastY = p.y;
-                ctx.beginPath();
-                ctx.moveTo(lastX, lastY);
-            };
-            
-            canvas.ontouchmove = function(e) {
-                e.preventDefault();
-                if (!drawing) return;
-                const p = getPos(e);
-                ctx.lineTo(p.x, p.y);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(p.x, p.y);
-                lastX = p.x;
-                lastY = p.y;
-                container.classList.add('has-signature');
-            };
-            
-            canvas.ontouchend = function() {
-                if (drawing) {
-                    drawing = false;
-                    signModalSignature = canvas.toDataURL();
-                    validateSignModal();
-                }
-            };
+            }
+
+            canvas.addEventListener('mousedown', startDraw, { signal: signal });
+            canvas.addEventListener('mousemove', doDraw, { signal: signal });
+            canvas.addEventListener('mouseup', endDraw, { signal: signal });
+            canvas.addEventListener('mouseleave', endDraw, { signal: signal });
+            canvas.addEventListener('touchstart', startDraw, { passive: false, signal: signal });
+            canvas.addEventListener('touchmove', doDraw, { passive: false, signal: signal });
+            canvas.addEventListener('touchend', endDraw, { signal: signal });
         }
         
         function clearSignModal() {
