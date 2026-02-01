@@ -606,7 +606,10 @@
             </div>
             <div class="dashboard-date" id="dashboardDate"></div>
             <div id="syncStatus" style="display:none;font-size:12px;font-weight:600;margin-top:4px;align-items:center;gap:4px;"></div>
+            <div id="sessionTimerDisplay" style="display:none;font-size:11px;color:var(--text-muted);margin-top:4px;font-family:'JetBrains Mono',monospace;"></div>
         </header>
+        <!-- Verfall-Warnung Banner -->
+        <div id="verfallWarningBanner" style="display:none;margin:0 20px 0;max-width:800px;margin-left:auto;margin-right:auto;"></div>
         <div class="tiles-container">
             <!-- Top-Bereich: Meldungen -->
             <div class="tiles-grid top-tiles" style="grid-template-columns: repeat(1, 1fr); margin-bottom:24px;">
@@ -981,17 +984,17 @@
     <!-- RÜCKMELDUNG MODAL -->
     <div class="modal-overlay" id="rueckmeldungModal">
         <div class="modal" style="max-width:450px;">
-            <h2 class="modal-title">📝 Rückmeldung geben</h2>
+            <h2 class="modal-title">💬 Kommentar hinzufügen</h2>
             <p class="modal-subtitle" id="rueckmeldungTitel" style="color:var(--text-secondary);margin-bottom:16px;"></p>
             <div class="meldung-form">
                 <div class="meldung-field">
-                    <label class="meldung-label">Deine Rückmeldung</label>
+                    <label class="meldung-label">Dein Kommentar</label>
                     <textarea class="meldung-textarea" id="rueckmeldungText" placeholder="z.B. Neues Gerät bestellt, kommt voraussichtlich Montag..." rows="4"></textarea>
                 </div>
             </div>
             <div class="modal-actions">
                 <button class="btn btn-secondary" onclick="closeRueckmeldungModal()">Abbrechen</button>
-                <button class="btn btn-primary" onclick="saveRueckmeldung()" style="background:#27ae60;">Rückmeldung speichern</button>
+                <button class="btn btn-primary" onclick="saveRueckmeldung()" style="background:#27ae60;">Kommentar speichern</button>
             </div>
         </div>
     </div>
@@ -1607,26 +1610,67 @@
             return generateChecksum(data) === checksum;
         }
         
-        // ============ SESSION TIMEOUT ============
+        // ============ SESSION TIMEOUT (iOS-kompatibel via setInterval) ============
+        let sessionCountdownInterval = null;
+
         function resetSessionTimer() {
             lastActivity = Date.now();
-            if (sessionTimer) clearTimeout(sessionTimer);
-            if (currentUser) {
-                sessionTimer = setTimeout(sessionTimeout, SESSION_TIMEOUT_MIN * 60 * 1000);
+        }
+
+        function startSessionCountdown() {
+            if (sessionCountdownInterval) clearInterval(sessionCountdownInterval);
+            lastActivity = Date.now();
+            sessionCountdownInterval = setInterval(function() {
+                if (!currentUser) return;
+                var elapsed = Date.now() - lastActivity;
+                var remaining = (SESSION_TIMEOUT_MIN * 60 * 1000) - elapsed;
+                if (remaining <= 0) {
+                    clearInterval(sessionCountdownInterval);
+                    sessionCountdownInterval = null;
+                    addAuditEntry('SESSION_TIMEOUT', 'Automatischer Logout wegen Inaktivität');
+                    alert('Sie wurden wegen Inaktivität automatisch abgemeldet.');
+                    logout();
+                    return;
+                }
+                updateSessionTimerDisplay(remaining);
+            }, 1000);
+        }
+
+        function stopSessionCountdown() {
+            if (sessionCountdownInterval) clearInterval(sessionCountdownInterval);
+            sessionCountdownInterval = null;
+            var el = document.getElementById('sessionTimerDisplay');
+            if (el) el.style.display = 'none';
+        }
+
+        function updateSessionTimerDisplay(remaining) {
+            var el = document.getElementById('sessionTimerDisplay');
+            if (!el) return;
+            var min = Math.floor(remaining / 60000);
+            var sec = Math.floor((remaining % 60000) / 1000);
+            var timeStr = min + ':' + (sec < 10 ? '0' : '') + sec;
+            el.style.display = 'block';
+            if (remaining <= 60000) {
+                el.style.color = '#e74c3c';
+                el.textContent = '⏱ Abmeldung in ' + timeStr;
+            } else if (remaining <= 180000) {
+                el.style.color = '#f59e0b';
+                el.textContent = '⏱ Session: ' + timeStr;
+            } else {
+                el.style.color = 'var(--text-muted)';
+                el.textContent = '⏱ Session: ' + timeStr;
             }
         }
-        
-        function sessionTimeout() {
-            if (currentUser) {
-                addAuditEntry('SESSION_TIMEOUT', 'Automatischer Logout wegen Inaktivität');
-                alert('Sie wurden wegen Inaktivität automatisch abgemeldet.');
-                logout();
-            }
-        }
-        
+
         function setupActivityListeners() {
-            ['click', 'touchstart', 'keypress', 'scroll'].forEach(event => {
+            ['click', 'touchstart', 'touchmove', 'keypress', 'keydown', 'scroll', 'mousemove'].forEach(function(event) {
                 document.addEventListener(event, resetSessionTimer, { passive: true });
+            });
+            // iOS: visibilitychange als Fallback
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden && currentUser) {
+                    resetSessionTimer();
+                }
             });
         }
         
@@ -1703,6 +1747,7 @@
             if (name === 'dashboard') {
                 updateLastCheckInfo();
                 updateVerfallBadge();
+                updateVerfallWarning();
             }
         }
 
@@ -1789,19 +1834,20 @@
             
             // Audit Log & Session
             addAuditEntry('LOGIN', `Benutzer ${currentUser.kuerzel} angemeldet`);
-            resetSessionTimer();
+            startSessionCountdown();
             updateExportBadge();
             updateMeldungenBadge();
             
             showScreen('dashboard');
             updateLastCheckInfo();
             updateVerfallBadge();
+            updateVerfallWarning();
         }
-        function logout() { 
+        function logout() {
             if (currentUser) {
                 addAuditEntry('LOGOUT', `Benutzer ${currentUser.kuerzel} abgemeldet`);
             }
-            if (sessionTimer) clearTimeout(sessionTimer);
+            stopSessionCountdown();
             currentUser = null; 
             currentPin = ''; 
             document.getElementById('loginKuerzel').value = '';
@@ -2132,17 +2178,17 @@
                         </div>
                         <div class="meldung-titel">${sanitizeHTML(m.titel)}</div>
                         ${m.beschreibung ? `<div class="meldung-beschreibung">${sanitizeHTML(m.beschreibung)}</div>` : ''}
-                        ${hatRueckmeldung ? `
-                            <div class="meldung-rueckmeldung">
-                                <strong>📝 Rückmeldung von ${sanitizeHTML(m.rueckmeldungVon)}:</strong><br>
-                                ${sanitizeHTML(m.rueckmeldung)}
-                                <div class="rueckmeldung-zeit">${new Date(m.rueckmeldungAm).toLocaleString('de-DE')}</div>
-                            </div>
-                        ` : ''}
+                        ${(function() {
+                            var kommentare = Array.isArray(m.kommentare) ? m.kommentare : (hatRueckmeldung ? [{ text: m.rueckmeldung, von: m.rueckmeldungVon, zeit: m.rueckmeldungAm }] : []);
+                            if (kommentare.length === 0) return '';
+                            return '<div style="margin:8px 0;">' + kommentare.map(function(k) {
+                                return '<div class="meldung-rueckmeldung" style="margin-bottom:6px;"><strong>💬 ' + sanitizeHTML(k.von) + ':</strong><br>' + sanitizeHTML(k.text) + '<div class="rueckmeldung-zeit">' + new Date(k.zeit).toLocaleString('de-DE') + '</div></div>';
+                            }).join('') + '</div>';
+                        })()}
                         <div class="meldung-meta">
                             <span>👤 ${sanitizeHTML(m.ersteller)} • ${dateStr} ${timeStr}</span>
                             <div class="meldung-actions">
-                                ${(!hatRueckmeldung && istZustaendig) ? `<button class="meldung-action-btn rueckmeldung" onclick="openRueckmeldungModal('${m.id}')" title="Rückmeldung geben"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg></button>` : ''}
+                                <button class="meldung-action-btn rueckmeldung" onclick="openRueckmeldungModal('${m.id}')" title="Kommentar hinzufügen"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg></button>
                                 ${(hatRueckmeldung && istZustaendig) ? `<button class="meldung-action-btn erledigt" onclick="meldungErledigen('${m.id}')" title="Als erledigt markieren & löschen"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></button>` : ''}
                                 ${isAdmin ? `<button class="meldung-action-btn delete" onclick="deleteMeldung('${m.id}')" title="Löschen"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>` : ''}
                             </div>
@@ -2355,16 +2401,36 @@
         
         function saveRueckmeldung() {
             if (!currentRueckmeldungId) return;
-            
+
             const text = document.getElementById('rueckmeldungText').value.trim();
             if (!text) {
-                alert('Bitte Rückmeldung eingeben.');
+                alert('Bitte Kommentar eingeben.');
                 return;
             }
-            
+
             const meldungen = getMeldungen();
             const meldung = meldungen.find(m => m.id === currentRueckmeldungId);
             if (meldung) {
+                // Kommentar-Verlauf: Array von Kommentaren
+                if (!Array.isArray(meldung.kommentare)) {
+                    // Migration: alte Rückmeldung übernehmen
+                    meldung.kommentare = [];
+                    if (meldung.rueckmeldung) {
+                        meldung.kommentare.push({
+                            text: meldung.rueckmeldung,
+                            von: meldung.rueckmeldungVon || 'Unbekannt',
+                            vonKuerzel: meldung.rueckmeldungVonKuerzel || 'UNKNOWN',
+                            zeit: meldung.rueckmeldungAm || new Date().toISOString()
+                        });
+                    }
+                }
+                meldung.kommentare.push({
+                    text: text,
+                    von: currentUser ? currentUser.name : 'Unbekannt',
+                    vonKuerzel: currentUser ? currentUser.kuerzel : 'UNKNOWN',
+                    zeit: new Date().toISOString()
+                });
+                // Letzten Kommentar auch als rueckmeldung speichern (für Cloud-Sync Kompatibilität)
                 meldung.rueckmeldung = text;
                 meldung.rueckmeldungVon = currentUser ? currentUser.name : 'Unbekannt';
                 meldung.rueckmeldungVonKuerzel = currentUser ? currentUser.kuerzel : 'UNKNOWN';
@@ -2372,9 +2438,9 @@
                 saveMeldungen(meldungen);
                 syncMeldungToCloud(meldung);
 
-                addAuditEntry('MELDUNG_RUECKMELDUNG', `${currentUser ? currentUser.name : 'Unbekannt'} hat Rückmeldung zu "${meldung.titel}" gegeben: ${text}`);
+                addAuditEntry('MELDUNG_KOMMENTAR', `${currentUser ? currentUser.name : 'Unbekannt'} hat Kommentar zu "${meldung.titel}" hinzugefügt: ${text}`);
             }
-            
+
             closeRueckmeldungModal();
             loadMeldungen();
             updateMeldungenBadge();
@@ -4388,6 +4454,50 @@
                     }
                 } catch(e) { el.textContent = ''; }
             });
+        }
+
+        function updateVerfallWarning() {
+            try {
+                var items = JSON.parse(localStorage.getItem('rtw_expiry_tracker') || '[]');
+                var banner = document.getElementById('verfallWarningBanner');
+                if (!banner) return;
+                var today = new Date();
+                today.setHours(0, 0, 0, 0);
+                var urgent = [];
+                items.forEach(function(item) {
+                    if (!item.date) return;
+                    var expDate = new Date(item.date);
+                    var diffDays = Math.ceil((expDate - today) / 86400000);
+                    if (diffDays <= 7) {
+                        urgent.push({ name: item.name, date: item.date, days: diffDays });
+                    }
+                });
+                if (urgent.length === 0) {
+                    banner.style.display = 'none';
+                    return;
+                }
+                urgent.sort(function(a, b) { return a.days - b.days; });
+                var html = '<div style="background:linear-gradient(135deg,rgba(231,76,60,0.15),rgba(230,126,34,0.1));border:1px solid rgba(231,76,60,0.4);border-radius:12px;padding:16px 20px;margin-bottom:16px;">';
+                html += '<div style="font-size:15px;font-weight:700;color:#e74c3c;margin-bottom:10px;display:flex;align-items:center;gap:8px;">⚠️ Verfallswarnung (' + urgent.length + ')</div>';
+                urgent.forEach(function(item) {
+                    var color, label;
+                    if (item.days <= 0) {
+                        color = '#e74c3c'; label = 'ABGELAUFEN';
+                    } else if (item.days <= 3) {
+                        color = '#e74c3c'; label = item.days + (item.days === 1 ? ' Tag' : ' Tage');
+                    } else {
+                        color = '#f59e0b'; label = item.days + ' Tage';
+                    }
+                    html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(231,76,60,0.15);">';
+                    html += '<span style="font-size:14px;color:var(--text-primary);">' + sanitizeHTML(item.name) + '</span>';
+                    html += '<span style="font-size:12px;font-weight:700;color:' + color + ';background:rgba(231,76,60,0.1);padding:3px 10px;border-radius:6px;">' + label + '</span>';
+                    html += '</div>';
+                });
+                html += '<div style="margin-top:10px;font-size:12px;color:var(--text-muted);text-align:right;cursor:pointer;" onclick="openApp(\'wochencheck\')">Zum Verfall-Tracker →</div>';
+                html += '</div>';
+                banner.style.display = 'block';
+                banner.innerHTML = html;
+            } catch(e) {}
         }
 
         function updateVerfallBadge() {
