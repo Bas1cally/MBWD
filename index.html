@@ -617,6 +617,14 @@
                     <div class="tile-desc">Woechentlicher Reinigungsplan GZ</div>
                 </div>
             </div>
+            <div class="tiles-section-title">Dokumente</div>
+            <div class="tiles-grid">
+                <div class="tile green" onclick="openApp('dokumentenbox')">
+                    <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg></div>
+                    <div class="tile-title">Dokumentenbox</div>
+                    <div class="tile-desc">Checklisten, SOPs & Dokumente</div>
+                </div>
+            </div>
             <div class="tiles-section-title" id="adminSection" style="display:none;">Administration</div>
             <div class="tiles-grid" id="adminTiles" style="display:none;">
                 <div class="tile purple" onclick="openApp('archiv')">
@@ -805,6 +813,22 @@
         </div>
     </div>
 
+
+    <!-- DOKUMENTENBOX -->
+    <div class="screen app-screen" id="dokumentenboxScreen">
+        <header class="app-header" style="border-left: 4px solid #2ecc71;">
+            <div class="header-top">
+                <button class="back-btn" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+                <h1 class="header-title">Dokumentenbox</h1>
+            </div>
+            <div class="header-sub">
+                <span class="header-date">Checklisten, SOPs & Dokumente</span>
+            </div>
+        </header>
+        <div style="padding:20px;max-width:700px;margin:0 auto;padding-bottom:80px;">
+            <div id="dokumentenboxContent"></div>
+        </div>
+    </div>
 
     <!-- MELDUNGEN -->
     <div class="screen app-screen" id="meldungenScreen">
@@ -1481,6 +1505,7 @@
             else if (app === 'mpgcheck') { currentCheckType = 'mpg'; initMpgCheck(); showScreen('mpgcheck'); }
             else if (app === 'wochencheck') { currentCheckType = 'wochen'; initWochenCheck(); showScreen('wochencheck'); }
             else if (app === 'reinigungsplan') { currentCheckType = 'reinigung'; initReinigungsplan(); showScreen('reinigungsplan'); }
+            else if (app === 'dokumentenbox') { renderDokumentenbox(); showScreen('dokumentenbox'); }
             else if (app === 'meldungen') { loadMeldungen(); showScreen('meldungen'); }
             else if (app === 'archiv') { loadArchive(); showScreen('archiv'); }
             else if (app === 'benutzer') { loadBenutzerList(); showScreen('benutzer'); }
@@ -1488,6 +1513,66 @@
             else if (app === 'deletelog') { loadDeleteLog(); showScreen('deletelog'); }
         }
         
+
+        // ============ DOKUMENTENBOX ============
+        const DOKUMENTENBOX = [
+            {
+                kategorie: 'Checklisten Medizinprodukte',
+                icon: '🏥',
+                docs: [
+                    { name: 'Corpuls3 EKG/Defibrillator', file: '054_CL_Corpuls3_EKG_Defibrillator.pdf' },
+                    { name: 'Accuvac Rescue Absaugpumpe', file: '054_CL_AccuvacRescue_Absaugpumpe.pdf' },
+                    { name: 'Medumat Standard Beatmungsgerät', file: '054_CL_Medumat_Standard_Beatmungsgeraet.pdf' }
+                ]
+            },
+            {
+                kategorie: 'Checklisten Ausstattung',
+                icon: '🎒',
+                docs: [
+                    { name: 'Notfallrucksäcke Rot & Gelb', file: '054_CL_Notfallrucksaecke_Rot_Gelb.pdf' },
+                    { name: 'Notfallrucksack Kinder', file: '054_CL_Notfallrucksack_Kinder.pdf' },
+                    { name: 'MANV-Tasche RTW', file: '054_CL_MANV_Tasche_RTW.pdf' }
+                ]
+            },
+            {
+                kategorie: 'Fahrzeug & Prüfungen',
+                icon: '🚑',
+                docs: [
+                    { name: 'Wöchentlicher RTW-Check', file: '054_CL_Woechentlicher_RTW_Check_1-83-1.pdf' }
+                ]
+            },
+            {
+                kategorie: 'SOPs & Richtlinien',
+                icon: '📋',
+                docs: [
+                    { name: 'SAA / BPR 2025', file: 'SAA-BPR-2025.pdf' }
+                ]
+            }
+        ];
+
+        function renderDokumentenbox() {
+            var container = document.getElementById('dokumentenboxContent');
+            var html = '';
+            DOKUMENTENBOX.forEach(function(kat) {
+                html += '<div style="margin-bottom:24px;">';
+                html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">';
+                html += '<span style="font-size:24px;">' + kat.icon + '</span>';
+                html += '<h3 style="margin:0;font-size:16px;font-weight:600;color:var(--text-primary);">' + sanitizeHTML(kat.kategorie) + '</h3>';
+                html += '</div>';
+                kat.docs.forEach(function(doc) {
+                    html += '<a href="docs/' + encodeURIComponent(doc.file) + '" target="_blank" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;text-decoration:none;color:var(--text-primary);transition:var(--transition);" onmouseover="this.style.borderColor=\'#2ecc71\'" onmouseout="this.style.borderColor=\'var(--border)\'">';
+                    html += '<div style="width:40px;height:40px;background:rgba(46,204,113,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:#2ecc71;"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg></div>';
+                    html += '<div style="flex:1;min-width:0;">';
+                    html += '<div style="font-size:15px;font-weight:500;">' + sanitizeHTML(doc.name) + '</div>';
+                    html += '<div style="font-size:12px;color:var(--text-muted);margin-top:2px;">' + sanitizeHTML(doc.file) + '</div>';
+                    html += '</div>';
+                    html += '<svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:var(--text-muted);flex-shrink:0;"><path d="M19 19H5V5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>';
+                    html += '</a>';
+                });
+                html += '</div>';
+            });
+            container.innerHTML = html;
+        }
 
         // MELDUNGEN FUNKTIONEN
         function getMeldungen() {
