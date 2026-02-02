@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mbwd-app-v33';
+const CACHE_NAME = 'mbwd-app-v34';
 const urlsToCache = [
   './',
   './index.html',
