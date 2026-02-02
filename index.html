@@ -1148,7 +1148,7 @@
             </div>
             <div id="teamsMeldungPreview" style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;text-align:left;font-size:13px;color:var(--text-secondary);white-space:pre-line;max-height:200px;overflow-y:auto;"></div>
             <div style="background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.25);border-radius:8px;padding:10px 14px;margin-bottom:20px;font-size:12px;color:rgba(255,255,255,0.7);text-align:center;">
-                📋 Nachricht wird <strong>automatisch kopiert</strong> — in Teams einfach <strong>Strg+V</strong> drücken und absenden.
+                📋 <strong>Handy/iPad:</strong> Teilen-Menü öffnet sich — Teams auswählen. <strong>Desktop:</strong> Nachricht wird kopiert, in Teams <strong>Strg+V</strong>.
             </div>
             <button class="teams-share-btn" id="teamsMeldungShareBtn" onclick="shareMeldungToTeams()">
                 <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
@@ -1170,7 +1170,7 @@
             </div>
             <div id="teamsCheckPreview" style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;text-align:left;font-size:13px;color:var(--text-secondary);white-space:pre-line;max-height:200px;overflow-y:auto;"></div>
             <div style="background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.25);border-radius:8px;padding:10px 14px;margin-bottom:20px;font-size:12px;color:rgba(255,255,255,0.7);text-align:center;">
-                📋 Nachricht wird <strong>automatisch kopiert</strong> — in Teams einfach <strong>Strg+V</strong> drücken und absenden.
+                📋 <strong>Handy/iPad:</strong> Teilen-Menü öffnet sich — Teams auswählen. <strong>Desktop:</strong> Nachricht wird kopiert, in Teams <strong>Strg+V</strong>.
             </div>
             <button class="teams-share-btn" id="teamsCheckShareBtn" onclick="shareCheckToTeams()">
                 <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
@@ -1522,6 +1522,55 @@
                         localStorage.setItem('mbwd_doc_counter_' + c.key, c.counter.toString());
                     });
                 }
+                // Dienstplan aus Cloud laden (falls lokal keiner vorhanden)
+                var localDp = JSON.parse(localStorage.getItem('mbwd_dienstplan') || 'null');
+                if (!localDp || !localDp.base64) {
+                    var settings = await cloudGet('app_settings');
+                    if (settings) {
+                        var metaRow = settings.find(function(s) { return s.key === 'dienstplan_meta'; });
+                        var dataRow = settings.find(function(s) { return s.key === 'dienstplan_data'; });
+                        if (metaRow && dataRow && dataRow.value) {
+                            try {
+                                var meta = JSON.parse(metaRow.value);
+                                if (meta && meta.fileName) {
+                                    var dpObj = {
+                                        fileName: meta.fileName,
+                                        uploadedAt: meta.uploadedAt,
+                                        uploadedBy: meta.uploadedBy,
+                                        sheetNames: meta.sheetNames,
+                                        base64: dataRow.value
+                                    };
+                                    localStorage.setItem('mbwd_dienstplan', JSON.stringify(dpObj));
+                                    console.log('Dienstplan aus Cloud geladen:', meta.fileName);
+                                    try { loadSavedDienstplan(); } catch(e) {}
+                                }
+                            } catch(e) { console.warn('Dienstplan Cloud-Parse Fehler:', e); }
+                        }
+                    }
+                } else {
+                    // Prüfe ob Cloud eine neuere Version hat
+                    var settings2 = await cloudGet('app_settings', { eq: ['key', 'dienstplan_meta'] });
+                    if (settings2 && settings2[0]) {
+                        try {
+                            var cloudMeta = JSON.parse(settings2[0].value);
+                            if (cloudMeta && cloudMeta.uploadedAt && localDp.uploadedAt && new Date(cloudMeta.uploadedAt) > new Date(localDp.uploadedAt)) {
+                                var dataRow2 = await cloudGet('app_settings', { eq: ['key', 'dienstplan_data'] });
+                                if (dataRow2 && dataRow2[0] && dataRow2[0].value) {
+                                    var dpObj2 = {
+                                        fileName: cloudMeta.fileName,
+                                        uploadedAt: cloudMeta.uploadedAt,
+                                        uploadedBy: cloudMeta.uploadedBy,
+                                        sheetNames: cloudMeta.sheetNames,
+                                        base64: dataRow2[0].value
+                                    };
+                                    localStorage.setItem('mbwd_dienstplan', JSON.stringify(dpObj2));
+                                    console.log('Dienstplan aus Cloud aktualisiert:', cloudMeta.fileName);
+                                    try { loadSavedDienstplan(); } catch(e) {}
+                                }
+                            }
+                        } catch(e) {}
+                    }
+                }
                 console.log('Cloud-Daten synchronisiert.');
             } catch (e) { console.warn('pullFromCloud Fehler:', e.message); }
         }
@@ -1544,6 +1593,9 @@
                 })
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'expiry_tracker' }, function() {
                     pullTable('expiry_tracker');
+                })
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'app_settings' }, function() {
+                    pullTable('app_settings');
                 })
                 .subscribe();
         }
@@ -1597,6 +1649,31 @@
                     if (ex) localStorage.setItem('rtw_expiry_tracker', JSON.stringify(ex.map(function(x) {
                         return { id: x.id, name: x.name, date: x.date, addedBy: x.added_by };
                     })));
+                } else if (table === 'app_settings') {
+                    // Dienstplan aus Cloud aktualisieren
+                    var localDp = JSON.parse(localStorage.getItem('mbwd_dienstplan') || 'null');
+                    var metaRow = await cloudGet('app_settings', { eq: ['key', 'dienstplan_meta'] });
+                    if (metaRow && metaRow[0]) {
+                        try {
+                            var cloudMeta = JSON.parse(metaRow[0].value);
+                            if (cloudMeta && cloudMeta.fileName && (!localDp || !localDp.uploadedAt || new Date(cloudMeta.uploadedAt) > new Date(localDp.uploadedAt))) {
+                                var dataRow = await cloudGet('app_settings', { eq: ['key', 'dienstplan_data'] });
+                                if (dataRow && dataRow[0] && dataRow[0].value) {
+                                    localStorage.setItem('mbwd_dienstplan', JSON.stringify({
+                                        fileName: cloudMeta.fileName, uploadedAt: cloudMeta.uploadedAt,
+                                        uploadedBy: cloudMeta.uploadedBy, sheetNames: cloudMeta.sheetNames,
+                                        base64: dataRow[0].value
+                                    }));
+                                    try { loadSavedDienstplan(); } catch(e) {}
+                                }
+                            } else if (!cloudMeta || !cloudMeta.fileName) {
+                                // Dienstplan wurde in Cloud gelöscht
+                                localStorage.removeItem('mbwd_dienstplan');
+                                dpWorkbook = null; dpParsedData = null; dpViewMonth = null;
+                                try { loadSavedDienstplan(); } catch(e) {}
+                            }
+                        } catch(e) {}
+                    }
                 }
             } catch (e) { console.warn('pullTable(' + table + '):', e); }
         }
@@ -2485,19 +2562,22 @@
             message += '\n✍️ Erstellt von: ' + m.ersteller;
             message += '\n📅 ' + new Date(m.datum).toLocaleString('de-DE');
 
-            // Nachricht in Zwischenablage kopieren
-            navigator.clipboard.writeText(message).then(function() {}).catch(function() {});
-
-            var ch = TEAMS_CHANNELS.meldungen;
-            var teamsUrl = 'https://teams.microsoft.com/l/channel/' + encodeURIComponent(ch.id) + '/' + encodeURIComponent(ch.name) + '?groupId=' + TEAMS_GROUP_ID + '&tenantId=' + TEAMS_TENANT_ID;
-
-            window.open(teamsUrl, '_blank');
+            // Mobile: natives Teilen-Menü (iPad/Handy), Desktop: Clipboard + Deeplink
+            if (navigator.share) {
+                navigator.share({ title: 'MBWD Meldung', text: message }).then(function() {
+                    addAuditEntry('MELDUNG_TEAMS_GETEILT', 'Meldung "' + m.titel + '" geteilt (Share API)');
+                }).catch(function() {});
+            } else {
+                navigator.clipboard.writeText(message).then(function() {}).catch(function() {});
+                var ch = TEAMS_CHANNELS.meldungen;
+                var teamsUrl = 'https://teams.microsoft.com/l/channel/' + encodeURIComponent(ch.id) + '/' + encodeURIComponent(ch.name) + '?groupId=' + TEAMS_GROUP_ID + '&tenantId=' + TEAMS_TENANT_ID;
+                window.open(teamsUrl, '_blank');
+                addAuditEntry('MELDUNG_TEAMS_GETEILT', 'Meldung "' + m.titel + '" in Teams geteilt');
+            }
 
             document.getElementById('teamsMeldungCloseBtn').disabled = false;
-            document.getElementById('teamsMeldungShareBtn').innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg> Kopiert & Teams geöffnet!';
+            document.getElementById('teamsMeldungShareBtn').innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg> Geteilt!';
             document.getElementById('teamsMeldungShareBtn').style.background = 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)';
-
-            addAuditEntry('MELDUNG_TEAMS_GETEILT', 'Meldung "' + m.titel + '" in Teams geteilt');
         }
 
         function closeTeamsMeldungModal() {
@@ -2547,18 +2627,21 @@
             if (c.data.meta.kw) message += '\n📆 KW: ' + c.data.meta.kw;
             message += '\n✍️ Erstellt von: ' + c.data.meta.user;
 
-            // Nachricht in Zwischenablage kopieren
-            navigator.clipboard.writeText(message).then(function() {}).catch(function() {});
-
-            var teamsUrl = 'https://teams.microsoft.com/l/channel/' + encodeURIComponent(ch.id) + '/' + encodeURIComponent(ch.name) + '?groupId=' + TEAMS_GROUP_ID + '&tenantId=' + TEAMS_TENANT_ID;
-
-            window.open(teamsUrl, '_blank');
+            // Mobile: natives Teilen-Menü (iPad/Handy), Desktop: Clipboard + Deeplink
+            if (navigator.share) {
+                navigator.share({ title: 'MBWD ' + c.title, text: message }).then(function() {
+                    addAuditEntry('CHECK_TEAMS_GETEILT', c.title + ' (' + c.data.docId + ') geteilt (Share API)');
+                }).catch(function() {});
+            } else {
+                navigator.clipboard.writeText(message).then(function() {}).catch(function() {});
+                var teamsUrl = 'https://teams.microsoft.com/l/channel/' + encodeURIComponent(ch.id) + '/' + encodeURIComponent(ch.name) + '?groupId=' + TEAMS_GROUP_ID + '&tenantId=' + TEAMS_TENANT_ID;
+                window.open(teamsUrl, '_blank');
+                addAuditEntry('CHECK_TEAMS_GETEILT', c.title + ' (' + c.data.docId + ') in Teams geteilt');
+            }
 
             document.getElementById('teamsCheckCloseBtn').disabled = false;
-            document.getElementById('teamsCheckShareBtn').innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg> Kopiert & Teams geöffnet!';
+            document.getElementById('teamsCheckShareBtn').innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg> Geteilt!';
             document.getElementById('teamsCheckShareBtn').style.background = 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)';
-
-            addAuditEntry('CHECK_TEAMS_GETEILT', c.title + ' (' + c.data.docId + ') in Teams geteilt');
         }
 
         function closeTeamsCheckModal() {
@@ -4704,10 +4787,15 @@
                     };
                     localStorage.setItem('mbwd_dienstplan', JSON.stringify(dpData));
 
-                    // Cloud-Sync (nur Metadaten, base64 zu groß für Supabase)
+                    // Cloud-Sync: Metadaten + Datei-Daten
                     cloudUpsert('app_settings', {
                         key: 'dienstplan_meta',
                         value: JSON.stringify({ fileName: dpData.fileName, uploadedAt: dpData.uploadedAt, uploadedBy: dpData.uploadedBy, sheetNames: dpData.sheetNames }),
+                        updated_at: new Date().toISOString()
+                    });
+                    cloudUpsert('app_settings', {
+                        key: 'dienstplan_data',
+                        value: dpData.base64,
                         updated_at: new Date().toISOString()
                     });
 
@@ -5095,6 +5183,7 @@
             if (lastUpdate) lastUpdate.textContent = '';
             if (info) info.textContent = 'Kein Dienstplan hochgeladen';
             cloudUpsert('app_settings', { key: 'dienstplan_meta', value: JSON.stringify(null), updated_at: new Date().toISOString() });
+            cloudUpsert('app_settings', { key: 'dienstplan_data', value: '', updated_at: new Date().toISOString() });
             addAuditEntry('DIENSTPLAN_GELÖSCHT', 'Dienstplan wurde gelöscht');
         }
 
