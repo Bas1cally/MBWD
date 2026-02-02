@@ -944,6 +944,45 @@
         </div>
     </div>
 
+    <!-- MEDAS BESTÄTIGUNG MODAL -->
+    <div id="medasModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:10000;background:rgba(0,0,0,0.8);padding:16px;overflow-y:auto;">
+        <div style="max-width:520px;margin:30px auto;background:#1e1e2e;border-radius:16px;padding:24px;color:#fff;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+                <span style="font-size:28px;">⚠️</span>
+                <h3 style="margin:0;font-size:18px;font-weight:700;color:#f39c12;">MEDAS-Dokumentation erforderlich</h3>
+            </div>
+            <p style="font-size:14px;line-height:1.6;color:rgba(255,255,255,0.8);margin:0 0 16px;">
+                Vor dem Speichern in der App muss der Einsatz <strong style="color:#fff;">vollständig im MEDAS dokumentiert</strong> sein.
+            </p>
+            <div style="background:rgba(231,76,60,0.12);border:1px solid rgba(231,76,60,0.3);border-radius:12px;padding:14px;margin-bottom:16px;">
+                <p style="font-size:13px;color:#e74c3c;font-weight:600;margin:0 0 8px;">🔴 Besonders wichtig — unter "Maßnahmen" eintragen:</p>
+                <ul style="margin:0;padding-left:18px;font-size:13px;color:rgba(255,255,255,0.9);line-height:1.8;">
+                    <li><strong>Notfallmedizinische Behandlung</strong></li>
+                    <li><strong>Notfalleinsatz (ohne Werksarzt)</strong></li>
+                </ul>
+                <p style="font-size:12px;color:rgba(255,255,255,0.5);margin:8px 0 0;">Diese Angaben sind essentiell für die Datenerhebung.</p>
+            </div>
+            <div style="margin-bottom:16px;">
+                <p style="font-size:12px;color:rgba(255,255,255,0.5);margin:0 0 8px;">MEDAS Referenz (Maßnahmen-Feld):</p>
+                <div style="border-radius:10px;overflow:hidden;border:2px solid rgba(255,255,255,0.1);background:#000;">
+                    <img src="medas-hilfe.png" alt="MEDAS Maßnahmen-Feld Referenz" style="width:100%;display:block;" onerror="this.parentElement.innerHTML='<div style=\'padding:20px;text-align:center;color:rgba(255,255,255,0.3);font-size:12px;\'>Bild medas-hilfe.png nicht gefunden</div>'">
+                </div>
+            </div>
+            <div style="margin-bottom:20px;">
+                <label style="font-size:13px;color:rgba(255,255,255,0.7);display:block;margin-bottom:6px;">Optionale Notiz (z.B. Meldebild, Ort):</label>
+                <input type="text" id="medasNotiz" placeholder="z.B. Kreislaufkollaps, Halle 54" style="width:100%;box-sizing:border-box;padding:12px 14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:#fff;font-size:14px;outline:none;">
+            </div>
+            <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:14px;background:rgba(255,255,255,0.05);border-radius:10px;border:1px solid rgba(255,255,255,0.1);margin-bottom:20px;" id="medasCheckLabel">
+                <input type="checkbox" id="medasBestaetigung" onchange="var b=document.getElementById('medasSaveBtn');b.disabled=!this.checked;b.style.opacity=this.checked?'1':'0.4';document.getElementById('medasCheckLabel').style.borderColor=this.checked?'var(--accent)':'rgba(255,255,255,0.1)';" style="margin-top:2px;width:18px;height:18px;accent-color:var(--accent);flex-shrink:0;">
+                <span style="font-size:13px;line-height:1.5;color:rgba(255,255,255,0.9);">Ich bestätige, dass ich diesen Einsatz <strong>im MEDAS vollständig dokumentiert</strong> habe, inklusive der Maßnahmen.</span>
+            </label>
+            <div style="display:flex;gap:10px;">
+                <button onclick="closeMedasModal()" style="flex:1;padding:14px;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.15);border-radius:10px;font-size:15px;cursor:pointer;">Abbrechen</button>
+                <button id="medasSaveBtn" onclick="confirmMedasEinsatz()" disabled style="flex:1;padding:14px;background:var(--accent);color:#000;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;opacity:0.4;transition:opacity 0.2s;" onmouseenter="if(!this.disabled)this.style.opacity='0.9'" onmouseleave="if(!this.disabled)this.style.opacity='1'">Einsatz speichern</button>
+            </div>
+        </div>
+    </div>
+
     <!-- DIENSTPLAN -->
     <div class="screen app-screen" id="dienstplanScreen">
         <header class="app-header" style="border-left: 4px solid #3498db;">
@@ -4416,17 +4455,38 @@
         function saveEinsatzLog(log) {
             localStorage.setItem('mbwd_einsatz_log', JSON.stringify(log));
         }
+        var pendingEinsatzTyp = null;
+
         function neuerEinsatz(typ) {
+            pendingEinsatzTyp = typ;
+            document.getElementById('medasNotiz').value = '';
+            document.getElementById('medasBestaetigung').checked = false;
+            var saveBtn = document.getElementById('medasSaveBtn');
+            saveBtn.disabled = true;
+            saveBtn.style.opacity = '0.4';
+            document.getElementById('medasCheckLabel').style.borderColor = 'rgba(255,255,255,0.1)';
+            document.getElementById('medasModal').style.display = 'block';
+        }
+
+        function closeMedasModal() {
+            document.getElementById('medasModal').style.display = 'none';
+            pendingEinsatzTyp = null;
+        }
+
+        function confirmMedasEinsatz() {
+            if (!pendingEinsatzTyp) return;
+            if (!document.getElementById('medasBestaetigung').checked) return;
+            var typ = pendingEinsatzTyp;
             var typLabel = typ === 'rtw' ? 'RTW Einsatz' : 'Einsatz in Ambulanz';
-            var notiz = prompt(typLabel + '\n\nOptionale Notiz (z.B. Meldebild, Ort):');
-            if (notiz === null) return;
+            var notiz = document.getElementById('medasNotiz').value.trim();
             var log = getEinsatzLog();
-            var eintrag = { id: generateId(), typ: typ, datum: new Date().toISOString(), notiz: notiz || '', erfasser: currentUser ? currentUser.name : 'Unbekannt' };
+            var eintrag = { id: generateId(), typ: typ, datum: new Date().toISOString(), notiz: notiz || '', erfasser: currentUser ? currentUser.name : 'Unbekannt', medasBestaetigt: true };
             log.unshift(eintrag);
             if (log.length > 1000) log = log.slice(0, 1000);
             saveEinsatzLog(log);
             cloudInsert('einsatz_log', { id: eintrag.id, typ: eintrag.typ, datum: eintrag.datum, notizen: eintrag.notiz, erfasst_von: currentUser ? currentUser.kuerzel : 'UNKNOWN', erfasst_von_name: eintrag.erfasser });
-            addAuditEntry('EINSATZ_ERFASST', typLabel + (notiz ? ': ' + notiz : ''));
+            addAuditEntry('EINSATZ_ERFASST', typLabel + ' (MEDAS bestätigt)' + (notiz ? ': ' + notiz : ''));
+            closeMedasModal();
             renderEinsatzStatistik();
         }
         function renderEinsatzStatistik() {
