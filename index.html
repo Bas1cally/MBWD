@@ -997,13 +997,13 @@
                 <span class="header-date" id="dpUploadInfo">Kein Dienstplan hochgeladen</span>
             </div>
         </header>
-        <input type="file" id="dpFileInput" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleDienstplanUpload(event)">
+        <input type="file" id="dpFileInput" accept=".xlsx,.xls,.xlsm,.csv" style="display:none;" onchange="handleDienstplanUpload(event)">
         <div style="padding:20px;max-width:900px;margin:0 auto;padding-bottom:80px;">
             <!-- Drag & Drop Zone (nur für Berechtigte) -->
             <div id="dpDropZone" style="border:2px dashed var(--border);border-radius:16px;padding:40px 20px;text-align:center;margin-bottom:20px;transition:all 0.3s;cursor:pointer;display:none;" onclick="document.getElementById('dpFileInput').click()">
                 <div style="font-size:48px;margin-bottom:12px;">📋</div>
                 <div style="font-size:16px;font-weight:600;color:var(--text-primary);margin-bottom:8px;">Excel-Datei hierher ziehen</div>
-                <div style="font-size:13px;color:var(--text-muted);">oder klicken zum Auswählen (.xlsx, .xls, .csv)</div>
+                <div style="font-size:13px;color:var(--text-muted);">oder klicken zum Auswählen (.xlsx, .xls, .xlsm, .csv)</div>
             </div>
             <!-- Sheet Tabs -->
             <div id="dpSheetTabs" style="display:none;overflow-x:auto;white-space:nowrap;margin-bottom:16px;padding-bottom:4px;"></div>
@@ -4648,10 +4648,10 @@
                 return;
             }
             var validTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel', 'text/csv'];
-            var validExt = ['.xlsx', '.xls', '.csv'];
+            var validExt = ['.xlsx', '.xls', '.xlsm', '.csv'];
             var ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
             if (!validTypes.includes(file.type) && !validExt.includes(ext)) {
-                alert('Bitte eine Excel-Datei (.xlsx, .xls) oder CSV hochladen.');
+                alert('Bitte eine Excel-Datei (.xlsx, .xls, .xlsm) oder CSV hochladen.');
                 return;
             }
 
