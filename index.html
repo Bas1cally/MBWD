@@ -1016,6 +1016,7 @@
                 <h1 class="header-title">Dienstplan</h1>
                 <div class="header-actions" id="dpUploadBtn" style="display:none;">
                     <button class="header-btn" onclick="document.getElementById('dpFileInput').click()" title="Excel hochladen" style="background:#3498db;"><svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg></button>
+                    <button class="header-btn" id="dpDeleteBtn" onclick="deleteDienstplan()" title="Dienstplan löschen" style="background:#e74c3c;display:none;"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
                 </div>
             </div>
             <div class="header-sub">
@@ -4713,6 +4714,7 @@
                     dpCurrentSheet = 0;
                     renderDienstplan();
                     updateDpPreview(dpData);
+                    if (canUploadDienstplan()) document.getElementById('dpDeleteBtn').style.display = '';
                     addAuditEntry('DIENSTPLAN_HOCHGELADEN', 'Dienstplan "' + file.name + '" hochgeladen');
                 } catch (err) {
                     console.error('Excel Parse Error:', err);
@@ -4752,6 +4754,7 @@
                 dpCurrentSheet = 0;
                 renderDienstplan();
                 updateDpPreview(saved);
+                if (canUploadDienstplan()) document.getElementById('dpDeleteBtn').style.display = '';
             } catch (err) {
                 console.warn('Dienstplan laden fehlgeschlagen:', err);
             }
@@ -5074,6 +5077,25 @@
             if (info) {
                 info.textContent = dpData.fileName + ' • ' + dateStr + ' ' + timeStr + ' von ' + (dpData.uploadedBy || 'Unbekannt');
             }
+        }
+
+        function deleteDienstplan() {
+            if (!confirm('Dienstplan wirklich löschen?')) return;
+            localStorage.removeItem('mbwd_dienstplan');
+            dpWorkbook = null;
+            dpParsedData = null;
+            dpViewMonth = null;
+            document.getElementById('dpTableContainer').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Noch kein Dienstplan hochgeladen.<br>Excel-Datei oben hochladen oder reinziehen.</div>';
+            document.getElementById('dpMonthNav').style.display = 'none';
+            document.getElementById('dpDeleteBtn').style.display = 'none';
+            var preview = document.getElementById('dienstplanPreview');
+            var lastUpdate = document.getElementById('dienstplanLastUpdate');
+            var info = document.getElementById('dpUploadInfo');
+            if (preview) preview.textContent = 'Kein Dienstplan hochgeladen';
+            if (lastUpdate) lastUpdate.textContent = '';
+            if (info) info.textContent = 'Kein Dienstplan hochgeladen';
+            cloudUpsert('app_settings', { key: 'dienstplan_meta', value: JSON.stringify(null), updated_at: new Date().toISOString() });
+            addAuditEntry('DIENSTPLAN_GELÖSCHT', 'Dienstplan wurde gelöscht');
         }
 
         function updateDpDashboardPreview() {
