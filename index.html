@@ -1399,10 +1399,10 @@
             } catch (e) { console.warn('cloudGet(' + table + '):', e.message); return null; }
         }
 
-        async function cloudUpsert(table, data) {
+        async function cloudUpsert(table, data, options) {
             if (!supabaseClient || !isOnline) { queueOffline('upsert', table, data); return; }
             try {
-                const { error } = await supabaseClient.from(table).upsert(data);
+                const { error } = await supabaseClient.from(table).upsert(data, options || {});
                 if (error) throw error;
             } catch (e) { console.warn('cloudUpsert(' + table + '):', e.message); queueOffline('upsert', table, data); }
         }
@@ -1530,55 +1530,49 @@
                         localStorage.setItem('mbwd_doc_counter_' + c.key, c.counter.toString());
                     });
                 }
-                // Dienstplan aus Cloud laden (falls lokal keiner vorhanden)
-                var localDp = JSON.parse(localStorage.getItem('mbwd_dienstplan') || 'null');
-                if (!localDp || !localDp.base64) {
-                    var settings = await cloudGet('app_settings');
-                    if (settings) {
-                        var metaRow = settings.find(function(s) { return s.key === 'dienstplan_meta'; });
-                        var dataRow = settings.find(function(s) { return s.key === 'dienstplan_data'; });
-                        if (metaRow && dataRow && dataRow.value) {
-                            try {
-                                var meta = JSON.parse(metaRow.value);
-                                if (meta && meta.fileName) {
-                                    var dpObj = {
-                                        fileName: meta.fileName,
-                                        uploadedAt: meta.uploadedAt,
-                                        uploadedBy: meta.uploadedBy,
-                                        sheetNames: meta.sheetNames,
-                                        base64: dataRow.value
-                                    };
-                                    localStorage.setItem('mbwd_dienstplan', JSON.stringify(dpObj));
-                                    console.log('Dienstplan aus Cloud geladen:', meta.fileName);
-                                    try { loadSavedDienstplan(); } catch(e) {}
-                                }
-                            } catch(e) { console.warn('Dienstplan Cloud-Parse Fehler:', e); }
-                        }
-                    }
-                } else {
-                    // Prüfe ob Cloud eine neuere Version hat
-                    var settings2 = await cloudGet('app_settings', { eq: ['key', 'dienstplan_meta'] });
-                    if (settings2 && settings2[0]) {
-                        try {
-                            var cloudMeta = JSON.parse(settings2[0].value);
-                            if (cloudMeta && cloudMeta.uploadedAt && localDp.uploadedAt && new Date(cloudMeta.uploadedAt) > new Date(localDp.uploadedAt)) {
-                                var dataRow2 = await cloudGet('app_settings', { eq: ['key', 'dienstplan_data'] });
-                                if (dataRow2 && dataRow2[0] && dataRow2[0].value) {
-                                    var dpObj2 = {
-                                        fileName: cloudMeta.fileName,
-                                        uploadedAt: cloudMeta.uploadedAt,
-                                        uploadedBy: cloudMeta.uploadedBy,
-                                        sheetNames: cloudMeta.sheetNames,
-                                        base64: dataRow2[0].value
-                                    };
-                                    localStorage.setItem('mbwd_dienstplan', JSON.stringify(dpObj2));
-                                    console.log('Dienstplan aus Cloud aktualisiert:', cloudMeta.fileName);
-                                    try { loadSavedDienstplan(); } catch(e) {}
+                // Dienstplan aus Cloud laden
+                try {
+                    var localDp = JSON.parse(localStorage.getItem('mbwd_dienstplan') || 'null');
+                    var needsCloudDp = !localDp || !localDp.base64;
+                    // Erst Meta prüfen (klein, schnell)
+                    var metaRows = await cloudGet('app_settings', { eq: ['key', 'dienstplan_meta'] });
+                    console.log('Dienstplan Cloud-Meta:', metaRows ? metaRows.length + ' Zeilen' : 'null');
+                    if (metaRows && metaRows.length > 0) {
+                        // Neueste nehmen (falls Duplikate durch fehlenden onConflict)
+                        var metaRow = metaRows[metaRows.length - 1];
+                        var cloudMeta = null;
+                        try { cloudMeta = JSON.parse(metaRow.value); } catch(e) {}
+                        if (cloudMeta && cloudMeta.fileName) {
+                            var isNewer = !localDp || !localDp.uploadedAt || new Date(cloudMeta.uploadedAt) > new Date(localDp.uploadedAt);
+                            if (needsCloudDp || isNewer) {
+                                console.log('Dienstplan: Lade Daten aus Cloud...');
+                                var dataRows = await cloudGet('app_settings', { eq: ['key', 'dienstplan_data'] });
+                                console.log('Dienstplan Cloud-Daten:', dataRows ? dataRows.length + ' Zeilen' : 'null');
+                                if (dataRows && dataRows.length > 0) {
+                                    var dataRow = dataRows[dataRows.length - 1];
+                                    if (dataRow.value && dataRow.value.length > 100) {
+                                        var dpObj = {
+                                            fileName: cloudMeta.fileName,
+                                            uploadedAt: cloudMeta.uploadedAt,
+                                            uploadedBy: cloudMeta.uploadedBy,
+                                            sheetNames: cloudMeta.sheetNames,
+                                            base64: dataRow.value
+                                        };
+                                        localStorage.setItem('mbwd_dienstplan', JSON.stringify(dpObj));
+                                        console.log('Dienstplan aus Cloud geladen:', cloudMeta.fileName, '(' + Math.round(dataRow.value.length / 1024) + ' KB)');
+                                        try { loadSavedDienstplan(); } catch(e) { console.warn('loadSavedDienstplan:', e); }
+                                    } else {
+                                        console.warn('Dienstplan Cloud-Daten leer oder zu kurz:', dataRow.value ? dataRow.value.length : 0);
+                                    }
+                                } else {
+                                    console.warn('Dienstplan: Meta vorhanden aber keine Daten in Cloud!');
                                 }
                             }
-                        } catch(e) {}
+                        }
+                    } else {
+                        console.log('Dienstplan: Keine Cloud-Daten vorhanden.');
                     }
-                }
+                } catch(dpErr) { console.warn('Dienstplan Cloud-Sync Fehler:', dpErr); }
                 console.log('Cloud-Daten synchronisiert.');
             } catch (e) { console.warn('pullFromCloud Fehler:', e.message); }
         }
@@ -1658,29 +1652,30 @@
                         return { id: x.id, name: x.name, date: x.date, addedBy: x.added_by };
                     })));
                 } else if (table === 'app_settings') {
-                    // Dienstplan aus Cloud aktualisieren
+                    // Dienstplan aus Cloud aktualisieren (Realtime-Trigger)
                     var localDp = JSON.parse(localStorage.getItem('mbwd_dienstplan') || 'null');
-                    var metaRow = await cloudGet('app_settings', { eq: ['key', 'dienstplan_meta'] });
-                    if (metaRow && metaRow[0]) {
+                    var metaRows = await cloudGet('app_settings', { eq: ['key', 'dienstplan_meta'] });
+                    if (metaRows && metaRows.length > 0) {
                         try {
-                            var cloudMeta = JSON.parse(metaRow[0].value);
+                            var mr = metaRows[metaRows.length - 1];
+                            var cloudMeta = JSON.parse(mr.value);
                             if (cloudMeta && cloudMeta.fileName && (!localDp || !localDp.uploadedAt || new Date(cloudMeta.uploadedAt) > new Date(localDp.uploadedAt))) {
-                                var dataRow = await cloudGet('app_settings', { eq: ['key', 'dienstplan_data'] });
-                                if (dataRow && dataRow[0] && dataRow[0].value) {
+                                var dataRows = await cloudGet('app_settings', { eq: ['key', 'dienstplan_data'] });
+                                if (dataRows && dataRows.length > 0 && dataRows[dataRows.length - 1].value && dataRows[dataRows.length - 1].value.length > 100) {
                                     localStorage.setItem('mbwd_dienstplan', JSON.stringify({
                                         fileName: cloudMeta.fileName, uploadedAt: cloudMeta.uploadedAt,
                                         uploadedBy: cloudMeta.uploadedBy, sheetNames: cloudMeta.sheetNames,
-                                        base64: dataRow[0].value
+                                        base64: dataRows[dataRows.length - 1].value
                                     }));
+                                    console.log('Dienstplan Realtime-Update:', cloudMeta.fileName);
                                     try { loadSavedDienstplan(); } catch(e) {}
                                 }
                             } else if (!cloudMeta || !cloudMeta.fileName) {
-                                // Dienstplan wurde in Cloud gelöscht
                                 localStorage.removeItem('mbwd_dienstplan');
                                 dpWorkbook = null; dpParsedData = null; dpViewMonth = null;
                                 try { loadSavedDienstplan(); } catch(e) {}
                             }
-                        } catch(e) {}
+                        } catch(e) { console.warn('Dienstplan Realtime Fehler:', e); }
                     }
                 }
             } catch (e) { console.warn('pullTable(' + table + '):', e); }
@@ -4829,11 +4824,15 @@
                         key: 'dienstplan_meta',
                         value: JSON.stringify({ fileName: dpData.fileName, uploadedAt: dpData.uploadedAt, uploadedBy: dpData.uploadedBy, sheetNames: dpData.sheetNames }),
                         updated_at: new Date().toISOString()
+                    }, { onConflict: 'key' }).then(function() {
+                        console.log('Dienstplan Meta → Cloud OK');
                     });
                     cloudUpsert('app_settings', {
                         key: 'dienstplan_data',
                         value: dpData.base64,
                         updated_at: new Date().toISOString()
+                    }, { onConflict: 'key' }).then(function() {
+                        console.log('Dienstplan Daten → Cloud OK (' + Math.round(dpData.base64.length / 1024) + ' KB)');
                     });
 
                     dpCurrentSheet = 0;
@@ -5222,8 +5221,8 @@
             if (preview) preview.textContent = 'Kein Dienstplan hochgeladen';
             if (lastUpdate) lastUpdate.textContent = '';
             if (info) info.textContent = 'Kein Dienstplan hochgeladen';
-            cloudUpsert('app_settings', { key: 'dienstplan_meta', value: JSON.stringify(null), updated_at: new Date().toISOString() });
-            cloudUpsert('app_settings', { key: 'dienstplan_data', value: '', updated_at: new Date().toISOString() });
+            cloudUpsert('app_settings', { key: 'dienstplan_meta', value: JSON.stringify(null), updated_at: new Date().toISOString() }, { onConflict: 'key' });
+            cloudUpsert('app_settings', { key: 'dienstplan_data', value: '', updated_at: new Date().toISOString() }, { onConflict: 'key' });
             addAuditEntry('DIENSTPLAN_GELÖSCHT', 'Dienstplan wurde gelöscht');
         }
 
