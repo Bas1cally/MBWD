@@ -1404,7 +1404,11 @@
             try {
                 const { error } = await supabaseClient.from(table).upsert(data, options || {});
                 if (error) throw error;
-            } catch (e) { console.warn('cloudUpsert(' + table + '):', e.message); queueOffline('upsert', table, data); }
+            } catch (e) {
+                console.error('cloudUpsert(' + table + ') FEHLER:', e.message || e);
+                queueOffline('upsert', table, data);
+                throw e;
+            }
         }
 
         async function cloudInsert(table, data) {
@@ -4820,20 +4824,25 @@
                     localStorage.setItem('mbwd_dienstplan', JSON.stringify(dpData));
 
                     // Cloud-Sync: Metadaten + Datei-Daten
-                    cloudUpsert('app_kv', {
-                        key: 'dienstplan_meta',
-                        value: JSON.stringify({ fileName: dpData.fileName, uploadedAt: dpData.uploadedAt, uploadedBy: dpData.uploadedBy, sheetNames: dpData.sheetNames }),
-                        updated_at: new Date().toISOString()
-                    }, { onConflict: 'key' }).then(function() {
-                        console.log('Dienstplan Meta → Cloud OK');
-                    });
-                    cloudUpsert('app_kv', {
-                        key: 'dienstplan_data',
-                        value: dpData.base64,
-                        updated_at: new Date().toISOString()
-                    }, { onConflict: 'key' }).then(function() {
-                        console.log('Dienstplan Daten → Cloud OK (' + Math.round(dpData.base64.length / 1024) + ' KB)');
-                    });
+                    // Cloud-Sync: direkt mit await + Fehler-Feedback
+                    (async function() {
+                        try {
+                            await cloudUpsert('app_kv', {
+                                key: 'dienstplan_meta',
+                                value: JSON.stringify({ fileName: dpData.fileName, uploadedAt: dpData.uploadedAt, uploadedBy: dpData.uploadedBy, sheetNames: dpData.sheetNames }),
+                                updated_at: new Date().toISOString()
+                            }, { onConflict: 'key' });
+                            console.log('Dienstplan Meta → Cloud OK');
+                        } catch(e) { console.error('Dienstplan Meta → Cloud FEHLER:', e); }
+                        try {
+                            await cloudUpsert('app_kv', {
+                                key: 'dienstplan_data',
+                                value: dpData.base64,
+                                updated_at: new Date().toISOString()
+                            }, { onConflict: 'key' });
+                            console.log('Dienstplan Daten → Cloud OK (' + Math.round(dpData.base64.length / 1024) + ' KB)');
+                        } catch(e) { console.error('Dienstplan Daten → Cloud FEHLER:', e); }
+                    })();
 
                     dpCurrentSheet = 0;
                     renderDienstplan();
@@ -5151,8 +5160,8 @@
             html += '<div class="dp-legend">';
             var legendItems = [
                 ['FI','fi','Früh I'],['FII','fii','Früh II'],['SI','si','Spät I'],['NI','ni','Nacht I'],
-                ['DI','di','Dienst I'],['GT','gt','Gleittag'],['KT','kt','Klinik-Tag'],['KU','ku','Kurs'],
-                ['NST','nst','Nachtschicht-Tag'],['SD','sd','Sonderdienst'],['U','u','Urlaub'],
+                ['DI','di','Diagnostik I'],['DII','dii','Diagnostik II'],['GT','gt','Gleittag'],['KT','kt','Koordination'],['KU','ku','Kuppenheim'],
+                ['NST','nst','Nachtschichtausgleichstag'],['SD','sd','Sonderdienst'],['U','u','Urlaub'],
                 ['EH','eh','Erste Hilfe'],['Fobi','fobi','Fortbildung']
             ];
             legendItems.forEach(function(l) {
