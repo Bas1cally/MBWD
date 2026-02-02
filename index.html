@@ -541,18 +541,36 @@
         .tile-last { font-size: 11px; color: var(--success); margin-top: 6px; font-weight: 500; opacity: 0.8; }
         .tile-last.overdue { color: #e74c3c; }
         /* DIENSTPLAN */
-        .dp-table-wrapper { overflow-x: auto; overflow-y: auto; max-height: 75vh; -webkit-overflow-scrolling: touch; position: relative; border-radius: var(--radius); border: 1px solid var(--border); }
-        .dp-table { border-collapse: collapse; font-size: 11px; background: var(--bg-card); min-width: max-content; }
-        .dp-table th { background: #3498db; color: white; padding: 4px 6px; text-align: center; font-weight: 600; font-size: 10px; position: sticky; top: 0; z-index: 2; white-space: nowrap; }
-        .dp-table td { padding: 3px 5px; border-bottom: 1px solid var(--border); border-right: 1px solid rgba(255,255,255,0.04); color: var(--text-primary); white-space: nowrap; text-align: center; font-size: 10px; min-width: 28px; }
-        .dp-table tr:nth-child(even) { background: var(--bg-secondary); }
-        .dp-table tr:hover { background: rgba(52,152,219,0.1); }
-        .dp-table td:first-child, .dp-table th:first-child { position: sticky; left: 0; z-index: 1; background: var(--bg-card); text-align: left; font-weight: 600; min-width: 80px; max-width: 120px; border-right: 2px solid var(--border); padding-left: 8px; padding-right: 8px; }
-        .dp-table th:first-child { z-index: 3; background: #2980b9; }
-        .dp-table tr:nth-child(even) td:first-child { background: var(--bg-secondary); }
-        .dp-table tr:hover td:first-child { background: rgba(52,152,219,0.15); }
-        .dp-today-col { background: rgba(0,212,170,0.15) !important; }
-        .dp-weekend-col { background: rgba(255,255,255,0.03); }
+        .dp-month-nav { display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:16px; }
+        .dp-month-nav button { background:var(--bg-card); border:1px solid var(--border); color:var(--text-primary); width:36px; height:36px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:var(--transition); }
+        .dp-month-nav button:hover { background:var(--accent); color:#000; border-color:var(--accent); }
+        .dp-month-nav .dp-month-label { font-size:18px; font-weight:700; min-width:160px; text-align:center; }
+        .dp-month-nav .dp-today-btn { background:var(--accent); color:#000; border:none; border-radius:20px; padding:6px 14px; font-size:12px; font-weight:600; cursor:pointer; }
+        .dp-table-wrapper { overflow-x:auto; -webkit-overflow-scrolling:touch; border-radius:var(--radius); border:1px solid var(--border); }
+        .dp-table { border-collapse:collapse; width:100%; background:var(--bg-card); }
+        .dp-table th { background:#3498db; color:white; padding:6px 4px; text-align:center; font-weight:600; font-size:11px; white-space:nowrap; border-right:1px solid rgba(255,255,255,0.15); }
+        .dp-table td { padding:6px 4px; border-bottom:1px solid var(--border); border-right:1px solid rgba(255,255,255,0.04); color:var(--text-primary); white-space:nowrap; text-align:center; font-size:11px; }
+        .dp-table tr:nth-child(even) { background:var(--bg-secondary); }
+        .dp-table tr:hover { background:rgba(52,152,219,0.08); }
+        .dp-table td:first-child, .dp-table th:first-child { position:sticky; left:0; z-index:1; background:var(--bg-card); text-align:left; font-weight:600; min-width:90px; border-right:2px solid var(--border); padding:6px 10px; font-size:12px; }
+        .dp-table th:first-child { z-index:3; background:#2980b9; }
+        .dp-table tr:nth-child(even) td:first-child { background:var(--bg-secondary); }
+        .dp-table tr:hover td:first-child { background:rgba(52,152,219,0.12); }
+        .dp-today-col { background:rgba(0,212,170,0.18) !important; font-weight:700 !important; }
+        .dp-weekend { background:rgba(255,255,255,0.03); color:rgba(255,255,255,0.4) !important; }
+        .dp-kw-header { font-size:9px; color:rgba(255,255,255,0.5); font-weight:400; }
+        .dp-shift { display:inline-block; padding:2px 6px; border-radius:4px; font-size:10px; font-weight:600; min-width:24px; }
+        .dp-shift-fi { background:#2ecc71; color:#000; } .dp-shift-fii { background:#27ae60; color:#fff; }
+        .dp-shift-si { background:#3498db; color:#fff; } .dp-shift-ni { background:#9b59b6; color:#fff; }
+        .dp-shift-di { background:#e67e22; color:#fff; } .dp-shift-dii { background:#d35400; color:#fff; }
+        .dp-shift-gt { background:#1abc9c; color:#000; } .dp-shift-kt { background:#f39c12; color:#000; }
+        .dp-shift-ku { background:#8e44ad; color:#fff; } .dp-shift-nst { background:#e74c3c; color:#fff; }
+        .dp-shift-sd { background:#2980b9; color:#fff; } .dp-shift-u { background:#95a5a6; color:#000; }
+        .dp-shift-eh { background:#e74c3c; color:#fff; } .dp-shift-fobi { background:#16a085; color:#fff; }
+        .dp-shift-a { background:#c0392b; color:#fff; } .dp-shift-fzc { background:#7f8c8d; color:#fff; }
+        .dp-shift-sek { background:#34495e; color:#fff; } .dp-shift-kur { background:#2c3e50; color:#fff; }
+        .dp-legend { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; padding:10px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); }
+        .dp-legend-item { font-size:10px; display:flex; align-items:center; gap:3px; }
         .dp-drop-active { border-color: #3498db !important; background: rgba(52,152,219,0.08) !important; }
         .dp-sheet-tab { display: inline-block; padding: 8px 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px 8px 0 0; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-right: 4px; transition: var(--transition); }
         .dp-sheet-tab.active { background: #3498db; color: white; border-color: #3498db; }
@@ -1014,6 +1032,13 @@
             </div>
             <!-- Sheet Tabs -->
             <div id="dpSheetTabs" style="display:none;overflow-x:auto;white-space:nowrap;margin-bottom:16px;padding-bottom:4px;"></div>
+            <!-- Month Navigation -->
+            <div class="dp-month-nav" id="dpMonthNav" style="display:none;">
+                <button onclick="dpChangeMonth(-1)"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/></svg></button>
+                <div class="dp-month-label" id="dpMonthLabel"></div>
+                <button onclick="dpChangeMonth(1)"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/></svg></button>
+                <button class="dp-today-btn" onclick="dpGoToToday()">Heute</button>
+            </div>
             <!-- Table Content -->
             <div id="dpTableContainer"></div>
         </div>
@@ -4732,18 +4757,143 @@
             }
         }
 
+        var dpParsedData = null;
+        var dpViewMonth = null; // 0-11
+
+        var DP_MONTH_NAMES = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+        var DP_MONTH_FULL = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+        var DP_SHIFT_CLASSES = {
+            'fi':'fi','fii':'fii','si':'si','ni':'ni','di':'di','dii':'dii',
+            'gt':'gt','kt':'kt','ku':'ku','nst':'nst','sd':'sd','u':'u','u    alt':'u',
+            'eh':'eh','fobi':'fobi','a':'a','fzc':'fzc','sek':'sek','kur':'kur','1.at':'fobi'
+        };
+
+        function dpParseSheet(json) {
+            // Parse the boomer structure: 2 half-year blocks vertically
+            // Block pattern: monthRow (has Jan/Feb..), then ferienRow, kwRow, dayRow, weekdayRow, then employee rows
+            var monthNamesLower = DP_MONTH_NAMES.map(function(m) { return m.toLowerCase(); });
+            monthNamesLower.push('mar'); // Alternative für Mär
+
+            var blocks = [];
+            var employees = [];
+
+            // Find all blocks by finding KW rows
+            var kwRows = [];
+            json.forEach(function(row, rIdx) {
+                for (var c = 0; c < Math.min(row.length, 10); c++) {
+                    if (row[c] && String(row[c]).indexOf('KW') === 0) { kwRows.push(rIdx); break; }
+                }
+            });
+
+            // Extract employee names from first block (col B = index 1)
+            if (kwRows.length > 0) {
+                var nameStartRow = kwRows[0] + 3; // after KW, days, weekdays
+                for (var r = nameStartRow; r < json.length; r++) {
+                    var name = json[r] && json[r][1] ? String(json[r][1]).trim() : '';
+                    if (!name) continue;
+                    if (name === 'Summe' || name === 'Jahr') break;
+                    // Check if we hit next block (month header)
+                    var isMonthRow = false;
+                    if (json[r]) {
+                        json[r].forEach(function(cell) {
+                            if (cell && monthNamesLower.indexOf(String(cell).toLowerCase().trim()) >= 0) isMonthRow = true;
+                        });
+                    }
+                    if (isMonthRow) break;
+                    employees.push(name);
+                }
+            }
+
+            // For each KW row, parse months
+            kwRows.forEach(function(kwRowIdx) {
+                var dayRow = json[kwRowIdx + 1] || [];
+                var wdayRow = json[kwRowIdx + 2] || [];
+                var monthRow = json[kwRowIdx - 2] || [];
+                var yearRow = json[kwRowIdx - 3] || [];
+
+                // Find year
+                var year = new Date().getFullYear();
+                yearRow.forEach(function(cell) {
+                    var n = parseInt(cell);
+                    if (n >= 2024 && n <= 2030) year = n;
+                });
+                monthRow.forEach(function(cell) {
+                    var n = parseInt(cell);
+                    if (n >= 2024 && n <= 2030) year = n;
+                });
+
+                // Find which months are in this row by checking month names
+                var monthPositions = [];
+                monthRow.forEach(function(cell, cIdx) {
+                    if (!cell) return;
+                    var lower = String(cell).toLowerCase().trim();
+                    var mIdx = monthNamesLower.indexOf(lower);
+                    if (mIdx >= 0) {
+                        if (mIdx === 12) mIdx = 2; // 'mar' -> März
+                        monthPositions.push({ month: mIdx, col: cIdx });
+                    }
+                });
+
+                // Build day-to-month mapping by tracking day numbers
+                var currentMonth = monthPositions.length > 0 ? monthPositions[0].month : 0;
+                var prevDay = 0;
+                var dayMonthMap = {};
+
+                for (var c = 2; c < dayRow.length; c++) {
+                    var dayNum = parseInt(dayRow[c]);
+                    if (isNaN(dayNum) || dayNum < 1 || dayNum > 31) continue;
+
+                    // Check if a month starts at or before this col
+                    monthPositions.forEach(function(mp) {
+                        if (mp.col <= c && mp.col > (dayMonthMap[c-1] ? dayMonthMap[c-1].monthCol : -1)) {
+                            currentMonth = mp.month;
+                        }
+                    });
+
+                    if (dayNum < prevDay && dayNum === 1) {
+                        currentMonth = (currentMonth + 1) % 12;
+                    }
+                    prevDay = dayNum;
+
+                    var wday = wdayRow[c] ? String(wdayRow[c]).trim() : '';
+                    dayMonthMap[c] = { day: dayNum, month: currentMonth, year: year, wday: wday, col: c };
+                }
+
+                // Extract employee data for this block
+                var empStartRow = kwRowIdx + 3;
+                for (var ei = 0; ei < employees.length; ei++) {
+                    var dataRow = json[empStartRow + ei] || [];
+                    Object.keys(dayMonthMap).forEach(function(colStr) {
+                        var col = parseInt(colStr);
+                        var dm = dayMonthMap[col];
+                        var val = dataRow[col] ? String(dataRow[col]).trim() : '';
+                        if (!val) return;
+
+                        if (!blocks[dm.month]) blocks[dm.month] = { month: dm.month, year: dm.year, days: {}, wdays: {} };
+                        if (!blocks[dm.month].days[dm.day]) blocks[dm.month].days[dm.day] = {};
+                        blocks[dm.month].days[dm.day][employees[ei]] = val;
+                        blocks[dm.month].wdays[dm.day] = dm.wday;
+                    });
+                }
+            });
+
+            return { blocks: blocks, employees: employees };
+        }
+
         function renderDienstplan() {
             if (!dpWorkbook) return;
             var tabsEl = document.getElementById('dpSheetTabs');
             var tableEl = document.getElementById('dpTableContainer');
             var zone = document.getElementById('dpDropZone');
 
-            // Drop-Zone verkleinern wenn Daten da sind
-            zone.style.padding = '16px 20px';
-            zone.querySelector('div:first-child').style.fontSize = '24px';
-            zone.querySelector('div:first-child').style.marginBottom = '4px';
-            zone.querySelector('div:nth-child(2)').style.fontSize = '13px';
-            zone.querySelector('div:nth-child(3)').style.fontSize = '11px';
+            // Drop-Zone verkleinern
+            if (zone && zone.style.display !== 'none') {
+                zone.style.padding = '16px 20px';
+                var kids = zone.querySelectorAll('div');
+                if (kids[0]) kids[0].style.fontSize = '24px';
+                if (kids[1]) kids[1].style.fontSize = '13px';
+                if (kids[2]) kids[2].style.fontSize = '11px';
+            }
 
             // Sheet Tabs rendern
             if (dpWorkbook.SheetNames.length > 1) {
@@ -4755,103 +4905,155 @@
                 tabsEl.style.display = 'none';
             }
 
-            // Tabelle rendern
             var sheetName = dpWorkbook.SheetNames[dpCurrentSheet];
-            var sheet = dpWorkbook.Sheets[sheetName];
-            var json = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
 
-            if (json.length === 0) {
-                tableEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">Leeres Tabellenblatt</div>';
+            // Nur den Dienstplan-Sheet intelligent parsen
+            if (sheetName === 'Dienstplan') {
+                var sheet = dpWorkbook.Sheets[sheetName];
+                var json = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+                dpParsedData = dpParseSheet(json);
+
+                if (dpViewMonth === null) dpViewMonth = new Date().getMonth();
+                document.getElementById('dpMonthNav').style.display = 'flex';
+                renderDpMonth();
                 return;
             }
 
-            // Heute erkennen für Spalten-Hervorhebung
-            var today = new Date();
-            var todayDay = today.getDate();
-            var todayMonth = today.getMonth(); // 0-based
-            var todayColIdx = -1;
-            var monthNames = ['jan','feb','mär','mar','apr','mai','jun','jul','aug','sep','okt','nov','dez'];
+            // Andere Sheets (Jahr, Monat) als normale Tabelle
+            document.getElementById('dpMonthNav').style.display = 'none';
+            var sheet = dpWorkbook.Sheets[sheetName];
+            var json = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+            if (json.length === 0) { tableEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">Leeres Tabellenblatt</div>'; return; }
 
-            // Monats-Zeile und Tages-Zeile finden
-            var currentMonthStartCol = -1;
-            var dayRowIdx = -1;
-            json.forEach(function(row, rIdx) {
-                row.forEach(function(cell, cIdx) {
-                    var cellStr = String(cell).toLowerCase().trim();
-                    if (monthNames.indexOf(cellStr) === todayMonth) {
-                        currentMonthStartCol = cIdx;
-                    }
-                });
-                // Zeile mit Tageszahlen erkennen (1-31)
-                if (dayRowIdx === -1) {
-                    var numCount = 0;
-                    row.forEach(function(cell) {
-                        var n = parseInt(cell);
-                        if (n >= 1 && n <= 31) numCount++;
-                    });
-                    if (numCount >= 10) dayRowIdx = rIdx;
-                }
-            });
-
-            // Heute-Spalte finden
-            if (dayRowIdx >= 0) {
-                json[dayRowIdx].forEach(function(cell, cIdx) {
-                    if (parseInt(cell) === todayDay && todayColIdx === -1) {
-                        // Prüfen ob in der Nähe des aktuellen Monats
-                        if (currentMonthStartCol === -1 || cIdx >= currentMonthStartCol) {
-                            todayColIdx = cIdx;
-                        }
-                    }
-                });
-            }
-
-            // Wochenend-Spalten erkennen (Sa, So Zeile)
-            var weekendCols = {};
-            var dayNameRowIdx = dayRowIdx >= 0 ? dayRowIdx + 1 : -1;
-            if (dayNameRowIdx >= 0 && dayNameRowIdx < json.length) {
-                json[dayNameRowIdx].forEach(function(cell, cIdx) {
-                    var d = String(cell).toLowerCase().trim();
-                    if (d === 'sa' || d === 'so') weekendCols[cIdx] = true;
-                });
-            }
-
-            var html = '<div class="dp-table-wrapper" id="dpScrollWrapper"><table class="dp-table">';
+            var html = '<div class="dp-table-wrapper"><table class="dp-table">';
             json.forEach(function(row, rowIdx) {
                 html += '<tr>';
                 row.forEach(function(cell, colIdx) {
                     var tag = rowIdx === 0 ? 'th' : 'td';
                     var val = cell;
-                    if (cell instanceof Date) {
-                        val = cell.toLocaleDateString('de-DE');
-                    } else if (typeof cell === 'number' && cell > 40000 && cell < 50000) {
-                        try {
-                            var d = XLSX.SSF.parse_date_code(cell);
-                            val = (d.d < 10 ? '0' : '') + d.d + '.' + (d.m < 10 ? '0' : '') + d.m + '.' + d.y;
-                        } catch(e) { val = cell; }
+                    if (typeof cell === 'number' && cell > 40000 && cell < 50000) {
+                        try { var d = XLSX.SSF.parse_date_code(cell); val = (d.d<10?'0':'')+d.d+'.'+(d.m<10?'0':'')+d.m+'.'+d.y; } catch(e) {}
                     }
-                    var classes = [];
-                    if (colIdx === todayColIdx) classes.push('dp-today-col');
-                    if (weekendCols[colIdx] && colIdx !== todayColIdx) classes.push('dp-weekend-col');
-                    var idAttr = (colIdx === todayColIdx && rowIdx === 0) ? ' id="dpTodayCol"' : '';
-                    html += '<' + tag + (classes.length ? ' class="' + classes.join(' ') + '"' : '') + idAttr + '>' + sanitizeHTML(String(val)) + '</' + tag + '>';
+                    html += '<'+tag+'>'+sanitizeHTML(String(val))+'</'+tag+'>';
                 });
                 html += '</tr>';
             });
             html += '</table></div>';
             tableEl.innerHTML = html;
+        }
 
-            // Auto-Scroll zum heutigen Tag
-            setTimeout(function() {
-                var todayEl = document.getElementById('dpTodayCol');
-                var wrapper = document.getElementById('dpScrollWrapper');
-                if (todayEl && wrapper) {
-                    wrapper.scrollLeft = todayEl.offsetLeft - wrapper.clientWidth / 3;
+        function renderDpMonth() {
+            if (!dpParsedData) return;
+            var tableEl = document.getElementById('dpTableContainer');
+            var block = dpParsedData.blocks[dpViewMonth];
+            var employees = dpParsedData.employees;
+            var today = new Date();
+            var todayDay = today.getDate();
+            var todayMonth = today.getMonth();
+
+            // Month label
+            var yearLabel = block ? block.year : new Date().getFullYear();
+            document.getElementById('dpMonthLabel').textContent = DP_MONTH_FULL[dpViewMonth] + ' ' + yearLabel;
+
+            if (!block || Object.keys(block.days).length === 0) {
+                tableEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Keine Daten für ' + DP_MONTH_FULL[dpViewMonth] + '</div>';
+                return;
+            }
+
+            // Get sorted day numbers
+            var dayNums = Object.keys(block.days).map(Number).sort(function(a,b) { return a-b; });
+
+            // Build table
+            var html = '<div class="dp-table-wrapper"><table class="dp-table">';
+
+            // Header row 1: KW spans
+            html += '<tr><th></th>';
+            var kwStart = null; var kwNum = null; var kwCols = [];
+            dayNums.forEach(function(day, idx) {
+                var d = new Date(yearLabel, dpViewMonth, day);
+                var kw = getISOWeek(d);
+                if (kw !== kwNum) {
+                    if (kwNum !== null) kwCols.push({ kw: kwNum, span: idx - kwStart });
+                    kwNum = kw; kwStart = idx;
                 }
-            }, 100);
+                if (idx === dayNums.length - 1) kwCols.push({ kw: kwNum, span: idx - kwStart + 1 });
+            });
+            kwCols.forEach(function(k) {
+                html += '<th colspan="' + k.span + '" class="dp-kw-header">KW ' + k.kw + '</th>';
+            });
+            html += '</tr>';
+
+            // Header row 2: Day numbers + weekdays
+            html += '<tr><th>Name</th>';
+            dayNums.forEach(function(day) {
+                var wday = block.wdays[day] || '';
+                var isToday = (dpViewMonth === todayMonth && day === todayDay);
+                var isWeekend = (wday === 'Sa' || wday === 'So');
+                var cls = isToday ? ' class="dp-today-col"' : (isWeekend ? ' class="dp-weekend"' : '');
+                html += '<th' + cls + '>' + wday + '<br>' + day + '</th>';
+            });
+            html += '</tr>';
+
+            // Employee rows
+            employees.forEach(function(name) {
+                html += '<tr><td>' + sanitizeHTML(name) + '</td>';
+                dayNums.forEach(function(day) {
+                    var shift = block.days[day] && block.days[day][name] ? block.days[day][name] : '';
+                    var isToday = (dpViewMonth === todayMonth && day === todayDay);
+                    var wday = block.wdays[day] || '';
+                    var isWeekend = (wday === 'Sa' || wday === 'So');
+                    var tdClass = isToday ? ' class="dp-today-col"' : (isWeekend && !shift ? ' class="dp-weekend"' : '');
+
+                    if (shift) {
+                        var shiftLower = shift.toLowerCase().trim();
+                        var shiftClass = DP_SHIFT_CLASSES[shiftLower] || '';
+                        html += '<td' + tdClass + '><span class="dp-shift' + (shiftClass ? ' dp-shift-' + shiftClass : '') + '">' + sanitizeHTML(shift) + '</span></td>';
+                    } else {
+                        html += '<td' + tdClass + '></td>';
+                    }
+                });
+                html += '</tr>';
+            });
+
+            html += '</table></div>';
+
+            // Legend
+            html += '<div class="dp-legend">';
+            var legendItems = [
+                ['FI','fi','Früh I'],['FII','fii','Früh II'],['SI','si','Spät I'],['NI','ni','Nacht I'],
+                ['DI','di','Dienst I'],['GT','gt','Gleittag'],['KT','kt','Klinik-Tag'],['KU','ku','Kurs'],
+                ['NST','nst','Nachtschicht-Tag'],['SD','sd','Sonderdienst'],['U','u','Urlaub'],
+                ['EH','eh','Erste Hilfe'],['Fobi','fobi','Fortbildung']
+            ];
+            legendItems.forEach(function(l) {
+                html += '<div class="dp-legend-item"><span class="dp-shift dp-shift-' + l[1] + '">' + l[0] + '</span> ' + l[2] + '</div>';
+            });
+            html += '</div>';
+
+            tableEl.innerHTML = html;
+        }
+
+        function getISOWeek(d) {
+            var date = new Date(d.getTime());
+            date.setHours(0,0,0,0);
+            date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+            var week1 = new Date(date.getFullYear(), 0, 4);
+            return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+        }
+
+        function dpChangeMonth(delta) {
+            dpViewMonth = ((dpViewMonth || 0) + delta + 12) % 12;
+            renderDpMonth();
+        }
+
+        function dpGoToToday() {
+            dpViewMonth = new Date().getMonth();
+            renderDpMonth();
         }
 
         function switchDpSheet(idx) {
             dpCurrentSheet = idx;
+            dpViewMonth = null;
             renderDienstplan();
         }
 
