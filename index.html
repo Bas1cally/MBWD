@@ -4769,15 +4769,16 @@
         };
 
         function dpParseSheet(json) {
-            // Parse the boomer structure: 2 half-year blocks vertically
-            // Block pattern: monthRow (has Jan/Feb..), then ferienRow, kwRow, dayRow, weekdayRow, then employee rows
+            // Parse the boomer structure: half-year blocks vertically
+            // Each block: monthRow, ferienRow, kwRow, dayRow, weekdayRow, then N employee rows
             var monthNamesLower = DP_MONTH_NAMES.map(function(m) { return m.toLowerCase(); });
             monthNamesLower.push('mar'); // Alternative für Mär
 
-            var blocks = [];
-            var employees = [];
+            var blocks = {}; // month -> { year, days: { dayNum: { name: shift } }, wdays: { dayNum: wday } }
+            var employeeSet = {};
+            var employeeOrder = [];
 
-            // Find all blocks by finding KW rows
+            // Find all KW rows (block starts)
             var kwRows = [];
             json.forEach(function(row, rIdx) {
                 for (var c = 0; c < Math.min(row.length, 10); c++) {
@@ -4785,44 +4786,22 @@
                 }
             });
 
-            // Extract employee names from first block (col B = index 1)
-            if (kwRows.length > 0) {
-                var nameStartRow = kwRows[0] + 3; // after KW, days, weekdays
-                for (var r = nameStartRow; r < json.length; r++) {
-                    var name = json[r] && json[r][1] ? String(json[r][1]).trim() : '';
-                    if (!name) continue;
-                    if (name === 'Summe' || name === 'Jahr') break;
-                    // Check if we hit next block (month header)
-                    var isMonthRow = false;
-                    if (json[r]) {
-                        json[r].forEach(function(cell) {
-                            if (cell && monthNamesLower.indexOf(String(cell).toLowerCase().trim()) >= 0) isMonthRow = true;
-                        });
-                    }
-                    if (isMonthRow) break;
-                    employees.push(name);
-                }
-            }
-
-            // For each KW row, parse months
             kwRows.forEach(function(kwRowIdx) {
                 var dayRow = json[kwRowIdx + 1] || [];
                 var wdayRow = json[kwRowIdx + 2] || [];
                 var monthRow = json[kwRowIdx - 2] || [];
                 var yearRow = json[kwRowIdx - 3] || [];
 
-                // Find year
+                // Find year from nearby rows
                 var year = new Date().getFullYear();
-                yearRow.forEach(function(cell) {
-                    var n = parseInt(cell);
-                    if (n >= 2024 && n <= 2030) year = n;
-                });
-                monthRow.forEach(function(cell) {
-                    var n = parseInt(cell);
-                    if (n >= 2024 && n <= 2030) year = n;
+                [yearRow, monthRow, json[kwRowIdx - 1] || []].forEach(function(row) {
+                    row.forEach(function(cell) {
+                        var n = parseInt(cell);
+                        if (n >= 2024 && n <= 2030) year = n;
+                    });
                 });
 
-                // Find which months are in this row by checking month names
+                // Find month positions from month header row
                 var monthPositions = [];
                 monthRow.forEach(function(cell, cIdx) {
                     if (!cell) return;
@@ -4834,7 +4813,7 @@
                     }
                 });
 
-                // Build day-to-month mapping by tracking day numbers
+                // Build day-to-month mapping
                 var currentMonth = monthPositions.length > 0 ? monthPositions[0].month : 0;
                 var prevDay = 0;
                 var dayMonthMap = {};
@@ -4843,7 +4822,6 @@
                     var dayNum = parseInt(dayRow[c]);
                     if (isNaN(dayNum) || dayNum < 1 || dayNum > 31) continue;
 
-                    // Check if a month starts at or before this col
                     monthPositions.forEach(function(mp) {
                         if (mp.col <= c && mp.col > (dayMonthMap[c-1] ? dayMonthMap[c-1].monthCol : -1)) {
                             currentMonth = mp.month;
@@ -4856,28 +4834,50 @@
                     prevDay = dayNum;
 
                     var wday = wdayRow[c] ? String(wdayRow[c]).trim() : '';
-                    dayMonthMap[c] = { day: dayNum, month: currentMonth, year: year, wday: wday, col: c };
+                    dayMonthMap[c] = { day: dayNum, month: currentMonth, year: year, wday: wday, monthCol: c };
                 }
 
-                // Extract employee data for this block
+                // Read employee rows: start after KW+days+weekdays, read until next block or end
                 var empStartRow = kwRowIdx + 3;
-                for (var ei = 0; ei < employees.length; ei++) {
-                    var dataRow = json[empStartRow + ei] || [];
+                for (var r = empStartRow; r < json.length; r++) {
+                    var row = json[r] || [];
+                    var name = row[1] ? String(row[1]).trim() : '';
+
+                    // Stop at next block indicator
+                    var hitNextBlock = false;
+                    for (var cc = 0; cc < Math.min(row.length, 20); cc++) {
+                        var cellVal = row[cc] ? String(row[cc]).toLowerCase().trim() : '';
+                        if (monthNamesLower.indexOf(cellVal) >= 0) { hitNextBlock = true; break; }
+                        var nVal = parseInt(row[cc]);
+                        if (nVal >= 2024 && nVal <= 2030 && cc > 5) { hitNextBlock = true; break; }
+                    }
+                    if (hitNextBlock) break;
+                    if (!name) continue;
+                    if (name === 'Summe') break;
+
+                    // Track employee order
+                    if (!employeeSet[name]) {
+                        employeeSet[name] = true;
+                        employeeOrder.push(name);
+                    }
+
+                    // Extract shift data for this employee
                     Object.keys(dayMonthMap).forEach(function(colStr) {
                         var col = parseInt(colStr);
                         var dm = dayMonthMap[col];
-                        var val = dataRow[col] ? String(dataRow[col]).trim() : '';
+                        var val = row[col] ? String(row[col]).trim() : '';
                         if (!val) return;
 
-                        if (!blocks[dm.month]) blocks[dm.month] = { month: dm.month, year: dm.year, days: {}, wdays: {} };
-                        if (!blocks[dm.month].days[dm.day]) blocks[dm.month].days[dm.day] = {};
-                        blocks[dm.month].days[dm.day][employees[ei]] = val;
-                        blocks[dm.month].wdays[dm.day] = dm.wday;
+                        var monthKey = dm.month;
+                        if (!blocks[monthKey]) blocks[monthKey] = { month: dm.month, year: dm.year, days: {}, wdays: {} };
+                        if (!blocks[monthKey].days[dm.day]) blocks[monthKey].days[dm.day] = {};
+                        blocks[monthKey].days[dm.day][name] = val;
+                        blocks[monthKey].wdays[dm.day] = dm.wday;
                     });
                 }
             });
 
-            return { blocks: blocks, employees: employees };
+            return { blocks: blocks, employees: employeeOrder };
         }
 
         function renderDienstplan() {
