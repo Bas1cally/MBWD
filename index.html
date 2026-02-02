@@ -555,9 +555,10 @@
         .confetti-piece { position: absolute; width: 10px; height: 10px; top: -10px; animation: confetti-fall 3s ease-out forwards; }
         @keyframes confetti-fall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
+    <!-- CDN Scripts: crossorigin für SRI-Kompatibilität, Versionen gepinnt -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" crossorigin="anonymous" defer></script>
 </head>
 <body>
     <div class="offline-banner" id="offlineBanner">
@@ -591,6 +592,32 @@
                 <button type="button" class="pin-key" onclick="deletePin()"><svg viewBox="0 0 24 24"><path d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.11c.36.53.9.89 1.59.89h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-3 12.59L17.59 17 14 13.41 10.41 17 9 15.59 12.59 12 9 8.41 10.41 7 14 10.59 17.59 7 19 8.41 15.41 12 19 15.59z"/></svg></button>
             </div>
             <div class="login-error" id="loginError"></div>
+        </div>
+        <div id="dsgvoHinweis" style="margin:16px auto;max-width:340px;padding:12px 16px;background:rgba(255,255,255,0.08);border-radius:12px;border:1px solid rgba(255,255,255,0.12);font-size:11px;color:rgba(255,255,255,0.5);text-align:center;line-height:1.5;">
+            Mit der Anmeldung stimmen Sie der Verarbeitung Ihrer Daten (Name, Kürzel, Prüfprotokolle) gemäß Art. 6 Abs. 1 lit. b DSGVO zu. Daten werden in der EU (Supabase/Frankfurt) gespeichert.
+            <a href="#" onclick="showDsgvoDetails();return false;" style="color:rgba(255,255,255,0.7);text-decoration:underline;">Mehr erfahren</a>
+        </div>
+    </div>
+
+    <!-- DSGVO DETAIL MODAL -->
+    <div id="dsgvoModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:10000;background:rgba(0,0,0,0.7);padding:20px;overflow-y:auto;">
+        <div style="max-width:500px;margin:40px auto;background:#1e1e2e;border-radius:16px;padding:24px;color:#fff;font-size:13px;line-height:1.7;">
+            <h3 style="margin:0 0 16px;font-size:18px;">Datenschutzhinweis MBWD-App</h3>
+            <p><strong>Verantwortlicher:</strong> Mercedes-Benz Werksdienst, Standort 054 Rastatt</p>
+            <p><strong>Zweck der Verarbeitung:</strong> Digitale Dokumentation von Fahrzeugprüfungen, Meldungen und Einsätzen gemäß interner Qualitätssicherung.</p>
+            <p><strong>Verarbeitete Daten:</strong></p>
+            <ul style="padding-left:20px;">
+                <li>Name und Kürzel (Identifikation)</li>
+                <li>Prüfprotokolle und Checklisten</li>
+                <li>Meldungen und Kommentare</li>
+                <li>Unterschriften (digital)</li>
+                <li>Einsatzprotokolle</li>
+                <li>Anmelde-/Abmeldezeiten (Audit-Log)</li>
+            </ul>
+            <p><strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. b DSGVO (Erfüllung arbeitsvertraglicher Pflichten), Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an Qualitätssicherung).</p>
+            <p><strong>Speicherung:</strong> Lokaler Gerätespeicher + Supabase Cloud (EU, Frankfurt am Main). Automatische Löschung nach betrieblich festgelegter Aufbewahrungsfrist.</p>
+            <p><strong>Ihre Rechte:</strong> Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit. Wenden Sie sich an Ihren Vorgesetzten oder den Datenschutzbeauftragten.</p>
+            <button onclick="document.getElementById('dsgvoModal').style.display='none'" style="margin-top:16px;width:100%;padding:12px;background:#00d4aa;color:#000;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;">Verstanden</button>
         </div>
     </div>
 
@@ -1376,7 +1403,7 @@
                 var users = await cloudGet('users');
                 if (users) {
                     var obj = {};
-                    users.forEach(function(u) { obj[u.kuerzel] = { name: u.name, pin: u.pin, funktionen: u.funktionen || [] }; });
+                    users.forEach(function(u) { obj[u.kuerzel] = { name: u.name, pinHash: u.pin, funktionen: u.funktionen || [] }; });
                     localStorage.setItem('mbwd_users', JSON.stringify(obj));
                 }
                 // Meldungen
@@ -1497,7 +1524,7 @@
                     var u = await cloudGet('users');
                     if (u) {
                         var obj = {};
-                        u.forEach(function(x) { obj[x.kuerzel] = { name: x.name, pin: x.pin, funktionen: x.funktionen || [] }; });
+                        u.forEach(function(x) { obj[x.kuerzel] = { name: x.name, pinHash: x.pin, funktionen: x.funktionen || [] }; });
                         localStorage.setItem('mbwd_users', JSON.stringify(obj));
                     }
                 } else if (table === 'expiry_tracker') {
@@ -1510,8 +1537,20 @@
         }
 
 
+        // ============ PIN HASHING (SHA-256) ============
+        async function hashPin(pin) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode('mbwd_salt_054_' + pin);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // Admin-PIN Hash (SHA-256 von '5400' mit Salt)
+        // Zum Ändern: neuen Hash generieren via hashPin('NEUE_PIN') in der Konsole
+        const ADMIN_PIN_HASH = '4c7a6a441d62917c64f3a558e815cd0a59793f71a2ca1d394dec3ceb96e98d3e';
+
         // USERS - Admin ist fest, andere aus localStorage
-        const ADMIN_PIN = '5400';
         let loginAttempts = 0;
         let lockoutUntil = 0;
         const SESSION_TIMEOUT_MIN = 15; // Automatischer Logout nach 15 Minuten
@@ -1527,9 +1566,9 @@
         }
         function saveUsers(users) {
             localStorage.setItem('mbwd_users', JSON.stringify(users));
-            // Cloud-Sync
+            // Cloud-Sync (nur Hash, nie Klartext-PIN)
             Object.entries(users).forEach(function([k, u]) {
-                cloudUpsert('users', { kuerzel: k, name: u.name, pin: u.pin, funktionen: u.funktionen || [], updated_at: new Date().toISOString() });
+                cloudUpsert('users', { kuerzel: k, name: u.name, pin: u.pinHash || u.pin || '', funktionen: u.funktionen || [], updated_at: new Date().toISOString() });
             });
         }
         
@@ -1830,8 +1869,13 @@
             document.querySelectorAll('.pin-dot').forEach(d => d.classList.add('error'));
             setTimeout(() => { currentPin = ''; updatePinDisplay(); }, 1500);
         }
-        function checkPin() {
-            // Brute-force protection
+        async function checkPin() {
+            // Brute-force protection (persistent via localStorage)
+            var storedLockout = parseInt(localStorage.getItem('mbwd_lockout_until') || '0');
+            if (storedLockout > lockoutUntil) lockoutUntil = storedLockout;
+            var storedAttempts = parseInt(localStorage.getItem('mbwd_login_attempts') || '0');
+            if (storedAttempts > loginAttempts) loginAttempts = storedAttempts;
+
             if (Date.now() < lockoutUntil) {
                 const remaining = Math.ceil((lockoutUntil - Date.now()) / 1000);
                 showLoginError('Gesperrt für ' + remaining + ' Sekunden');
@@ -1839,28 +1883,43 @@
                 return;
             }
             const kuerzel = document.getElementById('loginKuerzel').value.trim().toUpperCase();
-            
-            // Admin Login (Kürzel: ADMIN, PIN: 5400)
-            if (kuerzel === 'ADMIN' && currentPin === ADMIN_PIN) {
+            const pinHash = await hashPin(currentPin);
+
+            // Admin Login (Hash-Vergleich)
+            if (kuerzel === 'ADMIN' && pinHash === ADMIN_PIN_HASH) {
                 currentUser = { role: 'admin', name: 'Administrator', kuerzel: 'ADMIN' };
                 loginSuccess();
                 return;
             }
-            
-            // User Login
+
+            // User Login (Hash-Vergleich)
             const users = getUsers();
-            if (users[kuerzel] && users[kuerzel].pin === currentPin) {
-                currentUser = { role: 'user', name: users[kuerzel].name, kuerzel: kuerzel, funktionen: users[kuerzel].funktionen || (users[kuerzel].funktion ? [users[kuerzel].funktion] : []) };
-                loginSuccess();
-                return;
+            if (users[kuerzel]) {
+                var userPinMatch = false;
+                if (users[kuerzel].pinHash) {
+                    userPinMatch = (users[kuerzel].pinHash === pinHash);
+                } else if (users[kuerzel].pin === currentPin) {
+                    // Legacy: Klartext-PIN → automatisch auf Hash migrieren
+                    userPinMatch = true;
+                    users[kuerzel].pinHash = pinHash;
+                    delete users[kuerzel].pin;
+                    saveUsers(users);
+                }
+                if (userPinMatch) {
+                    currentUser = { role: 'user', name: users[kuerzel].name, kuerzel: kuerzel, funktionen: users[kuerzel].funktionen || (users[kuerzel].funktion ? [users[kuerzel].funktion] : []) };
+                    loginSuccess();
+                    return;
+                }
             }
-            
-            // Fehler
+
+            // Fehler - exponentieller Lockout
             loginAttempts++;
+            localStorage.setItem('mbwd_login_attempts', loginAttempts.toString());
             if (loginAttempts >= 5) {
-                lockoutUntil = Date.now() + 30000;
-                loginAttempts = 0;
-                showLoginError('Zu viele Versuche. 30 Sekunden gesperrt.');
+                var lockoutDuration = Math.min(30000 * Math.pow(2, Math.floor(loginAttempts / 5) - 1), 300000); // 30s, 60s, 120s... max 5min
+                lockoutUntil = Date.now() + lockoutDuration;
+                localStorage.setItem('mbwd_lockout_until', lockoutUntil.toString());
+                showLoginError('Zu viele Versuche. ' + Math.ceil(lockoutDuration/1000) + ' Sekunden gesperrt.');
             } else if (!kuerzel) {
                 showLoginError('Bitte Kürzel eingeben');
             } else if (!users[kuerzel] && kuerzel !== 'ADMIN') {
@@ -1869,8 +1928,14 @@
                 showLoginError('Falsche PIN (' + (5 - loginAttempts) + ' Versuche übrig)');
             }
         }
+        function showDsgvoDetails() {
+            document.getElementById('dsgvoModal').style.display = 'block';
+        }
+
         function loginSuccess() {
             loginAttempts = 0;
+            localStorage.setItem('mbwd_login_attempts', '0');
+            localStorage.removeItem('mbwd_lockout_until');
             document.getElementById('userBadge').textContent = currentUser.kuerzel;
             document.getElementById('userBadge').classList.toggle('admin', currentUser.role === 'admin');
             document.getElementById('adminSection').style.display = currentUser.role === 'admin' ? 'block' : 'none';
@@ -1963,26 +2028,27 @@
             `}).join('');
         }
         
-        function addUser() {
+        async function addUser() {
             const kuerzel = document.getElementById('newUserKuerzel').value.trim().toUpperCase();
             const name = document.getElementById('newUserName').value.trim();
             const pin = document.getElementById('newUserPin').value.trim();
-            
+
             // Alle ausgewählten Funktionen sammeln
             const checkboxes = document.querySelectorAll('#newUserFunktionen input[type="checkbox"]:checked');
             const funktionen = Array.from(checkboxes).map(cb => cb.value);
-            
+
             if (!kuerzel) { alert('Bitte Kürzel eingeben'); return; }
             if (!name) { alert('Bitte Namen eingeben'); return; }
             if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) { alert('Bitte 4-stellige PIN eingeben (nur Zahlen)'); return; }
             if (kuerzel === 'ADMIN') { alert('Kürzel "ADMIN" ist reserviert'); return; }
-            
+
             const users = getUsers();
-            if (users[kuerzel]) { 
+            if (users[kuerzel]) {
                 if (!confirm(`Benutzer "${kuerzel}" existiert bereits. Überschreiben?`)) return;
             }
-            
-            users[kuerzel] = { name: name, pin: pin, funktionen: funktionen };
+
+            const pinHashed = await hashPin(pin);
+            users[kuerzel] = { name: name, pinHash: pinHashed, funktionen: funktionen };
             saveUsers(users);
             
             // Felder leeren
@@ -2224,9 +2290,9 @@
                 const statusBorder = hatRueckmeldung ? 'border-left-color: #27ae60 !important;' : '';
                 
                 return `
-                    <div class="meldung-card priority-${m.prioritaet} ${statusClass}" style="${statusBorder}">
+                    <div class="meldung-card priority-${sanitizeHTML(m.prioritaet)} ${statusClass}" style="${statusBorder}">
                         <div class="meldung-header">
-                            <span class="meldung-kategorie">${kategorieEmoji[m.kategorie] || '📋'} ${m.kategorie}</span>
+                            <span class="meldung-kategorie">${kategorieEmoji[m.kategorie] || '📋'} ${sanitizeHTML(m.kategorie)}</span>
                             <span class="meldung-zustaendig ${istFuerMich ? 'fuer-mich' : ''} ${hatRueckmeldung ? 'in-bearbeitung' : ''}">${hatRueckmeldung ? '✅ In Bearbeitung' : zustaendigLabel}</span>
                         </div>
                         <div class="meldung-titel">${sanitizeHTML(m.titel)}</div>
@@ -2241,9 +2307,9 @@
                         <div class="meldung-meta">
                             <span>👤 ${sanitizeHTML(m.ersteller)} • ${dateStr} ${timeStr}</span>
                             <div class="meldung-actions">
-                                ${(istZustaendig || isAdmin) ? `<button class="meldung-action-btn rueckmeldung" onclick="openRueckmeldungModal('${m.id}')" title="Kommentar hinzufügen"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg></button>` : ''}
-                                ${(hatRueckmeldung && istZustaendig) ? `<button class="meldung-action-btn erledigt" onclick="meldungErledigen('${m.id}')" title="Als erledigt markieren & löschen"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></button>` : ''}
-                                ${isAdmin ? `<button class="meldung-action-btn delete" onclick="deleteMeldung('${m.id}')" title="Löschen"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>` : ''}
+                                ${(istZustaendig || isAdmin) ? `<button class="meldung-action-btn rueckmeldung" onclick="openRueckmeldungModal('${sanitizeHTML(m.id)}')" title="Kommentar hinzufügen"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg></button>` : ''}
+                                ${(hatRueckmeldung && istZustaendig) ? `<button class="meldung-action-btn erledigt" onclick="meldungErledigen('${sanitizeHTML(m.id)}')" title="Als erledigt markieren & löschen"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></button>` : ''}
+                                ${isAdmin ? `<button class="meldung-action-btn delete" onclick="deleteMeldung('${sanitizeHTML(m.id)}')" title="Löschen"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>` : ''}
                             </div>
                         </div>
                     </div>
@@ -3039,7 +3105,7 @@
                         '<div class="expiry-item-meta">Eingetragen von ' + sanitizeHTML(item.addedBy) + ' am ' + addedDate + '</div>' +
                     '</div>' +
                     '<span class="expiry-item-days">' + daysText + '</span>' +
-                    '<button class="expiry-delete" onclick="deleteExpiryItem(\'' + item.id + '\')" title="Löschen (wenn ersetzt)">' +
+                    '<button class="expiry-delete" onclick="deleteExpiryItem(\'' + sanitizeHTML(item.id) + '\')" title="Löschen (wenn ersetzt)">' +
                         '<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>' +
                     '</button>' +
                 '</div>';
@@ -4169,7 +4235,7 @@
                         typeName = 'Reinigung KW' + (kw || '');
                         if (x.auto_archived) typeName += ' ⏰';
                     }
-                    return `<div class="archive-item" onclick="showCheckDetail('${x.id}', '${x.type}')">
+                    return `<div class="archive-item" onclick="showCheckDetail('${sanitizeHTML(x.id)}', '${sanitizeHTML(x.type)}')">
                         <div class="archive-item-header">
                             <span class="archive-item-date">${d}</span>
                             <span class="archive-item-badge" style="background:${badgeColor}">${typeName}</span>
