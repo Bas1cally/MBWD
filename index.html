@@ -541,11 +541,18 @@
         .tile-last { font-size: 11px; color: var(--success); margin-top: 6px; font-weight: 500; opacity: 0.8; }
         .tile-last.overdue { color: #e74c3c; }
         /* DIENSTPLAN */
-        .dp-table { width: 100%; border-collapse: collapse; font-size: 13px; background: var(--bg-card); border-radius: var(--radius); overflow: hidden; }
-        .dp-table th { background: #3498db; color: white; padding: 10px 12px; text-align: left; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px; position: sticky; top: 0; z-index: 1; white-space: nowrap; }
-        .dp-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--text-primary); white-space: nowrap; }
+        .dp-table-wrapper { overflow-x: auto; overflow-y: auto; max-height: 75vh; -webkit-overflow-scrolling: touch; position: relative; border-radius: var(--radius); border: 1px solid var(--border); }
+        .dp-table { border-collapse: collapse; font-size: 11px; background: var(--bg-card); min-width: max-content; }
+        .dp-table th { background: #3498db; color: white; padding: 4px 6px; text-align: center; font-weight: 600; font-size: 10px; position: sticky; top: 0; z-index: 2; white-space: nowrap; }
+        .dp-table td { padding: 3px 5px; border-bottom: 1px solid var(--border); border-right: 1px solid rgba(255,255,255,0.04); color: var(--text-primary); white-space: nowrap; text-align: center; font-size: 10px; min-width: 28px; }
         .dp-table tr:nth-child(even) { background: var(--bg-secondary); }
         .dp-table tr:hover { background: rgba(52,152,219,0.1); }
+        .dp-table td:first-child, .dp-table th:first-child { position: sticky; left: 0; z-index: 1; background: var(--bg-card); text-align: left; font-weight: 600; min-width: 80px; max-width: 120px; border-right: 2px solid var(--border); padding-left: 8px; padding-right: 8px; }
+        .dp-table th:first-child { z-index: 3; background: #2980b9; }
+        .dp-table tr:nth-child(even) td:first-child { background: var(--bg-secondary); }
+        .dp-table tr:hover td:first-child { background: rgba(52,152,219,0.15); }
+        .dp-today-col { background: rgba(0,212,170,0.15) !important; }
+        .dp-weekend-col { background: rgba(255,255,255,0.03); }
         .dp-drop-active { border-color: #3498db !important; background: rgba(52,152,219,0.08) !important; }
         .dp-sheet-tab { display: inline-block; padding: 8px 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px 8px 0 0; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-right: 4px; transition: var(--transition); }
         .dp-sheet-tab.active { background: #3498db; color: white; border-color: #3498db; }
@@ -1008,7 +1015,7 @@
             <!-- Sheet Tabs -->
             <div id="dpSheetTabs" style="display:none;overflow-x:auto;white-space:nowrap;margin-bottom:16px;padding-bottom:4px;"></div>
             <!-- Table Content -->
-            <div id="dpTableContainer" style="overflow-x:auto;"></div>
+            <div id="dpTableContainer"></div>
         </div>
     </div>
 
@@ -4758,27 +4765,89 @@
                 return;
             }
 
-            var html = '<table class="dp-table">';
+            // Heute erkennen für Spalten-Hervorhebung
+            var today = new Date();
+            var todayDay = today.getDate();
+            var todayMonth = today.getMonth(); // 0-based
+            var todayColIdx = -1;
+            var monthNames = ['jan','feb','mär','mar','apr','mai','jun','jul','aug','sep','okt','nov','dez'];
+
+            // Monats-Zeile und Tages-Zeile finden
+            var currentMonthStartCol = -1;
+            var dayRowIdx = -1;
+            json.forEach(function(row, rIdx) {
+                row.forEach(function(cell, cIdx) {
+                    var cellStr = String(cell).toLowerCase().trim();
+                    if (monthNames.indexOf(cellStr) === todayMonth) {
+                        currentMonthStartCol = cIdx;
+                    }
+                });
+                // Zeile mit Tageszahlen erkennen (1-31)
+                if (dayRowIdx === -1) {
+                    var numCount = 0;
+                    row.forEach(function(cell) {
+                        var n = parseInt(cell);
+                        if (n >= 1 && n <= 31) numCount++;
+                    });
+                    if (numCount >= 10) dayRowIdx = rIdx;
+                }
+            });
+
+            // Heute-Spalte finden
+            if (dayRowIdx >= 0) {
+                json[dayRowIdx].forEach(function(cell, cIdx) {
+                    if (parseInt(cell) === todayDay && todayColIdx === -1) {
+                        // Prüfen ob in der Nähe des aktuellen Monats
+                        if (currentMonthStartCol === -1 || cIdx >= currentMonthStartCol) {
+                            todayColIdx = cIdx;
+                        }
+                    }
+                });
+            }
+
+            // Wochenend-Spalten erkennen (Sa, So Zeile)
+            var weekendCols = {};
+            var dayNameRowIdx = dayRowIdx >= 0 ? dayRowIdx + 1 : -1;
+            if (dayNameRowIdx >= 0 && dayNameRowIdx < json.length) {
+                json[dayNameRowIdx].forEach(function(cell, cIdx) {
+                    var d = String(cell).toLowerCase().trim();
+                    if (d === 'sa' || d === 'so') weekendCols[cIdx] = true;
+                });
+            }
+
+            var html = '<div class="dp-table-wrapper" id="dpScrollWrapper"><table class="dp-table">';
             json.forEach(function(row, rowIdx) {
                 html += '<tr>';
-                row.forEach(function(cell) {
+                row.forEach(function(cell, colIdx) {
                     var tag = rowIdx === 0 ? 'th' : 'td';
                     var val = cell;
                     if (cell instanceof Date) {
                         val = cell.toLocaleDateString('de-DE');
                     } else if (typeof cell === 'number' && cell > 40000 && cell < 50000) {
-                        // Excel Seriennummer → Datum
                         try {
                             var d = XLSX.SSF.parse_date_code(cell);
                             val = (d.d < 10 ? '0' : '') + d.d + '.' + (d.m < 10 ? '0' : '') + d.m + '.' + d.y;
                         } catch(e) { val = cell; }
                     }
-                    html += '<' + tag + '>' + sanitizeHTML(String(val)) + '</' + tag + '>';
+                    var classes = [];
+                    if (colIdx === todayColIdx) classes.push('dp-today-col');
+                    if (weekendCols[colIdx] && colIdx !== todayColIdx) classes.push('dp-weekend-col');
+                    var idAttr = (colIdx === todayColIdx && rowIdx === 0) ? ' id="dpTodayCol"' : '';
+                    html += '<' + tag + (classes.length ? ' class="' + classes.join(' ') + '"' : '') + idAttr + '>' + sanitizeHTML(String(val)) + '</' + tag + '>';
                 });
                 html += '</tr>';
             });
-            html += '</table>';
+            html += '</table></div>';
             tableEl.innerHTML = html;
+
+            // Auto-Scroll zum heutigen Tag
+            setTimeout(function() {
+                var todayEl = document.getElementById('dpTodayCol');
+                var wrapper = document.getElementById('dpScrollWrapper');
+                if (todayEl && wrapper) {
+                    wrapper.scrollLeft = todayEl.offsetLeft - wrapper.clientWidth / 3;
+                }
+            }, 100);
         }
 
         function switchDpSheet(idx) {
