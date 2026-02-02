@@ -1535,7 +1535,7 @@
                     var localDp = JSON.parse(localStorage.getItem('mbwd_dienstplan') || 'null');
                     var needsCloudDp = !localDp || !localDp.base64;
                     // Erst Meta prüfen (klein, schnell)
-                    var metaRows = await cloudGet('app_settings', { eq: ['key', 'dienstplan_meta'] });
+                    var metaRows = await cloudGet('app_kv', { eq: ['key', 'dienstplan_meta'] });
                     console.log('Dienstplan Cloud-Meta:', metaRows ? metaRows.length + ' Zeilen' : 'null');
                     if (metaRows && metaRows.length > 0) {
                         // Neueste nehmen (falls Duplikate durch fehlenden onConflict)
@@ -1546,7 +1546,7 @@
                             var isNewer = !localDp || !localDp.uploadedAt || new Date(cloudMeta.uploadedAt) > new Date(localDp.uploadedAt);
                             if (needsCloudDp || isNewer) {
                                 console.log('Dienstplan: Lade Daten aus Cloud...');
-                                var dataRows = await cloudGet('app_settings', { eq: ['key', 'dienstplan_data'] });
+                                var dataRows = await cloudGet('app_kv', { eq: ['key', 'dienstplan_data'] });
                                 console.log('Dienstplan Cloud-Daten:', dataRows ? dataRows.length + ' Zeilen' : 'null');
                                 if (dataRows && dataRows.length > 0) {
                                     var dataRow = dataRows[dataRows.length - 1];
@@ -1596,8 +1596,8 @@
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'expiry_tracker' }, function() {
                     pullTable('expiry_tracker');
                 })
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'app_settings' }, function() {
-                    pullTable('app_settings');
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'app_kv' }, function() {
+                    pullTable('app_kv');
                 })
                 .subscribe();
         }
@@ -1651,16 +1651,16 @@
                     if (ex) localStorage.setItem('rtw_expiry_tracker', JSON.stringify(ex.map(function(x) {
                         return { id: x.id, name: x.name, date: x.date, addedBy: x.added_by };
                     })));
-                } else if (table === 'app_settings') {
+                } else if (table === 'app_kv') {
                     // Dienstplan aus Cloud aktualisieren (Realtime-Trigger)
                     var localDp = JSON.parse(localStorage.getItem('mbwd_dienstplan') || 'null');
-                    var metaRows = await cloudGet('app_settings', { eq: ['key', 'dienstplan_meta'] });
+                    var metaRows = await cloudGet('app_kv', { eq: ['key', 'dienstplan_meta'] });
                     if (metaRows && metaRows.length > 0) {
                         try {
                             var mr = metaRows[metaRows.length - 1];
                             var cloudMeta = JSON.parse(mr.value);
                             if (cloudMeta && cloudMeta.fileName && (!localDp || !localDp.uploadedAt || new Date(cloudMeta.uploadedAt) > new Date(localDp.uploadedAt))) {
-                                var dataRows = await cloudGet('app_settings', { eq: ['key', 'dienstplan_data'] });
+                                var dataRows = await cloudGet('app_kv', { eq: ['key', 'dienstplan_data'] });
                                 if (dataRows && dataRows.length > 0 && dataRows[dataRows.length - 1].value && dataRows[dataRows.length - 1].value.length > 100) {
                                     localStorage.setItem('mbwd_dienstplan', JSON.stringify({
                                         fileName: cloudMeta.fileName, uploadedAt: cloudMeta.uploadedAt,
@@ -4820,14 +4820,14 @@
                     localStorage.setItem('mbwd_dienstplan', JSON.stringify(dpData));
 
                     // Cloud-Sync: Metadaten + Datei-Daten
-                    cloudUpsert('app_settings', {
+                    cloudUpsert('app_kv', {
                         key: 'dienstplan_meta',
                         value: JSON.stringify({ fileName: dpData.fileName, uploadedAt: dpData.uploadedAt, uploadedBy: dpData.uploadedBy, sheetNames: dpData.sheetNames }),
                         updated_at: new Date().toISOString()
                     }, { onConflict: 'key' }).then(function() {
                         console.log('Dienstplan Meta → Cloud OK');
                     });
-                    cloudUpsert('app_settings', {
+                    cloudUpsert('app_kv', {
                         key: 'dienstplan_data',
                         value: dpData.base64,
                         updated_at: new Date().toISOString()
@@ -5221,8 +5221,8 @@
             if (preview) preview.textContent = 'Kein Dienstplan hochgeladen';
             if (lastUpdate) lastUpdate.textContent = '';
             if (info) info.textContent = 'Kein Dienstplan hochgeladen';
-            cloudUpsert('app_settings', { key: 'dienstplan_meta', value: JSON.stringify(null), updated_at: new Date().toISOString() }, { onConflict: 'key' });
-            cloudUpsert('app_settings', { key: 'dienstplan_data', value: '', updated_at: new Date().toISOString() }, { onConflict: 'key' });
+            cloudUpsert('app_kv', { key: 'dienstplan_meta', value: JSON.stringify(null), updated_at: new Date().toISOString() }, { onConflict: 'key' });
+            cloudUpsert('app_kv', { key: 'dienstplan_data', value: '', updated_at: new Date().toISOString() }, { onConflict: 'key' });
             addAuditEntry('DIENSTPLAN_GELÖSCHT', 'Dienstplan wurde gelöscht');
         }
 
