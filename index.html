@@ -593,10 +593,6 @@
             </div>
             <div class="login-error" id="loginError"></div>
         </div>
-        <div id="dsgvoHinweis" style="margin:16px auto;max-width:340px;padding:12px 16px;background:rgba(255,255,255,0.08);border-radius:12px;border:1px solid rgba(255,255,255,0.12);font-size:11px;color:rgba(255,255,255,0.5);text-align:center;line-height:1.5;">
-            Mit der Anmeldung stimmen Sie der Verarbeitung Ihrer Daten (Name, Kürzel, Prüfprotokolle) gemäß Art. 6 Abs. 1 lit. b DSGVO zu. Daten werden in der EU (Supabase/Frankfurt) gespeichert.
-            <a href="#" onclick="showDsgvoDetails();return false;" style="color:rgba(255,255,255,0.7);text-decoration:underline;">Mehr erfahren</a>
-        </div>
         <!-- Credits -->
         <div style="position:fixed;bottom:16px;right:20px;text-align:right;font-family:'Dancing Script',cursive;opacity:0.35;pointer-events:none;z-index:1;">
             <div style="font-size:14px;color:#fff;line-height:1.6;letter-spacing:0.5px;">Erstellt von <span style="font-weight:600;font-size:16px;">Emsiebe</span></div>
@@ -609,28 +605,6 @@
                 </svg>
                 <span style="font-size:11px;color:rgba(255,255,255,0.6);font-family:'DM Sans',sans-serif;font-weight:500;letter-spacing:0.3px;">Claude Code <span style="font-size:9px;opacity:0.8;">by Anthropic</span></span>
             </div>
-        </div>
-    </div>
-
-    <!-- DSGVO DETAIL MODAL -->
-    <div id="dsgvoModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:10000;background:rgba(0,0,0,0.7);padding:20px;overflow-y:auto;">
-        <div style="max-width:500px;margin:40px auto;background:#1e1e2e;border-radius:16px;padding:24px;color:#fff;font-size:13px;line-height:1.7;">
-            <h3 style="margin:0 0 16px;font-size:18px;">Datenschutzhinweis MBWD-App</h3>
-            <p><strong>Verantwortlicher:</strong> Mercedes-Benz Werksdienst, Standort 054 Rastatt</p>
-            <p><strong>Zweck der Verarbeitung:</strong> Digitale Dokumentation von Fahrzeugprüfungen, Meldungen und Einsätzen gemäß interner Qualitätssicherung.</p>
-            <p><strong>Verarbeitete Daten:</strong></p>
-            <ul style="padding-left:20px;">
-                <li>Name und Kürzel (Identifikation)</li>
-                <li>Prüfprotokolle und Checklisten</li>
-                <li>Meldungen und Kommentare</li>
-                <li>Unterschriften (digital)</li>
-                <li>Einsatzprotokolle</li>
-                <li>Anmelde-/Abmeldezeiten (Audit-Log)</li>
-            </ul>
-            <p><strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. b DSGVO (Erfüllung arbeitsvertraglicher Pflichten), Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an Qualitätssicherung).</p>
-            <p><strong>Speicherung:</strong> Lokaler Gerätespeicher + Supabase Cloud (EU, Frankfurt am Main). Automatische Löschung nach betrieblich festgelegter Aufbewahrungsfrist.</p>
-            <p><strong>Ihre Rechte:</strong> Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit. Wenden Sie sich an Ihren Vorgesetzten oder den Datenschutzbeauftragten.</p>
-            <button onclick="document.getElementById('dsgvoModal').style.display='none'" style="margin-top:16px;width:100%;padding:12px;background:#00d4aa;color:#000;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;">Verstanden</button>
         </div>
     </div>
 
@@ -1941,10 +1915,6 @@
                 showLoginError('Falsche PIN (' + (5 - loginAttempts) + ' Versuche übrig)');
             }
         }
-        function showDsgvoDetails() {
-            document.getElementById('dsgvoModal').style.display = 'block';
-        }
-
         function loginSuccess() {
             loginAttempts = 0;
             localStorage.setItem('mbwd_login_attempts', '0');
