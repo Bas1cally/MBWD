@@ -56,14 +56,18 @@
         .tile:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
         .tile:active { transform: translateY(0); }
         .tile::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
+        .tile.red::before { background: var(--accent); }
         .tile.blue::before { background: var(--blue); }
         .tile.orange::before { background: var(--orange); }
+        .tile:hover.red { border-color: var(--accent); box-shadow: 0 8px 32px var(--accent-glow); }
         .tile:hover.blue { border-color: var(--blue); box-shadow: 0 8px 32px var(--blue-glow); }
         .tile:hover.orange { border-color: var(--orange); box-shadow: 0 8px 32px var(--orange-glow); }
         .tile-icon { width: 56px; height: 56px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+        .tile.red .tile-icon { background: rgba(196, 30, 58, 0.2); }
         .tile.blue .tile-icon { background: rgba(52, 152, 219, 0.2); }
         .tile.orange .tile-icon { background: rgba(230, 126, 34, 0.2); }
         .tile-icon svg { width: 28px; height: 28px; }
+        .tile.red .tile-icon svg { fill: var(--accent); }
         .tile.blue .tile-icon svg { fill: var(--blue); }
         .tile.orange .tile-icon svg { fill: var(--orange); }
         .tile-title { font-size: 17px; font-weight: 600; margin-bottom: 4px; }
@@ -156,6 +160,41 @@
         .pdf-section { padding: 20px; max-width: 800px; margin: 0 auto; }
         .pdf-section .btn-primary { max-width: 800px; margin: 0 auto; }
 
+        /* EXPIRY TRACKER */
+        .expiry-tracker { margin: 20px; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .expiry-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 20px; }
+        .expiry-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .expiry-title { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .expiry-title svg { width: 24px; height: 24px; fill: var(--orange); }
+        .expiry-badge { background: var(--orange); color: white; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 12px; }
+        .expiry-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+        .expiry-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--bg-input); border-radius: var(--radius); border-left: 4px solid var(--text-muted); }
+        .expiry-item.urgent { border-left-color: #e74c3c; background: rgba(231, 76, 60, 0.1); }
+        .expiry-item.warning { border-left-color: var(--orange); background: rgba(230, 126, 34, 0.1); }
+        .expiry-item.soon { border-left-color: #f1c40f; background: rgba(241, 196, 15, 0.1); }
+        .expiry-item-info { flex: 1; }
+        .expiry-item-name { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
+        .expiry-item-date { font-size: 13px; color: var(--text-muted); }
+        .expiry-item-days { font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 8px; background: var(--bg-card); white-space: nowrap; }
+        .expiry-item.urgent .expiry-item-days { background: #e74c3c; color: white; }
+        .expiry-item.warning .expiry-item-days { background: var(--orange); color: white; }
+        .expiry-item.soon .expiry-item-days { background: #f1c40f; color: #333; }
+        .expiry-delete { width: 32px; height: 32px; background: transparent; border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); }
+        .expiry-delete:hover { background: #e74c3c; border-color: #e74c3c; }
+        .expiry-delete svg { width: 16px; height: 16px; fill: var(--text-muted); }
+        .expiry-delete:hover svg { fill: white; }
+        .expiry-empty { text-align: center; padding: 24px; color: var(--text-muted); font-size: 14px; }
+        .expiry-form { display: flex; gap: 10px; flex-wrap: wrap; }
+        .expiry-input { flex: 1; min-width: 150px; padding: 12px 16px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-primary); font-family: inherit; font-size: 14px; }
+        .expiry-input:focus { outline: none; border-color: var(--orange); }
+        .expiry-input::placeholder { color: var(--text-muted); }
+        .expiry-input[type="date"] { min-width: 140px; }
+        .expiry-add-btn { padding: 12px 20px; background: var(--orange); border: none; border-radius: var(--radius); color: white; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: var(--transition); }
+        .expiry-add-btn:hover { background: #d35400; }
+        .expiry-add-btn svg { width: 18px; height: 18px; fill: white; }
+        .sunday-section { background: linear-gradient(135deg, rgba(196, 30, 58, 0.1) 0%, transparent 100%); border: 1px solid var(--accent); border-radius: var(--radius); }
+        .sunday-section .section-header { background: rgba(196, 30, 58, 0.1); border-color: var(--accent); }
+
         /* LIGHT MODE */
         :root.light-mode {
             --bg-primary: #f5f5f5; --bg-secondary: #e8e8e8; --bg-card: #ffffff; --bg-input: #f0f0f0;
@@ -186,6 +225,11 @@
         <div class="tiles-container">
             <div class="tiles-section-title">Checks auswählen</div>
             <div class="tiles-grid">
+                <div class="tile red" onclick="openCheck('ambulanz')">
+                    <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/></svg></div>
+                    <div class="tile-title">Ambulanzcheck</div>
+                    <div class="tile-desc">Täglicher Ambulanzcheck</div>
+                </div>
                 <div class="tile blue" onclick="openCheck('mpg')">
                     <div class="tile-icon"><svg viewBox="0 0 24 24"><path d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zM19.5 9.5L21 12h-3.5v3h-1v-3H10V9.5h9.5zM6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zM20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4h3zM3 6v9h.76c.55-.61 1.35-1 2.24-1s1.69.39 2.24 1H10V6H3z"/></svg></div>
                     <div class="tile-title">MPG-Check RTW</div>
@@ -198,6 +242,31 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- AMBULANZCHECK -->
+    <div class="screen app-screen" id="ambulanzScreen">
+        <header class="app-header" style="border-left: 4px solid var(--accent);">
+            <div class="header-top">
+                <button class="back-btn" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+                <h1 class="header-title">Ambulanzcheck</h1>
+                <div class="header-actions">
+                    <button class="header-btn" onclick="exportPDF('ambulanz')" title="Als PDF exportieren"><svg viewBox="0 0 24 24"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg></button>
+                </div>
+            </div>
+            <div class="header-meta">
+                <div class="employee-input">
+                    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    <input type="text" id="ambulanzEmployeeName" placeholder="Name eingeben..." class="employee-name-input">
+                </div>
+                <span class="header-date" id="ambulanzCheckDate"></span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" id="ambulanzProgressFill" style="width: 0%"></div></div>
+            <div class="progress-text"><span id="ambulanzProgressCount">0</span> / <span id="ambulanzTotalCount">0</span> erledigt</div>
+        </header>
+        <div class="checklist-container" id="ambulanzChecklistContainer"></div>
+        <div class="signature-section"><div class="signature-card"><h3 class="signature-title"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Unterschrift</h3><div class="signature-canvas-container" id="ambulanzSignatureContainer"><canvas class="signature-canvas" id="ambulanzSignatureCanvas"></canvas><span class="signature-placeholder">Hier unterschreiben</span></div><div class="signature-name" id="ambulanzSignatureName"></div><div class="signature-actions"><button class="btn btn-secondary" id="ambulanzClearSignature"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>Löschen</button></div></div></div>
+        <div class="pdf-section"><button class="btn btn-primary" onclick="exportPDF('ambulanz')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg>Als PDF exportieren</button></div>
     </div>
 
     <!-- MPG-CHECK RTW -->
@@ -246,6 +315,20 @@
             <div class="progress-text"><span id="wochenProgressCount">0</span> / <span id="wochenTotalCount">0</span> erledigt</div>
         </header>
         <div class="checklist-container" id="wochenChecklistContainer"></div>
+        <!-- VERFALL-TRACKER -->
+        <div class="expiry-tracker">
+            <div class="expiry-card">
+                <div class="expiry-header">
+                    <div class="expiry-title"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>Verfall-Tracker<span class="expiry-badge" id="expiryCount">0</span></div>
+                </div>
+                <div class="expiry-list" id="expiryList"></div>
+                <div class="expiry-form">
+                    <input type="text" class="expiry-input" id="expiryItemName" placeholder="Artikel / Material...">
+                    <input type="date" class="expiry-input" id="expiryItemDate">
+                    <button class="expiry-add-btn" onclick="addExpiryItem()"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Hinzufügen</button>
+                </div>
+            </div>
+        </div>
         <div class="signature-section"><div class="signature-card"><h3 class="signature-title"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Unterschrift</h3><div class="signature-canvas-container" id="wochenSignatureContainer"><canvas class="signature-canvas" id="wochenSignatureCanvas"></canvas><span class="signature-placeholder">Hier unterschreiben</span></div><div class="signature-name" id="wochenSignatureName"></div><div class="signature-actions"><button class="btn btn-secondary" id="wochenClearSignature"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>Löschen</button></div></div></div>
         <div class="pdf-section"><button class="btn btn-primary" onclick="exportPDF('wochen')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg>Als PDF exportieren</button></div>
     </div>
@@ -255,6 +338,18 @@
 
     <script>
         // ============ CHECKLIST DATA ============
+        var checklistData = [
+            {id:'corpuls',title:'Corpuls 3',icon:'<svg viewBox="0 0 24 24"><path d="M19.5 6c-1.31 0-2.37 1.01-2.48 2.3-1.88-.5-2.84-.52-4.52.02C12.4 7.01 11.34 6 10.03 6 8.69 6 7.58 7.11 7.58 8.45c0 .65.26 1.24.68 1.68-2.21 1.87-2.62 4.29-2.62 6.37 0 1.1.9 2 2 2h8.72c1.1 0 2-.9 2-2 0-2.08-.41-4.5-2.62-6.37.42-.44.68-1.03.68-1.68C16.42 7.11 15.31 6 13.97 6z"/></svg>',items:['EKG-Kabel (6- und 12-Kanal) + Rasierer','EKG-Elektroden > 12 St\u00fcck','corPatch-Elektroden Erwachsener','CPR-Feedback-Sensor','CO2-Sensor und 1 K\u00fcvette','NIBD-Manschette und Schlauch','SpO2-Sensor und Zwischenkabel','Druckerpapier im Druckerfach vorhanden','Testschock mit 200J + Kontrolle Stromabgabe','Ladekonsole (Laden aktiv)','Kommunikation zwischen den Modulen','Batteriestatus der Module','Ger\u00e4t einschalten (Selbsttest)']},
+            {id:'absaugpumpe',title:'Elektrische Absaugpumpe',icon:'<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>',items:['Funktion','Pumpe h\u00e4lt Sog bei erreichtem Vakuum','Absaugkatheter (je 2x) + Schlauch & Fingertip','Pumpe l\u00e4dt in Halterung']},
+            {id:'notfallzimmer',title:'Notfallzimmer',icon:'<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/></svg>',items:['O2-Flaschendruck >50bar (10L)','Rucksack Rot vorhanden','EKG-Rechner eingeschaltet','Rucksack Gelb vorhanden','OP-Leuchte Funktion','Gelb: O2>80bar, Laryngoskop Funktion','Infusionsst\u00e4nder mit 2x Infusion + Besteck','Zentrifuge Funktion / Blut k\u00fchlen','K\u00fchl- und Gefrierschrank Funktion','SicSac in Spender >5 St\u00fcck']},
+            {id:'ambulanz1',title:'Ambulanz 1',icon:'<svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm6 11h-3v3h-2v-3H8v-2h3v-3h2v3h3v2z"/></svg>',items:['OP-Leuchte Funktion','Ambulanzwagen sauber, bef\u00fcllt','Spaltlampe Funktion','Otoskop Funktion','Kryo-Fos Funktion/Akku/Ladung','Augensp\u00fclflasche in Spiegelschrank']},
+            {id:'ambulanz2',title:'Ambulanz 2',icon:'<svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm6 11h-3v3h-2v-3H8v-2h3v-3h2v3h3v2z"/></svg>',items:['OP-Leuchte Funktion','Ambulanzwagen sauber, bef\u00fcllt','Desinfektionsbad leer','Otoskop Funktion','Kryo-Fos Funktion/Akku/Ladung']},
+            {id:'ruheraum',title:'Ruheraum',icon:'<svg viewBox="0 0 24 24"><path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V7H1v10h22v-6c0-2.21-1.79-4-4-4z"/></svg>',items:['Liegen sauber / Decken vorhanden','SicSac in Spender >5 St\u00fcck']},
+            {id:'physio',title:'Physikalische Therapie',icon:'<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>',items:['Liegen sauber / \u00c4rztekrepp vorhanden','Reizstromger\u00e4t Funktion/Sauberkeit','Rotlicht vorne Funktion/Sauberkeit','Rotlicht mittig Funktion/Sauberkeit','SicSac in Spender >5 St\u00fcck','Elacur + Voltaren vorhanden','Schw\u00e4mme abkochen']},
+            {id:'aufenthalt',title:'Aufenthaltsraum',icon:'<svg viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>',items:['Schalter "Patientenklingel" eingeschaltet','Schwesternruf gr\u00fcne Leuchte an']},
+            {id:'sonntag',title:'Nur Sonntag',icon:'<svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>',items:['Notruftelefon Funktion \u00fcberpr\u00fcft','Dokumente Leitstelle abholen'],isSunday:true}
+        ];
+
         var mpgChecklistData = [
             {id:'mpg-corpuls',title:'Corpuls\u00b3',icon:'<svg viewBox="0 0 24 24"><path d="M19.5 6c-1.31 0-2.37 1.01-2.48 2.3-1.88-.5-2.84-.52-4.52.02C12.4 7.01 11.34 6 10.03 6 8.69 6 7.58 7.11 7.58 8.45c0 .65.26 1.24.68 1.68-2.21 1.87-2.62 4.29-2.62 6.37 0 1.1.9 2 2 2h8.72c1.1 0 2-.9 2-2 0-2.08-.41-4.5-2.62-6.37.42-.44.68-1.03.68-1.68C16.42 7.11 15.31 6 13.97 6z"/></svg>',items:['EKG-Kabel (6- und 12-Kanal) + 3 Rasierer','EKG-Elektroden > 12 St\u00fcck','corPatch-Elektroden Erwachsener + Kinder','CPR-Feedback-Sensor','CO2-Sensor und 1 K\u00fcvette','NIBP-Manschette und Schlauch','SpO2-Sensor und Zwischenkabel','Druckerpapier im Druckerfach vorhanden','Testschock 200J + Kontrolle Stromabgabe (via Taste Einsatz)','Ladekonsole (Laden aktiv)','Kommunikation zwischen den Modulen','Batteriestatus der Module','Ger\u00e4t einschalten (Selbsttest)']},
             {id:'mpg-absaug',title:'Elektrische Absaugpumpe',icon:'<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>',items:['Funktion','Pumpe h\u00e4lt Sog bei erreichtem Vakuum','Absaugkatheter (je 2x) + Schlauch + Fingertip','Pumpe l\u00e4dt in Halterung']},
@@ -285,6 +380,7 @@
         ];
 
         // ============ STATE ============
+        var checklistState = {}, commentsState = {}, signatureData = null;
         var mpgChecklistState = {}, mpgCommentsState = {}, mpgSignatureData = null;
         var wochenChecklistState = {}, wochenCommentsState = {}, wochenSignatureData = null;
 
@@ -296,7 +392,8 @@
         }
 
         function openCheck(type) {
-            if (type === 'mpg') { initMpgCheck(); showScreen('mpg'); }
+            if (type === 'ambulanz') { initAmbulanzCheck(); showScreen('ambulanz'); }
+            else if (type === 'mpg') { initMpgCheck(); showScreen('mpg'); }
             else if (type === 'wochen') { initWochenCheck(); showScreen('wochen'); }
         }
 
@@ -323,6 +420,15 @@
         // ============ GENERIC CHECKLIST ============
         function getChecklistConfig(type) {
             var configs = {
+                ambulanz: {
+                    data: checklistData, stateKey: 'checklistState', commentsKey: 'commentsState',
+                    containerId: 'ambulanzChecklistContainer', progressFillId: 'ambulanzProgressFill',
+                    progressCountId: 'ambulanzProgressCount', totalCountId: 'ambulanzTotalCount',
+                    employeeNameId: 'ambulanzEmployeeName', commentPrefix: '',
+                    filterKey: 'isSunday', filterFn: function() { return new Date().getDay() === 0; },
+                    hasDocLinks: false,
+                    getSignatureData: function() { return signatureData; }
+                },
                 mpg: {
                     data: mpgChecklistData, stateKey: 'mpgChecklistState', commentsKey: 'mpgCommentsState',
                     containerId: 'mpgChecklistContainer', progressFillId: 'mpgProgressFill',
@@ -344,11 +450,11 @@
         }
 
         function getState(key) {
-            return { mpgChecklistState: mpgChecklistState, wochenChecklistState: wochenChecklistState }[key];
+            return { checklistState: checklistState, mpgChecklistState: mpgChecklistState, wochenChecklistState: wochenChecklistState }[key];
         }
 
         function getComments(key) {
-            return { mpgCommentsState: mpgCommentsState, wochenCommentsState: wochenCommentsState }[key];
+            return { commentsState: commentsState, mpgCommentsState: mpgCommentsState, wochenCommentsState: wochenCommentsState }[key];
         }
 
         function renderGenericChecklist(type) {
@@ -457,7 +563,86 @@
             document.getElementById(clearBtnId).addEventListener('click', function() { initCanvas(); cont.classList.remove('has-signature'); onDataChange(null); }, { signal: signal });
         }
 
+        // ============ HELPERS ============
+        function sanitizeHTML(str) {
+            if (str === null || str === undefined) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        function generateId() {
+            return Date.now().toString(36) + '-' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // ============ VERFALL-TRACKER ============
+        function getExpiryItems() {
+            try { return JSON.parse(localStorage.getItem('rtw_expiry_tracker') || '[]'); } catch (e) { return []; }
+        }
+
+        function saveExpiryItems(items) {
+            localStorage.setItem('rtw_expiry_tracker', JSON.stringify(items));
+        }
+
+        function addExpiryItem() {
+            var name = document.getElementById('expiryItemName').value.trim();
+            var date = document.getElementById('expiryItemDate').value;
+            if (!name || !date) { alert('Bitte Artikel und Verfallsdatum eingeben!'); return; }
+            var items = getExpiryItems();
+            items.push({ id: generateId(), name: name, date: date, addedBy: document.getElementById('wochenEmployeeName').value || 'Unbekannt', addedAt: new Date().toISOString() });
+            items.sort(function(a, b) { return new Date(a.date) - new Date(b.date); });
+            saveExpiryItems(items);
+            document.getElementById('expiryItemName').value = '';
+            document.getElementById('expiryItemDate').value = '';
+            renderExpiryTracker();
+        }
+
+        function deleteExpiryItem(id) {
+            if (!confirm('Eintrag l\u00f6schen?')) return;
+            var items = getExpiryItems().filter(function(x) { return x.id !== id; });
+            saveExpiryItems(items);
+            renderExpiryTracker();
+        }
+
+        function renderExpiryTracker() {
+            var items = getExpiryItems();
+            var container = document.getElementById('expiryList');
+            var badge = document.getElementById('expiryCount');
+            badge.textContent = items.length;
+            if (items.length === 0) { container.innerHTML = '<div class="expiry-empty">Keine Verfallsdaten eingetragen</div>'; return; }
+            var today = new Date(); today.setHours(0, 0, 0, 0);
+            var html = items.map(function(item) {
+                var expDate = new Date(item.date);
+                var diffDays = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
+                var urgencyClass = '', daysText = '';
+                if (diffDays < 0) { urgencyClass = 'urgent'; daysText = 'ABGELAUFEN!'; }
+                else if (diffDays === 0) { urgencyClass = 'urgent'; daysText = 'Heute!'; }
+                else if (diffDays <= 14) { urgencyClass = 'urgent'; daysText = diffDays + ' Tag' + (diffDays !== 1 ? 'e' : ''); }
+                else if (diffDays <= 30) { urgencyClass = 'warning'; daysText = diffDays + ' Tage'; }
+                else if (diffDays <= 60) { urgencyClass = 'soon'; daysText = Math.ceil(diffDays / 7) + ' Wochen'; }
+                else { daysText = Math.ceil(diffDays / 30) + ' Monate'; }
+                var dateFormatted = expDate.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                var addedDate = new Date(item.addedAt).toLocaleDateString('de-DE');
+                return '<div class="expiry-item ' + urgencyClass + '">' +
+                    '<div class="expiry-item-info"><div class="expiry-item-name">' + sanitizeHTML(item.name) + '</div><div class="expiry-item-date">Verf\u00e4llt am: ' + dateFormatted + '</div></div>' +
+                    '<span class="expiry-item-days">' + daysText + '</span>' +
+                    '<button class="expiry-delete" onclick="deleteExpiryItem(\'' + item.id + '\')" title="L\u00f6schen"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></button></div>';
+            }).join('');
+            container.innerHTML = html;
+        }
+
         // ============ INIT CHECKS ============
+        function initAmbulanzCheck() {
+            document.getElementById('ambulanzCheckDate').textContent = new Date().toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
+            document.getElementById('ambulanzEmployeeName').value = '';
+            document.getElementById('ambulanzSignatureName').textContent = '';
+            checklistState = {}; commentsState = {}; signatureData = null;
+            checklistData.forEach(function(s) { s.items.forEach(function(_, i) { checklistState[s.id + '-' + i] = false; }); });
+            renderGenericChecklist('ambulanz'); updateGenericProgress('ambulanz');
+            setTimeout(function() {
+                setupGenericSignatureCanvas('ambulanzSignatureCanvas', 'ambulanzSignatureContainer', 'ambulanzClearSignature', function(data) { signatureData = data; });
+            }, 300);
+            document.getElementById('ambulanzEmployeeName').oninput = function() { document.getElementById('ambulanzSignatureName').textContent = this.value.toUpperCase(); };
+        }
+
         function initMpgCheck() {
             document.getElementById('mpgCheckDate').textContent = new Date().toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
             document.getElementById('mpgEmployeeName').value = '';
@@ -480,6 +665,7 @@
             wochenChecklistState = {}; wochenCommentsState = {}; wochenSignatureData = null;
             wochenChecklistData.forEach(function(s) { s.items.forEach(function(_, i) { wochenChecklistState[s.id + '-' + i] = false; }); });
             renderGenericChecklist('wochen'); updateGenericProgress('wochen');
+            renderExpiryTracker();
             setTimeout(function() {
                 setupGenericSignatureCanvas('wochenSignatureCanvas', 'wochenSignatureContainer', 'wochenClearSignature', function(data) { wochenSignatureData = data; });
             }, 300);
@@ -493,7 +679,16 @@
 
                 var theChecklistData, theChecklistState, theCommentsState, theSignatureData, employeeName, docId, pdfTitle, headerColor;
 
-                if (type === 'mpg') {
+                if (type === 'ambulanz') {
+                    theChecklistData = checklistData;
+                    theChecklistState = checklistState;
+                    theCommentsState = commentsState;
+                    theSignatureData = signatureData;
+                    employeeName = document.getElementById('ambulanzEmployeeName').value || 'Nicht angegeben';
+                    docId = '054_CL_Ambulanzcheck';
+                    pdfTitle = 'T\u00e4glicher Ambulanzcheck';
+                    headerColor = [196, 30, 58];
+                } else if (type === 'mpg') {
                     theChecklistData = mpgChecklistData;
                     theChecklistState = mpgChecklistState;
                     theCommentsState = mpgCommentsState;
@@ -613,7 +808,7 @@
                 for (var p = 1; p <= pageCount; p++) { doc.setPage(p); addFooter(doc, docId, shortDate, employeeName, p, pageCount); }
 
                 // Download
-                var filePrefix = type === 'mpg' ? 'MPGCheck_' : 'Wochencheck_KW' + kw + '_';
+                var filePrefix = type === 'ambulanz' ? 'Ambulanzcheck_' : type === 'mpg' ? 'MPGCheck_' : 'Wochencheck_KW' + kw + '_';
                 var fileName = filePrefix + new Date().toISOString().split('T')[0] + '_' + employeeName.replace(/\s+/g, '_') + '.pdf';
 
                 var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
