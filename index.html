@@ -161,11 +161,16 @@
         .header-btn:hover { background: var(--bg-input); }
         .header-btn svg { width: 20px; height: 20px; fill: var(--text-secondary); }
         .header-meta { display: flex; align-items: center; gap: 16px; font-size: 14px; color: var(--text-secondary); flex-wrap: wrap; }
-        .header-date { font-family: 'JetBrains Mono', monospace; background: var(--bg-card); padding: 6px 12px; border-radius: 8px; }
-        .employee-input { display: flex; align-items: center; gap: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; flex: 1; max-width: 280px; }
+        .header-date { font-family: 'JetBrains Mono', monospace; background: var(--bg-card); padding: 6px 12px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; position: relative; }
+        .header-date-text { pointer-events: none; }
+        .header-date-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; }
+        .header-date svg { width: 14px; height: 14px; fill: var(--text-muted); flex-shrink: 0; }
+        .employee-input { display: flex; align-items: center; gap: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; flex: 1; max-width: 280px; transition: border-color 0.3s; }
+        .employee-input.required-highlight { border-color: var(--accent); animation: shakeInput 0.4s ease; }
         .employee-input svg { width: 18px; height: 18px; fill: var(--text-muted); flex-shrink: 0; }
         .employee-name-input { background: none; border: none; color: var(--text-primary); font-family: inherit; font-size: 14px; width: 100%; outline: none; }
         .employee-name-input::placeholder { color: var(--text-muted); }
+        @keyframes shakeInput { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
         .progress-bar { height: 4px; background: var(--bg-input); border-radius: 2px; overflow: hidden; margin-top: 12px; }
         .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--success)); border-radius: 2px; transition: width 0.3s ease; }
         .progress-text { font-size: 12px; color: var(--text-muted); margin-top: 6px; text-align: right; font-family: 'JetBrains Mono', monospace; }
@@ -781,7 +786,7 @@
                     <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                     <input type="text" id="employeeName" placeholder="Name eingeben..." class="employee-name-input">
                 </div>
-                <span class="header-date" id="checkDate"></span>
+                <span class="header-date" id="checkDate"><svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg><span class="header-date-text" id="checkDateText"></span><input type="date" class="header-date-input" id="checkDateInput"></span>
             </div>
             <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 0%"></div></div>
             <div class="progress-text"><span id="progressCount">0</span> / <span id="totalCount">0</span> erledigt</div>
@@ -806,7 +811,7 @@
                     <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                     <input type="text" id="mpgEmployeeName" placeholder="Name eingeben..." class="employee-name-input">
                 </div>
-                <span class="header-date" id="mpgCheckDate"></span>
+                <span class="header-date" id="mpgCheckDate"><svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg><span class="header-date-text" id="mpgCheckDateText"></span><input type="date" class="header-date-input" id="mpgCheckDateInput"></span>
             </div>
             <div class="progress-bar"><div class="progress-fill" id="mpgProgressFill" style="width: 0%"></div></div>
             <div class="progress-text"><span id="mpgProgressCount">0</span> / <span id="mpgTotalCount">0</span> erledigt</div>
@@ -831,7 +836,7 @@
                     <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                     <input type="text" id="wochenEmployeeName" placeholder="Name eingeben..." class="employee-name-input">
                 </div>
-                <span class="header-date" id="wochenCheckDate"></span>
+                <span class="header-date" id="wochenCheckDate"><svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg><span class="header-date-text" id="wochenCheckDateText"></span><input type="date" class="header-date-input" id="wochenCheckDateInput"></span>
             </div>
             <div class="progress-bar"><div class="progress-fill" id="wochenProgressFill" style="width: 0%"></div></div>
             <div class="progress-text"><span id="wochenProgressCount">0</span> / <span id="wochenTotalCount">0</span> erledigt</div>
@@ -2886,20 +2891,63 @@
             addAuditEntry('LÖSCH_LOG_EXPORTIERT', 'Lösch-Protokoll als CSV exportiert');
         }
 
+        // DATE PICKER & VALIDATION HELPERS
+        var selectedDates = { ambulanz: new Date(), mpg: new Date(), wochen: new Date() };
+        function formatDateDE(d) { return d.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' }); }
+        function toISODate(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+
+        function setupDatePicker(type) {
+            var idMap = { ambulanz: 'checkDateInput', mpg: 'mpgCheckDateInput', wochen: 'wochenCheckDateInput' };
+            var textMap = { ambulanz: 'checkDateText', mpg: 'mpgCheckDateText', wochen: 'wochenCheckDateText' };
+            var input = document.getElementById(idMap[type]);
+            var text = document.getElementById(textMap[type]);
+            var now = new Date();
+            selectedDates[type] = now;
+            input.value = toISODate(now);
+            if (type === 'wochen') {
+                text.textContent = 'KW ' + getWeekNumber(now) + ' / ' + now.toLocaleDateString('de-DE', { year: 'numeric' });
+            } else {
+                text.textContent = formatDateDE(now);
+            }
+            input.onchange = function() {
+                var parts = this.value.split('-');
+                var d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                selectedDates[type] = d;
+                if (type === 'wochen') {
+                    text.textContent = 'KW ' + getWeekNumber(d) + ' / ' + d.toLocaleDateString('de-DE', { year: 'numeric' });
+                } else {
+                    text.textContent = formatDateDE(d);
+                }
+            };
+        }
+
+        function requireName(type) {
+            var nameMap = { ambulanz: 'employeeName', mpg: 'mpgEmployeeName', wochen: 'wochenEmployeeName' };
+            var field = document.getElementById(nameMap[type]);
+            if (!field.value.trim()) {
+                field.closest('.employee-input').classList.add('required-highlight');
+                field.focus();
+                field.setAttribute('placeholder', 'Name ist Pflicht!');
+                setTimeout(function() { field.setAttribute('placeholder', 'Name eingeben...'); }, 3000);
+                return false;
+            }
+            return true;
+        }
+
         // AMBULANZCHECK
         function initAmbulanzcheck() {
-            document.getElementById('checkDate').textContent = new Date().toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
+            setupDatePicker('ambulanz');
             document.getElementById('employeeName').value = currentUser ? currentUser.name : '';
             document.getElementById('signatureName').textContent = currentUser ? currentUser.name.toUpperCase() : '';
             checklistState = {}; commentsState = {}; signatureData = null;
             checklistData.forEach(s => s.items.forEach((_, i) => { checklistState[`${s.id}-${i}`] = false; }));
             renderChecklist(); updateProgress();
-            // Delay signature canvas setup until screen is fully visible
             setTimeout(setupSignatureCanvas, 500);
             var empInput = document.getElementById('employeeName');
             empInput.oninput = function() {
                 validateForm();
                 document.getElementById('signatureName').textContent = this.value.toUpperCase();
+                this.closest('.employee-input').classList.remove('required-highlight');
             };
         }
         // === GENERIC CHECKLIST FUNCTIONS ===
@@ -3135,7 +3183,7 @@
 
         // MPG-CHECK FUNCTIONS
         function initMpgCheck() {
-            document.getElementById('mpgCheckDate').textContent = new Date().toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
+            setupDatePicker('mpg');
             document.getElementById('mpgEmployeeName').value = currentUser ? currentUser.name : '';
             document.getElementById('mpgSignatureName').textContent = currentUser ? currentUser.name.toUpperCase() : '';
             mpgChecklistState = {}; mpgCommentsState = {}; mpgSignatureData = null;
@@ -3146,6 +3194,7 @@
             mpgEmpInput.oninput = function() {
                 validateMpgForm();
                 document.getElementById('mpgSignatureName').textContent = this.value.toUpperCase();
+                this.closest('.employee-input').classList.remove('required-highlight');
             };
         }
         function renderMpgChecklist() { renderGenericChecklist('mpg'); }
@@ -3163,20 +3212,19 @@
 
         // WOCHENCHECK FUNCTIONS
         function initWochenCheck() {
-            var now = new Date();
-            var kw = getWeekNumber(now);
-            document.getElementById('wochenCheckDate').textContent = 'KW ' + kw + ' / ' + now.toLocaleDateString('de-DE', { year: 'numeric' });
+            setupDatePicker('wochen');
             document.getElementById('wochenEmployeeName').value = currentUser ? currentUser.name : '';
             document.getElementById('wochenSignatureName').textContent = currentUser ? currentUser.name.toUpperCase() : '';
             wochenChecklistState = {}; wochenCommentsState = {}; wochenSignatureData = null;
             wochenChecklistData.forEach(s => s.items.forEach((_, i) => { wochenChecklistState[`${s.id}-${i}`] = false; }));
             renderWochenChecklist(); updateWochenProgress();
-            renderExpiryTracker(); // Verfall-Tracker laden
+            renderExpiryTracker();
             setTimeout(setupWochenSignatureCanvas, 500);
             var wochenEmpInput = document.getElementById('wochenEmployeeName');
             wochenEmpInput.oninput = function() {
                 validateWochenForm();
                 document.getElementById('wochenSignatureName').textContent = this.value.toUpperCase();
+                this.closest('.employee-input').classList.remove('required-highlight');
             };
         }
         
@@ -3355,15 +3403,24 @@
                     alert('PDF Bibliothek nicht geladen. Bitte Seite neu laden.');
                     return;
                 }
-                
+
+                // Reinigung hat eigene Logik
+                if (type === 'reinigung') {
+                    exportReinigungPDF();
+                    return;
+                }
+
+                // Name-Pflichtfeld prüfen
+                if (!requireName(type)) return;
+
                 var theChecklistData, theChecklistState, theCommentsState, theSignatureData, employeeName, docId, pdfTitle, headerColor;
-                
+
                 if (type === 'ambulanz') {
                     theChecklistData = checklistData;
                     theChecklistState = checklistState;
                     theCommentsState = commentsState;
                     theSignatureData = signatureData;
-                    employeeName = document.getElementById('employeeName').value || 'Nicht angegeben';
+                    employeeName = document.getElementById('employeeName').value;
                     docId = '054_CL_Ambulanzcheck';
                     pdfTitle = 'Täglicher Ambulanzcheck';
                     headerColor = [196, 30, 58];
@@ -3372,7 +3429,7 @@
                     theChecklistState = mpgChecklistState;
                     theCommentsState = mpgCommentsState;
                     theSignatureData = mpgSignatureData;
-                    employeeName = document.getElementById('mpgEmployeeName').value || 'Nicht angegeben';
+                    employeeName = document.getElementById('mpgEmployeeName').value;
                     docId = '054_CL_Täglicher_MPG-Check_RTW';
                     pdfTitle = 'Täglicher MPG-Check RTW';
                     headerColor = [30, 100, 200];
@@ -3381,23 +3438,20 @@
                     theChecklistState = wochenChecklistState;
                     theCommentsState = wochenCommentsState;
                     theSignatureData = wochenSignatureData;
-                    employeeName = document.getElementById('wochenEmployeeName').value || 'Nicht angegeben';
+                    employeeName = document.getElementById('wochenEmployeeName').value;
                     docId = '054_CL_Woechentlicher_RTW_Check_1-83-1';
                     pdfTitle = 'Woechentlicher RTW Check';
                     headerColor = [230, 126, 34];
-                } else if (type === 'reinigung') {
-                    // Special PDF export for Reinigungsplan
-                    exportReinigungPDF();
-                    return;
                 }
-                
+
+                var chosenDate = selectedDates[type] || new Date();
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
-                const sun = new Date().getDay() === 0;
+                const sun = chosenDate.getDay() === 0;
                 const lastWeek = isLastWeekOfMonth();
-                const dateStr = new Date().toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
-                const shortDate = new Date().toLocaleDateString('de-DE');
-                const kw = getWeekNumber(new Date());
+                const dateStr = chosenDate.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
+                const shortDate = chosenDate.toLocaleDateString('de-DE');
+                const kw = getWeekNumber(chosenDate);
                 
                 let y = 20;
                 
@@ -3578,8 +3632,8 @@
                 } else if (type === 'wochen') {
                     filePrefix = 'Wochencheck_KW' + kw + '_';
                 }
-                var fileName = filePrefix + new Date().toISOString().split('T')[0] + '_' + employeeName.replace(/\s+/g, '_') + '.pdf';
-                
+                var fileName = filePrefix + toISODate(chosenDate) + '_' + employeeName.replace(/\s+/g, '_') + '.pdf';
+
                 var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
                 if (isIOS) {
                     var pdfBlob = doc.output('blob');
@@ -3624,15 +3678,18 @@
 
         // SUBMIT CHECK
         function submitCheck(type) {
+            // Name-Pflichtfeld prüfen
+            if (type !== 'reinigung' && !requireName(type)) return;
+
             var theChecklistData, theChecklistState, theCommentsState, theSignatureData, employeeName, btn, storageKey, checkTitle, progressCountId;
             var lastWeek = isLastWeekOfMonth();
-            
+
             if (type === 'ambulanz') {
                 theChecklistData = checklistData;
                 theChecklistState = checklistState;
                 theCommentsState = commentsState;
                 theSignatureData = signatureData;
-                employeeName = document.getElementById('employeeName').value || 'Nicht angegeben';
+                employeeName = document.getElementById('employeeName').value;
                 btn = document.getElementById('submitBtn');
                 storageKey = 'ambulanzcheck_archive';
                 checkTitle = 'Ambulanzcheck';
@@ -3642,7 +3699,7 @@
                 theChecklistState = mpgChecklistState;
                 theCommentsState = mpgCommentsState;
                 theSignatureData = mpgSignatureData;
-                employeeName = document.getElementById('mpgEmployeeName').value || 'Nicht angegeben';
+                employeeName = document.getElementById('mpgEmployeeName').value;
                 btn = document.getElementById('mpgSubmitBtn');
                 storageKey = 'mpgcheck_archive';
                 checkTitle = 'MPG-Check RTW';
@@ -3652,7 +3709,7 @@
                 theChecklistState = wochenChecklistState;
                 theCommentsState = wochenCommentsState;
                 theSignatureData = wochenSignatureData;
-                employeeName = document.getElementById('wochenEmployeeName').value || 'Nicht angegeben';
+                employeeName = document.getElementById('wochenEmployeeName').value;
                 btn = document.getElementById('wochenSubmitBtn');
                 storageKey = 'wochencheck_archive';
                 checkTitle = 'RTW Wochencheck';
