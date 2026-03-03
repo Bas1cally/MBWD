@@ -47,6 +47,12 @@
         .dashboard-logo-icon svg { width: 24px; height: 24px; fill: white; }
         .dashboard-logo-text { font-size: 22px; font-weight: 700; }
         .dashboard-date { font-size: 14px; color: var(--text-muted); margin-top: 12px; }
+        .sync-status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 20px; background: rgba(255,255,255,0.06); cursor: default; }
+        .sync-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .sync-status.connected .sync-dot { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.6); }
+        .sync-status.connecting .sync-dot { background: #f59e0b; animation: syncPulse 1.2s ease-in-out infinite; }
+        .sync-status.offline .sync-dot { background: #ef4444; }
+        @keyframes syncPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
 
         /* TILES */
         .tiles-container { padding: 24px; max-width: 600px; margin: 0 auto; }
@@ -220,6 +226,7 @@
                     <div class="dashboard-logo-icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/></svg></div>
                     <span class="dashboard-logo-text">RTW Checks</span>
                 </div>
+                <span class="sync-status connecting" id="syncStatus"><span class="sync-dot"></span><span id="syncLabel">Verbinde...</span></span>
             </div>
             <div class="dashboard-date" id="dashboardDate"></div>
         </header>
@@ -581,9 +588,19 @@
         var isOnline = navigator.onLine;
         var realtimeChannel = null;
 
+        function updateSyncStatus(status, text) {
+            var el = document.getElementById('syncStatus');
+            var label = document.getElementById('syncLabel');
+            if (!el || !label) return;
+            el.className = 'sync-status ' + status;
+            label.textContent = text || (status === 'connected' ? 'Cloud Sync' : status === 'connecting' ? 'Verbinde...' : 'Nur lokal');
+        }
+
         function initSupabase() {
+            updateSyncStatus('connecting', 'Verbinde...');
             if (!window.supabase || !window.supabase.createClient) {
                 console.warn('Supabase JS Library nicht geladen.');
+                updateSyncStatus('offline', 'Nicht verfügbar');
                 return false;
             }
             try {
@@ -592,12 +609,13 @@
                 return true;
             } catch (e) {
                 console.error('Supabase Init Fehler:', e);
+                updateSyncStatus('offline', 'Init Fehler');
                 return false;
             }
         }
 
-        window.addEventListener('online', function() { isOnline = true; syncOfflineQueue(); });
-        window.addEventListener('offline', function() { isOnline = false; });
+        window.addEventListener('online', function() { isOnline = true; updateSyncStatus('connecting', 'Verbinde...'); syncOfflineQueue(); });
+        window.addEventListener('offline', function() { isOnline = false; updateSyncStatus('offline', 'Offline'); });
 
         function queueOffline(action, data) {
             try {
@@ -646,7 +664,7 @@
         }
 
         async function loadExpiryFromCloud() {
-            if (!supabaseClient || !isOnline) { renderExpiryTracker(getExpiryItemsLocal()); return; }
+            if (!supabaseClient || !isOnline) { updateSyncStatus('offline', 'Nur lokal'); renderExpiryTracker(getExpiryItemsLocal()); return; }
             try {
                 var { data, error } = await supabaseClient.from('expiry_tracker').select('*').order('date', { ascending: true });
                 if (error) throw error;
@@ -655,8 +673,10 @@
                 });
                 saveExpiryItemsLocal(items);
                 renderExpiryTracker(items);
+                updateSyncStatus('connected', 'Cloud Sync');
             } catch (e) {
                 console.warn('Cloud-Load fehlgeschlagen, nutze localStorage:', e.message);
+                updateSyncStatus('offline', 'Sync Fehler');
                 renderExpiryTracker(getExpiryItemsLocal());
             }
         }
