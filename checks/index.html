@@ -208,6 +208,7 @@
         @media (max-width: 600px) { .tiles-grid { grid-template-columns: 1fr; } .toggle-switch { width: 64px; height: 40px; } .toggle-slider:before { height: 32px; width: 32px; } .toggle-switch input:checked + .toggle-slider:before { transform: translateX(24px); } }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -573,37 +574,125 @@
             return Date.now().toString(36) + '-' + Math.random().toString(36).substr(2, 9);
         }
 
+        // ============ SUPABASE KONFIGURATION ============
+        var SUPABASE_URL = 'https://mlocmimpsepzopmqgmtq.supabase.co';
+        var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1sb2NtaW1wc2Vwem9wbXFnbXRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5Mzg4MTksImV4cCI6MjA4NTUxNDgxOX0.BadecVV6NKnZwqOqHuQ0xBnzL38nv3u72m8ibaLbGVw';
+        var supabaseClient = null;
+        var isOnline = navigator.onLine;
+        var realtimeChannel = null;
+
+        function initSupabase() {
+            if (!window.supabase || !window.supabase.createClient) {
+                console.warn('Supabase JS Library nicht geladen.');
+                return false;
+            }
+            try {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log('Supabase Client erstellt (Checks).');
+                return true;
+            } catch (e) {
+                console.error('Supabase Init Fehler:', e);
+                return false;
+            }
+        }
+
+        window.addEventListener('online', function() { isOnline = true; syncOfflineQueue(); });
+        window.addEventListener('offline', function() { isOnline = false; });
+
+        function queueOffline(action, data) {
+            try {
+                var q = JSON.parse(localStorage.getItem('checks_offline_queue') || '[]');
+                q.push({ action: action, data: data, t: Date.now() });
+                localStorage.setItem('checks_offline_queue', JSON.stringify(q));
+            } catch (e) {}
+        }
+
+        async function syncOfflineQueue() {
+            if (!supabaseClient || !isOnline) return;
+            var q = JSON.parse(localStorage.getItem('checks_offline_queue') || '[]');
+            if (!q.length) return;
+            var failed = [];
+            for (var i = 0; i < q.length; i++) {
+                try {
+                    if (q[i].action === 'insert') {
+                        await supabaseClient.from('expiry_tracker').upsert(q[i].data);
+                    } else if (q[i].action === 'delete') {
+                        await supabaseClient.from('expiry_tracker').delete().eq('id', q[i].data.id);
+                    }
+                } catch (e) { failed.push(q[i]); }
+            }
+            localStorage.setItem('checks_offline_queue', JSON.stringify(failed));
+            if (!failed.length) console.log('Offline-Queue synchronisiert.');
+            await loadExpiryFromCloud();
+        }
+
+        // ============ REALTIME ============
+        function setupRealtime() {
+            if (!supabaseClient) return;
+            realtimeChannel = supabaseClient.channel('checks-expiry-sync')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'expiry_tracker' }, function() {
+                    loadExpiryFromCloud();
+                })
+                .subscribe();
+        }
+
         // ============ VERFALL-TRACKER ============
-        function getExpiryItems() {
+        function getExpiryItemsLocal() {
             try { return JSON.parse(localStorage.getItem('rtw_expiry_tracker') || '[]'); } catch (e) { return []; }
         }
 
-        function saveExpiryItems(items) {
+        function saveExpiryItemsLocal(items) {
             localStorage.setItem('rtw_expiry_tracker', JSON.stringify(items));
         }
 
-        function addExpiryItem() {
+        async function loadExpiryFromCloud() {
+            if (!supabaseClient || !isOnline) { renderExpiryTracker(getExpiryItemsLocal()); return; }
+            try {
+                var { data, error } = await supabaseClient.from('expiry_tracker').select('*').order('date', { ascending: true });
+                if (error) throw error;
+                var items = (data || []).map(function(row) {
+                    return { id: row.id, name: row.name, date: row.date, addedBy: row.added_by || '', addedAt: row.added_at || '' };
+                });
+                saveExpiryItemsLocal(items);
+                renderExpiryTracker(items);
+            } catch (e) {
+                console.warn('Cloud-Load fehlgeschlagen, nutze localStorage:', e.message);
+                renderExpiryTracker(getExpiryItemsLocal());
+            }
+        }
+
+        async function addExpiryItem() {
             var name = document.getElementById('expiryItemName').value.trim();
             var date = document.getElementById('expiryItemDate').value;
             if (!name || !date) { alert('Bitte Artikel und Verfallsdatum eingeben!'); return; }
-            var items = getExpiryItems();
-            items.push({ id: generateId(), name: name, date: date, addedBy: document.getElementById('wochenEmployeeName').value || 'Unbekannt', addedAt: new Date().toISOString() });
+            var item = { id: generateId(), name: name, date: date, addedBy: document.getElementById('wochenEmployeeName').value || 'Unbekannt', addedAt: new Date().toISOString() };
+            var items = getExpiryItemsLocal();
+            items.push(item);
             items.sort(function(a, b) { return new Date(a.date) - new Date(b.date); });
-            saveExpiryItems(items);
+            saveExpiryItemsLocal(items);
+            renderExpiryTracker(items);
             document.getElementById('expiryItemName').value = '';
             document.getElementById('expiryItemDate').value = '';
-            renderExpiryTracker();
+            var cloudRow = { id: item.id, name: item.name, date: item.date, added_by: item.addedBy, added_at: item.addedAt };
+            if (supabaseClient && isOnline) {
+                try { await supabaseClient.from('expiry_tracker').insert(cloudRow); }
+                catch (e) { console.warn('Cloud-Insert fehlgeschlagen:', e.message); queueOffline('insert', cloudRow); }
+            } else { queueOffline('insert', cloudRow); }
         }
 
-        function deleteExpiryItem(id) {
+        async function deleteExpiryItem(id) {
             if (!confirm('Eintrag l\u00f6schen?')) return;
-            var items = getExpiryItems().filter(function(x) { return x.id !== id; });
-            saveExpiryItems(items);
-            renderExpiryTracker();
+            var items = getExpiryItemsLocal().filter(function(x) { return x.id !== id; });
+            saveExpiryItemsLocal(items);
+            renderExpiryTracker(items);
+            if (supabaseClient && isOnline) {
+                try { await supabaseClient.from('expiry_tracker').delete().eq('id', id); }
+                catch (e) { console.warn('Cloud-Delete fehlgeschlagen:', e.message); queueOffline('delete', { id: id }); }
+            } else { queueOffline('delete', { id: id }); }
         }
 
-        function renderExpiryTracker() {
-            var items = getExpiryItems();
+        function renderExpiryTracker(items) {
+            if (!items) items = getExpiryItemsLocal();
             var container = document.getElementById('expiryList');
             var badge = document.getElementById('expiryCount');
             badge.textContent = items.length;
@@ -620,7 +709,6 @@
                 else if (diffDays <= 60) { urgencyClass = 'soon'; daysText = Math.ceil(diffDays / 7) + ' Wochen'; }
                 else { daysText = Math.ceil(diffDays / 30) + ' Monate'; }
                 var dateFormatted = expDate.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                var addedDate = new Date(item.addedAt).toLocaleDateString('de-DE');
                 return '<div class="expiry-item ' + urgencyClass + '">' +
                     '<div class="expiry-item-info"><div class="expiry-item-name">' + sanitizeHTML(item.name) + '</div><div class="expiry-item-date">Verf\u00e4llt am: ' + dateFormatted + '</div></div>' +
                     '<span class="expiry-item-days">' + daysText + '</span>' +
@@ -665,7 +753,7 @@
             wochenChecklistState = {}; wochenCommentsState = {}; wochenSignatureData = null;
             wochenChecklistData.forEach(function(s) { s.items.forEach(function(_, i) { wochenChecklistState[s.id + '-' + i] = false; }); });
             renderGenericChecklist('wochen'); updateGenericProgress('wochen');
-            renderExpiryTracker();
+            loadExpiryFromCloud();
             setTimeout(function() {
                 setupGenericSignatureCanvas('wochenSignatureCanvas', 'wochenSignatureContainer', 'wochenClearSignature', function(data) { wochenSignatureData = data; });
             }, 300);
@@ -843,6 +931,10 @@
         }
 
         // ============ INIT ============
+        initSupabase();
+        setupRealtime();
+        loadExpiryFromCloud();
+        syncOfflineQueue();
         document.getElementById('dashboardDate').textContent = new Date().toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
         if (localStorage.getItem('checks_theme') === 'light') {
             document.documentElement.classList.add('light-mode');
